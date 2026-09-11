@@ -14,6 +14,7 @@ class SceneManager:
         self.last: float = time.perf_counter()
         self.keys: set[str] = set()
         self.tk.bind("<KeyPress>", self.on_key)
+        self.tk.after(0, self.tick)
         self.tk.mainloop()
 
     @property
