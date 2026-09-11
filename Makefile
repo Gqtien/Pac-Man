@@ -2,10 +2,10 @@ VENV		:= .venv
 MYPY_FLAGS	:= --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 run: $(VENV)
-	@$(ARGS) uv run python -m src || true
+	@$(ARGS) uv run python src || true
 
 debug: $(VENV)
-	@$(ARGS) uv run python -m pdb -m src || true
+	@$(ARGS) uv run python -m pdb src || true
 
 install $(VENV):
 	@uv sync
