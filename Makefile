@@ -3,7 +3,7 @@ PY_VERSION	:= 3.10
 MYPY_FLAGS	:= --python-version $(PY_VERSION) --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 CMDS		:= run debug install lint lint-strict clean fclean
 ARGS		:= $(filter-out $(CMDS),$(MAKECMDGOALS))
-CMD		:= $(or $(firstword $(filter $(CMDS),$(MAKECMDGOALS))),run)
+CMD			:= $(or $(firstword $(filter $(CMDS),$(MAKECMDGOALS))),run)
 
 run: $(VENV)
 	@uv run python src $(ARGS)
