@@ -1,5 +1,5 @@
 from tkinter import Canvas
-from models import Transition, Pacman, World
+from models import Transition, Pacman, World, Ghost, Personality
 from models.utils import WALL_NORTH, WALL_EAST, WALL_SOUTH, WALL_WEST, Vec2
 from .base import Scene
 from models.utils import maze_to_grid, grid_to_walls
@@ -8,23 +8,27 @@ from mazegenerator import MazeGenerator
 
 class Gameplay(Scene):
     def __init__(self) -> None:
+        # TODO: figure out start pos of pacman and ghosts
         self.world: World = World(
             grid_to_walls(maze_to_grid(MazeGenerator().maze)),
             Pacman(pos=Vec2(1, 1), direction=Vec2(0, 0)),
-            [],
-            0
+            [
+                Ghost(Vec2(11, 1), Vec2(0, 0), Personality.BLINKY),
+            ],
         )
         self.input_buffer: list[str] = []
 
     def update(self, dt: float, keys: set[str]) -> Transition:
         self.input_buffer.extend(list(keys))
-        self.update_pacman(self.world.pacman, dt, keys)
+        self.update_pacman(self.world.pacman, dt)
         return None
 
     def draw(self, canvas: Canvas) -> None:
         cell_size: float = self.get_cell_size(canvas)
         canvas.delete("all")
         self.draw_map(self.world.map, cell_size, canvas)
+        for ghost in self.world.ghosts:
+            self.draw_ghost(ghost, cell_size, canvas)
         self.draw_pacman(self.world.pacman, cell_size, canvas)
 
     @staticmethod
@@ -36,7 +40,19 @@ class Gameplay(Scene):
         y *= cell_size
         canvas.create_oval(x, y, x + cell_size, y + cell_size, fill="Yellow")
 
-    def update_pacman(self, pacman: Pacman, dt: float, keys: set[str]) -> None:
+    @staticmethod
+    def draw_ghost(ghost: Ghost, cell_size: float, canvas: Canvas) -> None:
+        # Scale position from map coords to pixel coords.
+        x = ghost.pos.x + ghost.direction.x * ghost.movement_progress
+        y = ghost.pos.y + ghost.direction.y * ghost.movement_progress
+        x *= cell_size
+        y *= cell_size
+        canvas.create_oval(
+            x, y, x + cell_size, y + cell_size,
+            fill=ghost.personality.value.value
+        )
+
+    def update_pacman(self, pacman: Pacman, dt: float) -> None:
         # Move along direction.
         # TODO: speed in config
         pacman.movement_progress += 3 * dt
@@ -65,26 +81,27 @@ class Gameplay(Scene):
                     direction.update(1, 0)
             if direction != Vec2(0, 0):
                 # try to move to the last input
-                if self.can_move(pacman.pos, direction):
+                if self.can_move(pacman.pos, direction, self.world.map):
                     pacman.direction = direction
                     return
                 # only consume first input in the buffer
                 break
         # try to move to the old direction
-        if not self.can_move(pacman.pos, pacman.direction):
+        if not self.can_move(pacman.pos, pacman.direction, self.world.map):
             pacman.direction.update(0, 0)
 
+    @staticmethod
     def can_move(
-            self, pos: Vec2, direction: Vec2
+            pos: Vec2, direction: Vec2, map: list[list[int]]
     ) -> bool:
         """Check if there is a wall in this direction."""
         x = int(pos.x + direction.x)
         y = int(pos.y + direction.y)
         if x < 0 or y < 0:
             return False
-        if x >= len(self.world.map[0]) or y >= len(self.world.map):
+        if x >= len(map[0]) or y >= len(map):
             return False
-        if self.world.map[y][x]:
+        if map[y][x]:
             return False
         return True
 

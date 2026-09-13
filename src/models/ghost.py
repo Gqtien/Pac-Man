@@ -23,4 +23,5 @@ class Ghost:
     pos: Vec2
     direction: Vec2
     personality: Personality
-    state: State
+    movement_progress: float = 0.0
+    state: State = State.CHASE

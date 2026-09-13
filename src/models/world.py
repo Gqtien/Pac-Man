@@ -8,4 +8,4 @@ class World:
     map: list[list[int]]
     pacman: Pacman
     ghosts: list[Ghost]
-    score: int
+    score: int = 0
