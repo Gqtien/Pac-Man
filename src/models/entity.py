@@ -23,6 +23,7 @@ class State(Enum):
 class Entity:
     pos: Vec2
     direction: Direction
+    wanted: Direction = field(default=Direction.NONE, kw_only=True)
     progress: float = field(default=0.0, kw_only=True)
 
 
