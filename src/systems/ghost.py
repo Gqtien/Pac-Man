@@ -1,4 +1,4 @@
-from models import Direction, World, Ghost, State, Personality, Map
+from models import Direction, World, Ghost, GhostState, GhostPersonality, Map
 from typing import Callable
 from . import movement
 from .pathfind import pathfind
@@ -28,11 +28,11 @@ def update_clyde(ghost: Ghost, world: World) -> None:
     pass
 
 
-chase_map: dict[Personality, Callable[[Ghost, World], None]] = {
-    Personality.BLINKY: update_blinky,
-    Personality.PINKY: update_pinky,
-    Personality.INKY: update_inky,
-    Personality.CLYDE: update_clyde,
+chase_map: dict[GhostPersonality, Callable[[Ghost, World], None]] = {
+    GhostPersonality.BLINKY: update_blinky,
+    GhostPersonality.PINKY: update_pinky,
+    GhostPersonality.INKY: update_inky,
+    GhostPersonality.CLYDE: update_clyde,
 }
 
 
@@ -53,11 +53,11 @@ def step(ghost: Ghost, world: World, dt: float) -> None:
     if ghost.dirty:
         # recompute direction
         match ghost.state:
-            case State.DEAD:
+            case GhostState.DEAD:
                 pass  # TODO: go back to spawn
-            case State.FRIGHTENED:
+            case GhostState.FRIGHTENED:
                 update_ghost_frightned(ghost, world.map)
-            case State.SCATTER:
+            case GhostState.SCATTER:
                 pass  # TODO: go to each personality's corner
-            case State.CHASE:
+            case GhostState.CHASE:
                 chase_map[ghost.personality](ghost, world)
