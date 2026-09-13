@@ -3,7 +3,9 @@ name = "pacman"
 version = "0.0.1"
 description = "Ghosts! More ghosts!"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "mazegenerator",
+]
 
 [dependency-groups]
 dev = [
@@ -14,3 +16,6 @@ dev = [
 [tool.mypy]
 explicit_package_bases = true
 mypy_path = "src"
+
+[tool.uv.sources]
+mazegenerator = { path = "mazegenerator-2.1.0-py3-none-any.whl" }
