@@ -9,12 +9,14 @@ from .vec import Vec2
 class Entity:
     pos: Vec2
     direction: Direction
+    dirty: bool = field(default=True, kw_only=True)
     wanted: Direction = field(default=Direction.NONE, kw_only=True)
     progress: float = field(default=0.0, kw_only=True)
 
 
 @dataclass
-class Pacman(Entity): ...
+class Pacman(Entity):
+    ...
 
 
 class GhostPersonality(Enum):
