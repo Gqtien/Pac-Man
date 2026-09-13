@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum, auto
 from .colors import Color
-from .utils import Vec2
+from .vec import Vec2
 
 
 class Personality(Enum):

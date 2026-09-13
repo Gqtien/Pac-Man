@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from .utils import Vec2
+from .vec import Vec2
 
 
 @dataclass

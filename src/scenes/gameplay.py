@@ -1,8 +1,9 @@
 from tkinter import Canvas
 from models import Transition, Pacman, World, Ghost, Personality
-from models.utils import WALL_NORTH, WALL_EAST, WALL_SOUTH, WALL_WEST, Vec2
+from utils import WALL_NORTH, WALL_EAST, WALL_SOUTH, WALL_WEST
+from models.vec import Vec2
 from .base import Scene
-from models.utils import maze_to_grid, grid_to_walls
+from utils import maze_to_grid, grid_to_walls
 from mazegenerator import MazeGenerator
 
 
