@@ -20,7 +20,9 @@ class Gameplay(Scene):
 
     def update(self, dt: float, keys: set[str]) -> Transition:
         self.input_buffer.extend(list(keys))
-        self.update_pacman(self.world.pacman, dt)
+        self.update_pacman(
+            self.world.pacman, dt, self.input_buffer, self.world.map
+        )
         return None
 
     def draw(self, canvas: Canvas) -> None:
@@ -52,7 +54,13 @@ class Gameplay(Scene):
             fill=ghost.personality.value.value
         )
 
-    def update_pacman(self, pacman: Pacman, dt: float) -> None:
+    @staticmethod
+    def update_pacman(
+            pacman: Pacman,
+            dt: float,
+            input_buffer: list[str],
+            map: list[list[int]]
+    ) -> None:
         # Move along direction.
         # TODO: speed in config
         pacman.movement_progress += 3 * dt
@@ -68,8 +76,8 @@ class Gameplay(Scene):
         # update direction
         direction = Vec2(0, 0)
         # Read input buffer.
-        while self.input_buffer:
-            key: str = self.input_buffer.pop(0)
+        while input_buffer:
+            key: str = input_buffer.pop(0)
             match key:
                 case "Up":
                     direction.update(0, -1)
@@ -81,13 +89,13 @@ class Gameplay(Scene):
                     direction.update(1, 0)
             if direction != Vec2(0, 0):
                 # try to move to the last input
-                if self.can_move(pacman.pos, direction, self.world.map):
+                if Gameplay.can_move(pacman.pos, direction, map):
                     pacman.direction = direction
                     return
                 # only consume first input in the buffer
                 break
         # try to move to the old direction
-        if not self.can_move(pacman.pos, pacman.direction, self.world.map):
+        if not Gameplay.can_move(pacman.pos, pacman.direction, map):
             pacman.direction.update(0, 0)
 
     @staticmethod
