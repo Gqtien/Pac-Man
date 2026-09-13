@@ -6,3 +6,4 @@ from .utils import Vec2
 class Pacman:
     pos: Vec2
     direction: Vec2
+    movement_progress: float = 0.0

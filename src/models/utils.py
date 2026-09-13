@@ -6,6 +6,10 @@ class Vec2:
     x: int
     y: int
 
+    def update(self, x: int, y: int) -> None:
+        self.x = x
+        self.y = y
+
 
 WALL_NORTH = 0b0001
 WALL_EAST = 0b0010
