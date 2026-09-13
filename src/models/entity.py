@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum, auto
 from .colors import Color
 from .vec import Vec2
@@ -19,9 +19,18 @@ class State(Enum):
 
 
 @dataclass
-class Ghost:
+class Entity:
     pos: Vec2
     direction: Vec2
+    movement_progress: float = field(default=0.0, kw_only=True)
+
+
+@dataclass
+class Pacman(Entity):
+    ...
+
+
+@dataclass
+class Ghost(Entity):
     personality: Personality
-    movement_progress: float = 0.0
     state: State = State.CHASE

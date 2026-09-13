@@ -1,7 +1,7 @@
 import time
 from tkinter import Canvas, Event, Tk
 from .base import Scene
-from models import Pop, Push, Reset, Transition
+from .transition import Pop, Push, Reset, Transition
 
 
 class SceneManager:

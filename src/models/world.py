@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from .pacman import Pacman
-from .ghost import Ghost
+from .entity import Pacman, Ghost
 
 
 @dataclass

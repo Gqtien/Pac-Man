@@ -1,5 +1,6 @@
 from tkinter import Canvas
-from models import Transition, Pacman, World, Ghost, Personality
+from .transition import Transition
+from models import Pacman, World, Ghost, Personality
 from utils import WALL_NORTH, WALL_EAST, WALL_SOUTH, WALL_WEST
 from models.vec import Vec2
 from .base import Scene
@@ -119,7 +120,9 @@ class Gameplay(Scene):
         if len(self.world.map):
             cell_size = canvas.winfo_height() / len(self.world.map)
         if len(self.world.map[0]):
-            if (size := canvas.winfo_width() / len(self.world.map[0])) < cell_size:
+            if (
+                size := canvas.winfo_width() / len(self.world.map[0])
+            ) < cell_size:
                 cell_size = size
         return cell_size
 

@@ -1,5 +1,5 @@
 from tkinter import Canvas
-from models import Transition
+from .transition import Transition
 from .base import Scene
 
 

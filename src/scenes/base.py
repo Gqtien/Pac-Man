@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from tkinter import Canvas
-from models import Transition
+from .transition import Transition
 
 
 class Scene(ABC):
