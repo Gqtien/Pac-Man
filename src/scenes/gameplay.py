@@ -19,25 +19,22 @@ class Gameplay(Scene):
     def update(self, dt: float, keys: set[str]) -> Transition:
         self.input_buffer.extend(list(keys))
         self.update_pacman(self.world.pacman, dt, keys)
+        return None
 
     def draw(self, canvas: Canvas) -> None:
         cell_size: float = self.get_cell_size(canvas)
-        self.draw_background(self.world.map, cell_size, canvas)
+        canvas.delete("all")
         self.draw_map(self.world.map, cell_size, canvas)
         self.draw_pacman(self.world.pacman, cell_size, canvas)
 
     @staticmethod
     def draw_pacman(pacman: Pacman, cell_size: float, canvas: Canvas) -> None:
         # Scale position from map coords to pixel coords.
-        x = pacman.pos.x + pacman.direction.x * pacman.movement_progress + 0.5
-        y = pacman.pos.y + pacman.direction.y * pacman.movement_progress + 0.5
+        x = pacman.pos.x + pacman.direction.x * pacman.movement_progress
+        y = pacman.pos.y + pacman.direction.y * pacman.movement_progress
         x *= cell_size
         y *= cell_size
-        canvas.create_oval(
-            x - cell_size / 2, y - cell_size / 2,
-            x + cell_size / 2, y + cell_size / 2,
-            fill="Yellow"
-        )
+        canvas.create_oval(x, y, x + cell_size, y + cell_size, fill="Yellow")
 
     def update_pacman(self, pacman: Pacman, dt: float, keys: set[str]) -> None:
         # Move along direction.
@@ -123,15 +120,3 @@ class Gameplay(Scene):
                     canvas.create_line(
                         px, py + size, px + size, py + size, fill="blue"
                     )
-
-    @staticmethod
-    def draw_background(map: list[list[int]], size: float, canvas: Canvas) -> None:
-        for y, line in enumerate(map):
-            for x, cell in enumerate(line):
-                if cell:
-                    continue
-                px = size * x + 1
-                py = size * y + 1
-                canvas.create_rectangle(
-                    px, py, px + size, py + size, fill="black", width=0
-                )

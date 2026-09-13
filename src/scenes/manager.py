@@ -35,7 +35,7 @@ class SceneManager:
         self.apply(transition)
         if self.stack:
             self.top.draw(self.canvas)
-        self.tk.after(16, self.tick)
+        self.tk.after(1, self.tick)
 
     def apply(self, transition: Transition) -> None:
         match transition:
