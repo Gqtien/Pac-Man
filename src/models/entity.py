@@ -6,10 +6,10 @@ from .vec import Vec2
 
 
 class Personality(Enum):
-    BLINKY = Color.RED
-    PINKY = Color.PINK
-    INKY = Color.CYAN
-    CLYDE = Color.ORANGE
+    BLINKY = Color.BLINKY
+    PINKY = Color.PINKY
+    INKY = Color.INKY
+    CLYDE = Color.CLYDE
 
 
 class State(Enum):
@@ -35,3 +35,7 @@ class Pacman(Entity): ...
 class Ghost(Entity):
     personality: Personality
     state: State = State.CHASE
+
+    @property
+    def color(self) -> str:
+        return self.personality.value
