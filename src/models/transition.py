@@ -1,8 +1,11 @@
 from dataclasses import dataclass
+from typing import Generic, TypeAlias, TypeVar
+
+Scene = TypeVar("Scene")
 
 
 @dataclass(frozen=True)
-class Push[Scene]:
+class Push(Generic[Scene]):
     scene: Scene
 
 
@@ -12,8 +15,8 @@ class Pop:
 
 
 @dataclass(frozen=True)
-class Reset[Scene]:
+class Reset(Generic[Scene]):
     scene: Scene
 
 
-type Transition[Scene] = Push[Scene] | Pop | Reset[Scene] | None
+Transition: TypeAlias = Push[Scene] | Pop | Reset[Scene] | None
