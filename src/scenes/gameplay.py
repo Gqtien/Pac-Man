@@ -38,8 +38,8 @@ class Gameplay(Scene):
     @staticmethod
     def draw_pacman(pacman: Pacman, cell_size: float, canvas: Canvas) -> None:
         # Scale position from map coords to pixel coords.
-        x = pacman.pos.x + pacman.direction.x * pacman.movement_progress
-        y = pacman.pos.y + pacman.direction.y * pacman.movement_progress
+        x = pacman.pos.x + pacman.direction.x * pacman.progress
+        y = pacman.pos.y + pacman.direction.y * pacman.progress
         x *= cell_size
         y *= cell_size
         canvas.create_oval(x, y, x + cell_size, y + cell_size, fill="Yellow")
@@ -47,8 +47,8 @@ class Gameplay(Scene):
     @staticmethod
     def draw_ghost(ghost: Ghost, cell_size: float, canvas: Canvas) -> None:
         # Scale position from map coords to pixel coords.
-        x = ghost.pos.x + ghost.direction.x * ghost.movement_progress
-        y = ghost.pos.y + ghost.direction.y * ghost.movement_progress
+        x = ghost.pos.x + ghost.direction.x * ghost.progress
+        y = ghost.pos.y + ghost.direction.y * ghost.progress
         x *= cell_size
         y *= cell_size
         canvas.create_oval(
@@ -65,13 +65,13 @@ class Gameplay(Scene):
     ) -> None:
         # Move along direction.
         # TODO: speed in config
-        pacman.movement_progress += 3 * dt
+        pacman.progress += 3 * dt
 
-        if pacman.movement_progress < 1.0:
+        if pacman.progress < 1.0:
             return
 
         # reset move
-        pacman.movement_progress = 0.0
+        pacman.progress = 0.0
         pacman.pos.x += pacman.direction.x
         pacman.pos.y += pacman.direction.y
 
