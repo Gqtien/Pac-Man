@@ -1,9 +1,10 @@
 import sys
 from scenes import SceneManager
+from scenes import Gameplay
 
 
 def run() -> None:
-    SceneManager()
+    SceneManager(Gameplay())
 
 
 if __name__ == "__main__":

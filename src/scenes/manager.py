@@ -1,16 +1,15 @@
 import time
 from tkinter import Canvas, Event, Tk
 from .base import Scene
-from .main import Main
 from models import Pop, Push, Reset, Transition
 
 
 class SceneManager:
-    def __init__(self) -> None:
+    def __init__(self, initial_scene: Scene) -> None:
         self.tk = Tk()
-        self.canvas = Canvas(self.tk)
+        self.canvas = Canvas(self.tk, bg="black")
         self.canvas.pack(fill="both", expand=True)
-        self.stack: list[Scene] = [Main()]
+        self.stack: list[Scene] = [initial_scene]
         self.last: float = time.perf_counter()
         self.keys: set[str] = set()
         self.tk.bind("<KeyPress>", self.on_key)
