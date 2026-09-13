@@ -42,9 +42,9 @@ class Gameplay(Scene):
         cell_size: float = self.get_cell_size(canvas)
         canvas.delete("all")
         self.draw_map(self.world.map, cell_size, canvas)
+        self.draw_pacman(self.world.pacman, cell_size, canvas)
         for ghost in self.world.ghosts:
             self.draw_ghost(ghost, cell_size, canvas)
-        self.draw_pacman(self.world.pacman, cell_size, canvas)
 
     @staticmethod
     def draw_pacman(pacman: Pacman, cell_size: float, canvas: Canvas) -> None:
