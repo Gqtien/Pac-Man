@@ -1,4 +1,5 @@
 from tkinter import Canvas
+from config import Config
 from mazegenerator import MazeGenerator
 import systems
 from systems import Outcome
@@ -29,11 +30,12 @@ from utils import (
 
 
 class Gameplay(Scene):
-    def __init__(self) -> None:
+    def __init__(self, config: Config) -> None:
         self.world = World(
             grid_to_walls(maze_to_grid(MazeGenerator().maze)),
             Pacman(Vec2(1, 1), Direction.NONE),
             [Ghost(Vec2(11, 1), Direction.NONE, Personality.BLINKY)],
+            config,
         )
 
     def update(self, dt: float, keys: set[str]) -> Transition:

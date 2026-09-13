@@ -11,7 +11,7 @@ KEYMAP: dict[str, Direction] = {
 
 def step(world: World, dt: float, keys: set[str]) -> None:
     steer(world.pacman, keys)
-    movement.move(world.pacman, world.map, dt)
+    movement.move(world.pacman, world, dt)
 
 
 def steer(pacman: Pacman, keys: set[str]) -> None:

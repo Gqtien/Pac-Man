@@ -1,14 +1,21 @@
-import sys
-from scenes import SceneManager
-from scenes import Gameplay
+import argparse
+from pathlib import Path
+from config import load_config
+from scenes import Gameplay, SceneManager
 
 
 def run() -> None:
-    SceneManager(Gameplay())
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "config",
+        nargs="?",
+        type=Path,
+        default=Path("config.json"),
+        help="config file to load (default: %(default)s)",
+    )
+    args = parser.parse_args()
+    SceneManager(Gameplay(load_config(args.config)))
 
 
 if __name__ == "__main__":
-    try:
-        run()
-    except Exception as exc:
-        sys.exit(f"Error: {exc}")
+    run()

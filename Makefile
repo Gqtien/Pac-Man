@@ -1,12 +1,15 @@
 VENV		:= .venv
 PY_VERSION	:= 3.10
 MYPY_FLAGS	:= --python-version $(PY_VERSION) --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+CMDS		:= run debug install lint lint-strict clean fclean
+ARGS		:= $(filter-out $(CMDS),$(MAKECMDGOALS))
+CMD		:= $(or $(firstword $(filter $(CMDS),$(MAKECMDGOALS))),run)
 
 run: $(VENV)
-	@$(ARGS) uv run python src || true
+	@uv run python src $(ARGS)
 
 debug: $(VENV)
-	@$(ARGS) uv run python -m pdb src || true
+	@uv run python -m pdb src $(ARGS)
 
 install $(VENV):
 	@uv sync
@@ -25,4 +28,7 @@ clean:
 fclean: clean
 	@rm -rf $(VENV)
 
-.PHONY: run debug install lint lint-strict clean fclean
+$(ARGS): $(CMD)
+	@:
+
+.PHONY: $(CMDS) $(ARGS)

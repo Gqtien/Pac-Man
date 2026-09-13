@@ -1,15 +1,16 @@
-from models import Direction, Entity, Vec2, Map
+from models import Direction, Entity, Map, Vec2, World
 
 
-def move(entity: Entity, map: Map, dt: float) -> None:
+def move(entity: Entity, world: World, dt: float) -> None:
     if not entity.direction.is_still:
-        entity.progress += 3 * dt
+        entity.progress += world.config.speed * dt
         if entity.progress < 1.0:
             return
         entity.progress -= 1.0
         entity.pos.x += entity.direction.dx
         entity.pos.y += entity.direction.dy
 
+    map = world.map
     if not entity.wanted.is_still and can_move(entity.pos, entity.wanted, map):
         entity.direction = entity.wanted
     elif not can_move(entity.pos, entity.direction, map):
