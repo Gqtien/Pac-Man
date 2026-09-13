@@ -1,10 +1,12 @@
+from models import Map
+
 WALL_NORTH = 0b0001
 WALL_EAST = 0b0010
 WALL_SOUTH = 0b0100
 WALL_WEST = 0b1000
 
 
-def maze_to_grid(maze: list[list[int]]) -> list[list[bool]]:
+def maze_to_grid(maze: Map) -> list[list[bool]]:
     height = len(maze)
     if height == 0:
         return []
@@ -40,13 +42,13 @@ def maze_to_grid(maze: list[list[int]]) -> list[list[bool]]:
     return grid
 
 
-def grid_to_walls(grid: list[list[bool]]) -> list[list[int]]:
+def grid_to_walls(grid: list[list[bool]]) -> Map:
     """Store adjacent wall info in int for each cell."""
     height = len(grid)
     if height == 0:
         return []
     width = len(grid[0])
-    walls: list[list[int]] = [[0] * width for _ in range(height)]
+    walls: Map = [[0] * width for _ in range(height)]
 
     for y in range(height):
         for x in range(width):

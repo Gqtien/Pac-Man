@@ -1,7 +1,7 @@
-from models import Direction, Entity, Vec2
+from models import Direction, Entity, Vec2, Map
 
 
-def move(entity: Entity, map: list[list[int]], dt: float) -> None:
+def move(entity: Entity, map: Map, dt: float) -> None:
     if not entity.direction.is_still:
         entity.progress += 3 * dt
         if entity.progress < 1.0:
@@ -16,7 +16,7 @@ def move(entity: Entity, map: list[list[int]], dt: float) -> None:
         entity.direction = Direction.NONE
 
 
-def can_move(pos: Vec2, direction: Direction, map: list[list[int]]) -> bool:
+def can_move(pos: Vec2, direction: Direction, map: Map) -> bool:
     x = pos.x + direction.dx
     y = pos.y + direction.dy
     if x < 0 or y < 0:

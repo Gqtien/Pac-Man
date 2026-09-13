@@ -16,6 +16,7 @@ from models import (
     Vec2,
     World,
     Color,
+    Map,
 )
 from utils import (
     WALL_NORTH,
@@ -55,7 +56,7 @@ class Gameplay(Scene):
             self.draw_entity(ghost, ghost.color, size, canvas)
 
     @staticmethod
-    def cell_size(map: list[list[int]], canvas: Canvas) -> float:
+    def cell_size(map: Map, canvas: Canvas) -> float:
         rows, cols = len(map), len(map[0])
         return min(canvas.winfo_width() / cols, canvas.winfo_height() / rows)
 
@@ -68,7 +69,7 @@ class Gameplay(Scene):
         canvas.create_oval(x, y, x + size, y + size, fill=color)
 
     @staticmethod
-    def draw_map(map: list[list[int]], size: float, canvas: Canvas) -> None:
+    def draw_map(map: Map, size: float, canvas: Canvas) -> None:
         wall_sides: dict[int, tuple[int, int, int, int]] = {
             WALL_NORTH: (0, 0, 1, 0),
             WALL_WEST: (0, 0, 0, 1),
