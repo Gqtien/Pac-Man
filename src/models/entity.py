@@ -1,22 +1,8 @@
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from .direction import Direction
 from .colors import Color
+from .direction import Direction
 from .vec import Vec2
-
-
-class Personality(Enum):
-    BLINKY = Color.BLINKY
-    PINKY = Color.PINKY
-    INKY = Color.INKY
-    CLYDE = Color.CLYDE
-
-
-class State(Enum):
-    CHASE = auto()
-    SCATTER = auto()
-    DEAD = auto()
-    FRIGHTENED = auto()
 
 
 @dataclass
@@ -31,10 +17,24 @@ class Entity:
 class Pacman(Entity): ...
 
 
+class GhostPersonality(Enum):
+    BLINKY = Color.BLINKY
+    PINKY = Color.PINKY
+    INKY = Color.INKY
+    CLYDE = Color.CLYDE
+
+
+class GhostState(Enum):
+    CHASE = auto()
+    SCATTER = auto()
+    DEAD = auto()
+    FRIGHTENED = auto()
+
+
 @dataclass
 class Ghost(Entity):
-    personality: Personality
-    state: State = State.CHASE
+    personality: GhostPersonality
+    state: GhostState = GhostState.CHASE
 
     @property
     def color(self) -> str:
