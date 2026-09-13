@@ -14,6 +14,7 @@ from utils import (
 from mazegenerator import MazeGenerator
 from .base import Scene
 from .death import Death
+from .pause import Pause
 from .main import Main
 from .transition import Push, Reset, Transition
 
@@ -30,6 +31,8 @@ class Gameplay(Scene):
         )
 
     def update(self, dt: float, keys: set[str]) -> Transition:
+        if "Escape" in keys:
+            return Push(Pause())
         match systems.step(self.world, dt, keys):
             case Outcome.LOST:
                 return Push(Death())
