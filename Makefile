@@ -1,5 +1,6 @@
 VENV		:= .venv
-MYPY_FLAGS	:= --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+PY_VERSION	:= 3.10
+MYPY_FLAGS	:= --python-version $(PY_VERSION) --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 run: $(VENV)
 	@$(ARGS) uv run python src || true
@@ -16,7 +17,7 @@ lint: $(VENV)
 
 lint-strict: $(VENV)
 	-@uv run flake8 src
-	-@uv run mypy src --strict
+	-@uv run mypy src --strict --python-version $(PY_VERSION)
 
 clean:
 	-@find . -type d \( -name __pycache__ -o -name .mypy_cache -o -name .pytest_cache \) -exec rm -rf {} +
