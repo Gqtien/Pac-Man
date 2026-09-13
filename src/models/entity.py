@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum, auto
+from .direction import Direction
 from .colors import Color
 from .vec import Vec2
 
@@ -21,13 +22,12 @@ class State(Enum):
 @dataclass
 class Entity:
     pos: Vec2
-    direction: Vec2
+    direction: Direction
     movement_progress: float = field(default=0.0, kw_only=True)
 
 
 @dataclass
-class Pacman(Entity):
-    ...
+class Pacman(Entity): ...
 
 
 @dataclass
