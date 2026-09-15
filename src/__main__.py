@@ -14,7 +14,8 @@ def run() -> None:
         help="config file to load (default: %(default)s)",
     )
     args = parser.parse_args()
-    SceneManager(Gameplay(load_config(args.config)))
+    manager = SceneManager()
+    manager.start(Gameplay(load_config(args.config)))
 
 
 if __name__ == "__main__":

@@ -5,15 +5,18 @@ from .transition import Pop, Push, Reset, Transition
 
 
 class SceneManager:
-    def __init__(self, initial_scene: Scene) -> None:
+    def __init__(self) -> None:
         self.tk = Tk()
         self.canvas = Canvas(self.tk, bg="black")
         self.canvas.pack(fill="both", expand=True)
-        self.stack: list[Scene] = [initial_scene]
+        self.stack: list[Scene] = []
         self.last: float = time.perf_counter()
         self.keys: set[str] = set()
         self.tk.bind("<KeyPress>", self.on_key)
         self.tk.after(0, self.tick)
+
+    def start(self, initial_scene: Scene) -> None:
+        self.stack.append(initial_scene)
         self.tk.mainloop()
 
     @property
