@@ -52,7 +52,26 @@ def maze_to_grid(maze: Maze) -> list[list[bool]]:
             grid[cy][cx - 1] = cell & WALLS[Direction.WEST] != 0
             grid[cy][cx + 1] = cell & WALLS[Direction.EAST] != 0
 
+    fill_holes(grid)
     return grid
+
+
+def fill_holes(grid: list[list[bool]]) -> None:
+    height = len(grid)
+    if height == 0:
+        return
+    width = len(grid[0])
+
+    to_fill: list[tuple[int, int]] = []
+    for y in range(1, height - 1):
+        for x in range(1, width - 1):
+            if all(
+                (grid[y + dy][x + dx] == False)
+                for dx in range(-1, 2) for dy in range(-1, 2)
+            ):
+                to_fill.append((x, y))
+    for x, y in to_fill:
+        grid[y][x] = True
 
 
 def grid_to_walls(grid: list[list[bool]]) -> Map:
@@ -75,5 +94,5 @@ def grid_to_walls(grid: list[list[bool]]) -> Map:
                 cell |= WALLS[Direction.WEST]
             if x + 1 < width and grid[y][x + 1]:
                 cell |= WALLS[Direction.EAST]
-            walls[y][x] = cell
+            walls[y][x] = cell if cell else 0x10
     return walls
