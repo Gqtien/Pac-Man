@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from .colors import Color
 from .direction import Direction
 from .vec import Vec2
 
@@ -21,10 +20,10 @@ class Pacman(Entity):
 
 
 class GhostPersonality(Enum):
-    BLINKY = Color.BLINKY
-    PINKY = Color.PINKY
-    INKY = Color.INKY
-    CLYDE = Color.CLYDE
+    BLINKY = auto()
+    PINKY = auto()
+    INKY = auto()
+    CLYDE = auto()
 
 
 class GhostState(Enum):
@@ -38,7 +37,3 @@ class GhostState(Enum):
 class Ghost(Entity):
     personality: GhostPersonality
     state: GhostState = GhostState.CHASE
-
-    @property
-    def color(self) -> str:
-        return self.personality.value

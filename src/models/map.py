@@ -67,7 +67,8 @@ def fill_holes(grid: list[list[bool]]) -> None:
         for x in range(1, width - 1):
             if all(
                 (grid[y + dy][x + dx] == False)
-                for dx in range(-1, 2) for dy in range(-1, 2)
+                for dx in range(-1, 2)
+                for dy in range(-1, 2)
             ):
                 to_fill.append((x, y))
     for x, y in to_fill:
