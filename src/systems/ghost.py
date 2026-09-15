@@ -75,7 +75,7 @@ def update_ghost_frightned(ghost: Ghost, maze: Map) -> None:
 def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
     move(ghost, world, config, dt)
     animate(ghost, world, config, dt)
-    if ghost.dirty:
+    if ghost.dirty or ghost.direction is Direction.NONE:
         # recompute direction
         match ghost.state:
             case GhostState.DEAD:
