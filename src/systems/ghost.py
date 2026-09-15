@@ -59,7 +59,7 @@ chase_map: dict[GhostPersonality, Callable[[Ghost, World], None]] = {
 }
 
 
-def update_ghost_frightned(ghost: Ghost, maze: Map) -> None:
+def update_ghost_frightened(ghost: Ghost, maze: Map) -> None:
     dirs = list(map(Direction, [(0, 1), (1, 0), (0, -1), (-1, 0)]))
     possible_dirs = []
     for dir in dirs:
@@ -80,7 +80,7 @@ def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
             case GhostState.DEAD:
                 pass  # TODO: go back to spawn
             case GhostState.FRIGHTENED:
-                update_ghost_frightned(ghost, world.map)
+                update_ghost_frightened(ghost, world.map)
             case GhostState.SCATTER:
                 pass  # TODO: go to each personality's corner
             case GhostState.CHASE:
