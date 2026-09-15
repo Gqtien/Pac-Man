@@ -70,8 +70,8 @@ def build_path(
         target: tuple[int, int]
 ) -> list[tuple[int, int]]:
     """Reconstruct path from previous dict."""
-    path = []
-    current = target
+    path: list[tuple[int, int]] = []
+    current: tuple[int, int] | None = target
     while current:
         path.append(current)
         current = previous.get(current, None)
