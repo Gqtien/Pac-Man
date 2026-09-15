@@ -1,4 +1,4 @@
-from models import Direction, World, Ghost, GhostState, GhostPersonality, Map
+from models import Direction, World, Ghost, GhostState, GhostPersonality, Map, Vec2
 from typing import Callable
 from . import movement
 from .pathfind import pathfind
@@ -7,26 +7,41 @@ from .animate import animate
 import random
 
 
-def update_blinky(ghost: Ghost, world: World) -> None:
-    path = pathfind(ghost.pos, world.pacman.pos, world.map)
+def pathfind_to(source: Vec2, target: Vec2, map: Map) -> Direction:
+    path = pathfind(source, target, map)
     if not path or not path[1:]:
-        ghost.direction = Direction.NONE
-        return
+        return Direction.NONE
     next_x, next_y = path[1]
-    dx, dy = next_x - ghost.pos.x, next_y - ghost.pos.y
-    ghost.direction = Direction((dx, dy))
+    dx, dy = next_x - source.x, next_y - source.y
+    return Direction((dx, dy))
+
+
+def update_blinky(ghost: Ghost, world: World) -> None:
+    ghost.direction = pathfind_to(ghost.pos, world.pacman.pos, world.map)
 
 
 def update_pinky(ghost: Ghost, world: World) -> None:
-    pass
+    target: Vec2 = world.pacman.pos + Vec2(*world.pacman.direction.value) * 2
+    ghost.direction = pathfind_to(ghost.pos, target, world.map)
 
 
 def update_inky(ghost: Ghost, world: World) -> None:
-    pass
+    blinky: Ghost = list(filter(
+        lambda g: g.personality == GhostPersonality.BLINKY,
+        world.ghosts
+    ))[0]
+    d: Vec2 = world.pacman.pos + Vec2(*world.pacman.direction.value)
+    d -= blinky.pos
+    d *= 2
+    target = blinky.pos + d
+    ghost.direction = pathfind_to(ghost.pos, target, world.map)
 
 
 def update_clyde(ghost: Ghost, world: World) -> None:
-    pass
+    ghost.direction = pathfind_to(ghost.pos, world.pacman.pos, world.map)
+    # TODO: config
+    if (world.pacman.pos - ghost.pos).norm() <= 8:
+        ghost.state = GhostState.SCATTER
 
 
 chase_map: dict[GhostPersonality, Callable[[Ghost, World], None]] = {
@@ -63,3 +78,4 @@ def step(ghost: Ghost, world: World, dt: float) -> None:
                 pass  # TODO: go to each personality's corner
             case GhostState.CHASE:
                 chase_map[ghost.personality](ghost, world)
+        ghost.dirty = False

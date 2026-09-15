@@ -39,7 +39,12 @@ class Gameplay(Scene):
         self.world = World(
             grid_to_walls(maze_to_grid(MazeGenerator().maze)),
             Pacman(Vec2(1, 1), Direction.NONE),
-            [Ghost(Vec2(11, 1), Direction.NONE, GhostPersonality.BLINKY)],
+            [
+                Ghost(Vec2(11, 1), Direction.NONE, GhostPersonality.BLINKY),
+                Ghost(Vec2(11, 3), Direction.NONE, GhostPersonality.PINKY),
+                Ghost(Vec2(11, 5), Direction.NONE, GhostPersonality.INKY),
+                Ghost(Vec2(11, 7), Direction.NONE, GhostPersonality.CLYDE),
+             ],
             config,
         )
         sheet = SpriteSheet(path=config.spritesheet, cell=16)
