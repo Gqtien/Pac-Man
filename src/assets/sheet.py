@@ -2,9 +2,16 @@ from tkinter import PhotoImage
 
 
 class SpriteSheet:
-    def __init__(self, path: str, cell: int) -> None:
-        self.image = PhotoImage(file=path)
+    def __init__(self, image: PhotoImage, cell: int) -> None:
+        self.image = image
         self.cell = cell
+
+    @classmethod
+    def load(cls, path: str, cell: int) -> "SpriteSheet":
+        return cls(PhotoImage(file=path), cell)
+
+    def zoom(self, scale: int) -> "SpriteSheet":
+        return SpriteSheet(self.image.zoom(scale), self.cell * scale)
 
     def cut(self, x: int, y: int, w: int, h: int) -> PhotoImage:
         sprite = PhotoImage(width=w, height=h)

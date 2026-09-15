@@ -18,6 +18,6 @@ class Pause(Scene):
 
     def draw(self, canvas: Canvas) -> None:
         w, h = canvas.winfo_width(), canvas.winfo_height()
-        font = self.assets.fonts[FontColor.WHITE, max(1, h // 128)]
+        font = self.assets.fonts.fit(h / 16)[FontColor.WHITE]
         canvas.create_image(0, 0, image=self.overlay, anchor="nw")
         put_text_centered("PAUSE", font, canvas, w / 2, h / 2)

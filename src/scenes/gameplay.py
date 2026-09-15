@@ -52,43 +52,20 @@ class Gameplay(Scene):
 
     def draw(self, canvas: Canvas) -> None:
         size: float = self.cell_size(self.world.map, canvas)
+        sprites: Sprites = self.assets.sprites.fit(size)
         # map
         self.draw_map(self.world.map, size, canvas)
 
         # pacman
-        anim: Animation = self.assets.sprites.pacman[
-            self.world.pacman.direction
-        ]
-        self.animate_entity(self.world.pacman, canvas, size, anim)
+        anim: Animation = sprites.pacman[self.world.pacman.direction]
+        self.animate_entity(self.world.pacman, anim, size, canvas)
 
         # ghosts
         for ghost in self.world.ghosts:
-            self.animate_ghost(ghost, canvas, self.assets.sprites, size)
+            anim = self.ghost_animation(ghost, sprites)
+            self.animate_entity(ghost, anim, size, canvas)
 
-    @staticmethod
-    def animate_ghost(
-        ghost: Ghost, canvas: Canvas, sprites: Sprites, size: float
-    ) -> None:
-        animation: Animation = []
-        match ghost.state:
-            case GhostState.CHASE | GhostState.SCATTER:
-                animation = sprites.ghost[ghost.personality][ghost.direction]
-            case GhostState.DEAD:
-                animation = [sprites.eyes[ghost.direction]]
-            case GhostState.FRIGHTENED:
-                animation = sprites.frightened
-        Gameplay.animate_entity(ghost, canvas, size, animation)
-
-    @staticmethod
-    def animate_entity(
-        entity: Entity, canvas: Canvas, size: float, animation: Animation
-    ) -> None:
-        x = (entity.pos.x + entity.direction.dx * entity.progress + 0.5) * size
-        y = (entity.pos.y + entity.direction.dy * entity.progress + 0.5) * size
-        canvas.create_image(
-            (x, y),
-            image=animation[int(entity.anim_progress) % len(animation)],
-        )
+        self.center(self.world.map, size, canvas)
 
     @staticmethod
     def cell_size(map: Map, canvas: Canvas) -> float:
@@ -96,12 +73,32 @@ class Gameplay(Scene):
         return min(canvas.winfo_width() / cols, canvas.winfo_height() / rows)
 
     @staticmethod
-    def draw_entity(
-        entity: Entity, color: str, size: float, canvas: Canvas
+    def center(map: Map, size: float, canvas: Canvas) -> None:
+        rows, cols = len(map), len(map[0])
+        dx = (canvas.winfo_width() - cols * size) / 2
+        dy = (canvas.winfo_height() - rows * size) / 2
+        canvas.move("all", dx, dy)
+
+    @staticmethod
+    def ghost_animation(ghost: Ghost, sprites: Sprites) -> Animation:
+        match ghost.state:
+            case GhostState.CHASE | GhostState.SCATTER:
+                return sprites.ghost[ghost.personality][ghost.direction]
+            case GhostState.DEAD:
+                return [sprites.eyes[ghost.direction]]
+            case GhostState.FRIGHTENED:
+                return sprites.frightened
+
+    @staticmethod
+    def animate_entity(
+        entity: Entity, animation: Animation, size: float, canvas: Canvas
     ) -> None:
-        x = (entity.pos.x + entity.direction.dx * entity.progress) * size
-        y = (entity.pos.y + entity.direction.dy * entity.progress) * size
-        canvas.create_oval(x, y, x + size, y + size, fill=color)
+        x = (entity.pos.x + entity.direction.dx * entity.progress + 0.5) * size
+        y = (entity.pos.y + entity.direction.dy * entity.progress + 0.5) * size
+        canvas.create_image(
+            (x, y),
+            image=animation[int(entity.anim_progress) % len(animation)],
+        )
 
     @staticmethod
     def draw_map(map: Map, size: float, canvas: Canvas) -> None:

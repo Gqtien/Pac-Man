@@ -23,7 +23,7 @@ lint-strict: $(VENV)
 	-@uv run mypy src --strict --python-version $(PY_VERSION)
 
 clean:
-	-@find . -type d \( -name __pycache__ -o -name .mypy_cache -o -name .pytest_cache \) -exec rm -rf {} +
+	-@find . -type d \( -name __pycache__ -o -name .mypy_cache -o -name .pytest_cache -o -name .ruff_cache \) -exec rm -rf {} +
 
 fclean: clean
 	@rm -rf $(VENV)

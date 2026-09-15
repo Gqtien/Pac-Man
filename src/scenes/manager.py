@@ -7,6 +7,7 @@ from .transition import Pop, Push, Reset, Transition
 class SceneManager:
     def __init__(self) -> None:
         self.tk = Tk()
+        self.tk.attributes("-zoomed", True)
         self.canvas = Canvas(self.tk, bg="black")
         self.canvas.pack(fill="both", expand=True)
         self.stack: list[Scene] = []
