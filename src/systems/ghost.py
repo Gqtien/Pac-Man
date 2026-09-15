@@ -3,6 +3,7 @@ from typing import Callable
 from . import movement
 from .pathfind import pathfind
 from .movement import can_move
+from .animate import animate
 import random
 
 
@@ -50,6 +51,7 @@ def update_ghost_frightned(ghost: Ghost, maze: Map) -> None:
 
 def step(ghost: Ghost, world: World, dt: float) -> None:
     movement.move(ghost, world, dt)
+    animate(ghost, world, dt)
     if ghost.dirty:
         # recompute direction
         match ghost.state:

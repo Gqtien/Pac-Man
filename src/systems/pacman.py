@@ -1,5 +1,6 @@
 from models import Direction, Pacman, World
 from . import movement
+from .animate import animate
 
 KEYMAP: dict[str, Direction] = {
     "Up": Direction.NORTH,
@@ -12,6 +13,7 @@ KEYMAP: dict[str, Direction] = {
 def step(world: World, dt: float, keys: set[str]) -> None:
     steer(world.pacman, keys)
     movement.move(world.pacman, world, dt)
+    animate(world.pacman, world, dt)
 
 
 def steer(pacman: Pacman, keys: set[str]) -> None:

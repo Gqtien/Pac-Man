@@ -1,3 +1,4 @@
+from systems.animate import animate
 from assets import Animation
 from tkinter import Canvas
 from config import Config
@@ -61,7 +62,9 @@ class Gameplay(Scene):
         # map
         self.draw_map(self.world.map, size, canvas)
 
-        self.animate_pacman(self.world.pacman, canvas, self.sprites, size)
+        # pacman
+        anim: Animation = self.sprites.pacman[self.world.pacman.direction]
+        self.animate_entity(self.world.pacman, canvas, size, anim)
 
         # ghosts
         for ghost in self.world.ghosts:
@@ -79,23 +82,17 @@ class Gameplay(Scene):
                 animation = [sprites.eyes[ghost.direction]]
             case GhostState.FRIGHTENED:
                 animation = sprites.frightened
-        x = (ghost.pos.x + ghost.direction.dx * ghost.progress + 0.5) * size
-        y = (ghost.pos.y + ghost.direction.dy * ghost.progress + 0.5) * size
-        canvas.create_image(
-            (x, y),
-            image=animation[0]
-        )
+        Gameplay.animate_entity(ghost, canvas, size, animation)
 
     @staticmethod
-    def animate_pacman(
-            pacman: Pacman, canvas: Canvas, sprites: Sprites, size: float
+    def animate_entity(
+            entity: Entity, canvas: Canvas, size: float, animation: Animation
     ) -> None:
-        animation: Animation = sprites.pacman[pacman.direction]
-        x = (pacman.pos.x + pacman.direction.dx * pacman.progress + 0.5) * size
-        y = (pacman.pos.y + pacman.direction.dy * pacman.progress + 0.5) * size
+        x = (entity.pos.x + entity.direction.dx * entity.progress + 0.5) * size
+        y = (entity.pos.y + entity.direction.dy * entity.progress + 0.5) * size
         canvas.create_image(
             (x, y),
-            image=animation[0]
+            image=animation[int(entity.anim_progress) % len(animation)]
         )
 
     @staticmethod
