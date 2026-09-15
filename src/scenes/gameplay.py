@@ -110,8 +110,8 @@ class Gameplay(Scene):
             for x, cell in enumerate(line):
                 if not cell:
                     continue
-                px = size * x + 1
-                py = size * y + 1
+                px = size * x
+                py = size * y
                 canvas.create_rectangle(
                     px, py, px + size, py + size, fill=Color.WALL, width=0
                 )
