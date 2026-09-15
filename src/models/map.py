@@ -20,8 +20,62 @@ def open_sides(cell: int) -> list[Direction]:
     return [direction for direction in WALLS if not has_wall(cell, direction)]
 
 
+def is_solid(cell: int) -> bool:
+    return cell != 0
+
+
+def is_house(cell: int) -> bool:
+    return cell in (-1, -2)
+
+
+def is_door(cell: int) -> bool:
+    return cell == -2
+
+
 def from_maze(maze: Maze) -> Map:
-    return grid_to_walls(maze_to_grid(maze))
+    enclosed = enclosed_cells(maze)
+    house = house_cells(enclosed)
+    doors = door_cells(enclosed)
+
+    grid = maze_to_grid(maze)
+    for x, y in house:
+        grid[y][x] = False
+    map = grid_to_walls(grid)
+    for x, y in house:
+        map[y][x] = -1
+    for x, y in doors:
+        map[y][x] = -2
+    return map
+
+
+def enclosed_cells(maze: Maze) -> set[tuple[int, int]]:
+    return {
+        (x, y)
+        for y, line in enumerate(maze)
+        for x, cell in enumerate(line)
+        if all(has_wall(cell, direction) for direction in WALLS)
+    }
+
+
+def grid_center(x: int, y: int) -> tuple[int, int]:
+    return 2 * x + 1, 2 * y + 1
+
+
+def house_cells(enclosed: set[tuple[int, int]]) -> set[tuple[int, int]]:
+    house = set()
+    for x, y in enclosed:
+        gx, gy = grid_center(x, y)
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                house.add((gx + dx, gy + dy))
+    return house
+
+
+def door_cells(enclosed: set[tuple[int, int]]) -> set[tuple[int, int]]:
+    xs = {x for x, _ in enclosed}
+    ys = {y for _, y in enclosed}
+    gx, gy = grid_center((min(xs) + max(xs)) // 2, (min(ys) + max(ys)) // 2)
+    return {(gx - 1, gy), (gx + 1, gy)}
 
 
 def maze_to_grid(maze: Maze) -> list[list[bool]]:
