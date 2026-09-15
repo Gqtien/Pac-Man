@@ -1,5 +1,6 @@
 import random
 from typing import Callable
+from config import Config
 from .pathfind import pathfind
 from .movement import can_move, move
 from .animate import animate
@@ -71,9 +72,9 @@ def update_ghost_frightned(ghost: Ghost, maze: Map) -> None:
     ghost.wanted = random.choice(possible_dirs)
 
 
-def step(ghost: Ghost, world: World, dt: float) -> None:
-    move(ghost, world, dt)
-    animate(ghost, world, dt)
+def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
+    move(ghost, world, config, dt)
+    animate(ghost, world, config, dt)
     if ghost.dirty:
         # recompute direction
         match ghost.state:

@@ -1,5 +1,4 @@
-from dataclasses import dataclass, field
-from config import Config
+from dataclasses import dataclass
 from .entity import Pacman, Ghost
 from .map import Map
 
@@ -9,5 +8,4 @@ class World:
     map: Map
     pacman: Pacman
     ghosts: list[Ghost]
-    config: Config = field(default_factory=Config)
     score: int = 0

@@ -37,13 +37,12 @@ class Gameplay(Scene):
                 Ghost(Vec2(11, 5), Direction.NONE, GhostPersonality.INKY),
                 Ghost(Vec2(11, 7), Direction.NONE, GhostPersonality.CLYDE),
             ],
-            config,
         )
 
     def update(self, dt: float, keys: set[str]) -> Transition:
         if "Escape" in keys:
             return Push(Pause(self.config, self.assets))
-        match step(self.world, dt, keys):
+        match step(self.world, self.config, dt, keys):
             case Outcome.LOST:
                 return Push(Death())
             case Outcome.WON:

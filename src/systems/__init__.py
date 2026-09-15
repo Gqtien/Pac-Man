@@ -1,14 +1,14 @@
+from config import Config
 from models import World
-from . import pacman
+from .pacman import step as pacman_step
 from .ghost import step as ghost_step
 from .outcome import Outcome
 
 
-def step(world: World, dt: float, keys: set[str]) -> Outcome:
-    pacman.step(world, dt, keys)
+def step(world: World, config: Config, dt: float, keys: set[str]) -> Outcome:
+    pacman_step(world, config, dt, keys)
     for ghost in world.ghosts:
-        ghost_step(ghost, world, dt)
-
+        ghost_step(ghost, world, config, dt)
     return outcome(world)
 
 
