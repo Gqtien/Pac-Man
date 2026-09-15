@@ -21,6 +21,7 @@ from models import (
     World,
     Color,
     Map,
+    GhostState,
 )
 from utils import (
     WALL_NORTH,
@@ -70,7 +71,14 @@ class Gameplay(Scene):
     def animate_ghost(
             ghost: Ghost, canvas: Canvas, sprites: Sprites, size: float
     ) -> None:
-        animation: Animation = sprites.ghost[ghost.personality][ghost.direction]
+        animation: Animation = []
+        match ghost.state:
+            case GhostState.CHASE | GhostState.SCATTER:
+                animation = sprites.ghost[ghost.personality][ghost.direction]
+            case GhostState.DEAD:
+                animation = [sprites.eyes[ghost.direction]]
+            case GhostState.FRIGHTENED:
+                animation = sprites.frightened
         x = (ghost.pos.x + ghost.direction.dx * ghost.progress + 0.5) * size
         y = (ghost.pos.y + ghost.direction.dy * ghost.progress + 0.5) * size
         canvas.create_image(
