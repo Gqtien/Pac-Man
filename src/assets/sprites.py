@@ -4,7 +4,7 @@ from typing import TypeAlias
 from models import Direction, GhostPersonality
 from .sheet import SpriteSheet
 
-Animation: TypeAlias = set[PhotoImage]
+Animation: TypeAlias = list[PhotoImage]
 
 
 @dataclass(frozen=True)

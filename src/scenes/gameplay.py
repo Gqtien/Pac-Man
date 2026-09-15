@@ -1,7 +1,10 @@
+from assets import Animation
 from tkinter import Canvas
 from config import Config
 from mazegenerator import MazeGenerator
 import systems
+from assets.sprites import Sprites, load_sprites
+from assets.sheet import SpriteSheet
 from systems import Outcome
 from .base import Scene
 from .death import Death
@@ -37,6 +40,8 @@ class Gameplay(Scene):
             [Ghost(Vec2(11, 1), Direction.NONE, GhostPersonality.BLINKY)],
             config,
         )
+        sheet = SpriteSheet(path=config.spritesheet, cell=16)
+        self.sprites: Sprites = load_sprites(sheet)
 
     def update(self, dt: float, keys: set[str]) -> Transition:
         if "Escape" in keys:
@@ -52,10 +57,38 @@ class Gameplay(Scene):
     def draw(self, canvas: Canvas) -> None:
         size: float = self.cell_size(self.world.map, canvas)
         canvas.delete("all")
+        # map
         self.draw_map(self.world.map, size, canvas)
-        self.draw_entity(self.world.pacman, Color.PACMAN, size, canvas)
+
+        self.animate_pacman(self.world.pacman, canvas, self.sprites, size)
+
+        # ghosts
         for ghost in self.world.ghosts:
-            self.draw_entity(ghost, ghost.color, size, canvas)
+            self.animate_ghost(ghost, canvas, self.sprites, size)
+
+    @staticmethod
+    def animate_ghost(
+            ghost: Ghost, canvas: Canvas, sprites: Sprites, size: float
+    ) -> None:
+        animation: Animation = sprites.ghost[ghost.personality][ghost.direction]
+        x = (ghost.pos.x + ghost.direction.dx * ghost.progress + 0.5) * size
+        y = (ghost.pos.y + ghost.direction.dy * ghost.progress + 0.5) * size
+        canvas.create_image(
+            (x, y),
+            image=animation[0]
+        )
+
+    @staticmethod
+    def animate_pacman(
+            pacman: Pacman, canvas: Canvas, sprites: Sprites, size: float
+    ) -> None:
+        animation: Animation = sprites.pacman[pacman.direction]
+        x = (pacman.pos.x + pacman.direction.dx * pacman.progress + 0.5) * size
+        y = (pacman.pos.y + pacman.direction.dy * pacman.progress + 0.5) * size
+        canvas.create_image(
+            (x, y),
+            image=animation[0]
+        )
 
     @staticmethod
     def cell_size(map: Map, canvas: Canvas) -> float:
