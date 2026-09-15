@@ -1,3 +1,7 @@
 {
-	"speed": 10.0
+  "speed": 10.0,
+  "anim_speed": 3.0,
+  "spritesheet": "assets/spritesheet.png",
+  "font": "assets/font.png",
+  "overlay": "assets/overlay.png"
 }

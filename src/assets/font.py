@@ -22,15 +22,27 @@ class FontColor(Enum):
     YELLOW = 6
 
 
-def load_fonts(sheet: SpriteSheet) -> dict[FontColor, Font]:
-    fonts = {}
-    for color in FontColor:
-        top = color.value * 4
-        font = {
-            char: sheet.sprite(col, top + row)
-            for row, line in enumerate(LINES)
-            for col, char in enumerate(line)
-        }
-        font[" "] = sheet.sprite(15, top)
-        fonts[color] = font
-    return fonts
+class Fonts(dict[tuple[FontColor, int], Font]):
+    def __missing__(self, key: tuple[FontColor, int]) -> Font:
+        color, scale = key
+        font = self[key] = scale_font(self[color, 1], scale)
+        return font
+
+
+def load_fonts(sheet: SpriteSheet) -> Fonts:
+    return Fonts({(color, 1): load_font(sheet, color) for color in FontColor})
+
+
+def load_font(sheet: SpriteSheet, color: FontColor) -> Font:
+    top = color.value * 4
+    font = {
+        char: sheet.sprite(col, top + row)
+        for row, line in enumerate(LINES)
+        for col, char in enumerate(line)
+    }
+    font[" "] = sheet.sprite(15, top)
+    return font
+
+
+def scale_font(font: Font, scale: int) -> Font:
+    return {char: glyph.zoom(scale) for char, glyph in font.items()}

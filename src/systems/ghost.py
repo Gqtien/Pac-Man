@@ -1,10 +1,17 @@
-from models import Direction, World, Ghost, GhostState, GhostPersonality, Map, Vec2
-from typing import Callable
-from . import movement
-from .pathfind import pathfind
-from .movement import can_move
-from .animate import animate
 import random
+from typing import Callable
+from .pathfind import pathfind
+from .movement import can_move, move
+from .animate import animate
+from models import (
+    Direction,
+    World,
+    Ghost,
+    GhostState,
+    GhostPersonality,
+    Map,
+    Vec2,
+)
 
 
 def pathfind_to(source: Vec2, target: Vec2, map: Map) -> Direction:
@@ -65,7 +72,7 @@ def update_ghost_frightned(ghost: Ghost, maze: Map) -> None:
 
 
 def step(ghost: Ghost, world: World, dt: float) -> None:
-    movement.move(ghost, world, dt)
+    move(ghost, world, dt)
     animate(ghost, world, dt)
     if ghost.dirty:
         # recompute direction

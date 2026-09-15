@@ -30,8 +30,8 @@ def load_sprites(sheet: SpriteSheet) -> Sprites:
         death=sheet.sprites(range(3, 14), 0),
         ghost={
             personality: {
-                Direction.NONE: sheet.sprites(range(0, 2), row),
-                Direction.EAST: sheet.sprites(range(0, 2), row),
+                Direction.NONE: sheet.sprites(range(2), row),
+                Direction.EAST: sheet.sprites(range(2), row),
                 Direction.WEST: sheet.sprites(range(2, 4), row),
                 Direction.NORTH: sheet.sprites(range(4, 6), row),
                 Direction.SOUTH: sheet.sprites(range(6, 8), row),

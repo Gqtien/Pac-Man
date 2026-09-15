@@ -1,10 +1,10 @@
 import json
-import logging
+from logging import getLogger, Logger
 from dataclasses import fields
 from pathlib import Path
 from .config import Config
 
-log = logging.getLogger(__name__)
+log: Logger = getLogger(__name__)
 
 
 def load_config(path: Path) -> Config:
@@ -12,10 +12,10 @@ def load_config(path: Path) -> Config:
     try:
         data = json.loads(path.read_text())
     except (OSError, ValueError) as e:
-        log.warning("%s: %s, using default config", path, e)
+        log.warning(f"{path}: {e}, using default config")
         return config
     if not isinstance(data, dict):
-        log.warning("%s: expected an object, using default config", path)
+        log.warning(f"{path}: expected an object, using default config")
         return config
 
     for field in fields(config):
@@ -25,15 +25,15 @@ def load_config(path: Path) -> Config:
         default = getattr(config, field.name)
         if not same_type(value, default):
             log.warning(
-                "%s: %s must be a %s, got %r, using default %r",
-                path, field.name, type(default).__name__, value, default
+                f"{path}: {field.name} must be a {type(default).__name__}, "
+                f"got {value}, using default {default}",
             )
             continue
         if isinstance(default, float):
             value = float(value)
         setattr(config, field.name, value)
     for key in data:
-        log.warning("%s: unknown key %r ignored", path, key)
+        log.warning(f"{path}: unknown key {key} ignored")
     return config
 
 

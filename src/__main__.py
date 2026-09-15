@@ -1,5 +1,6 @@
 import argparse
 from pathlib import Path
+from assets import load_assets
 from config import load_config
 from scenes import Gameplay, SceneManager
 
@@ -15,7 +16,9 @@ def run() -> None:
     )
     args = parser.parse_args()
     manager = SceneManager()
-    manager.start(Gameplay(load_config(args.config)))
+    config = load_config(args.config)
+    assets = load_assets(config)
+    manager.start(Gameplay(config, assets))
 
 
 if __name__ == "__main__":

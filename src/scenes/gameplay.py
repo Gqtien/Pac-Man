@@ -1,11 +1,13 @@
 from tkinter import Canvas
-
 from mazegenerator import MazeGenerator
-
-import systems
-from assets import Animation, Sprites, SpriteSheet
-from assets.sprites import load_sprites
+from assets import Animation, Assets, Sprites
 from config import Config
+from systems import Outcome, step
+from .base import Scene
+from .death import Death
+from .main import Main
+from .pause import Pause
+from .transition import Push, Reset, Transition
 from models import (
     Color,
     Direction,
@@ -20,16 +22,12 @@ from models import (
     from_maze,
     open_sides,
 )
-from systems import Outcome
-from .base import Scene
-from .death import Death
-from .main import Main
-from .pause import Pause
-from .transition import Push, Reset, Transition
 
 
 class Gameplay(Scene):
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: Config, assets: Assets) -> None:
+        self.config = config
+        self.assets = assets
         self.world = World(
             from_maze(MazeGenerator().maze),
             Pacman(Vec2(1, 1), Direction.NONE),
@@ -41,13 +39,11 @@ class Gameplay(Scene):
             ],
             config,
         )
-        sheet = SpriteSheet(path=config.spritesheet, cell=16)
-        self.sprites: Sprites = load_sprites(sheet)
 
     def update(self, dt: float, keys: set[str]) -> Transition:
         if "Escape" in keys:
-            return Push(Pause())
-        match systems.step(self.world, dt, keys):
+            return Push(Pause(self.config, self.assets))
+        match step(self.world, dt, keys):
             case Outcome.LOST:
                 return Push(Death())
             case Outcome.WON:
@@ -57,21 +53,22 @@ class Gameplay(Scene):
 
     def draw(self, canvas: Canvas) -> None:
         size: float = self.cell_size(self.world.map, canvas)
-        canvas.delete("all")
         # map
         self.draw_map(self.world.map, size, canvas)
 
         # pacman
-        anim: Animation = self.sprites.pacman[self.world.pacman.direction]
+        anim: Animation = self.assets.sprites.pacman[
+            self.world.pacman.direction
+        ]
         self.animate_entity(self.world.pacman, canvas, size, anim)
 
         # ghosts
         for ghost in self.world.ghosts:
-            self.animate_ghost(ghost, canvas, self.sprites, size)
+            self.animate_ghost(ghost, canvas, self.assets.sprites, size)
 
     @staticmethod
     def animate_ghost(
-            ghost: Ghost, canvas: Canvas, sprites: Sprites, size: float
+        ghost: Ghost, canvas: Canvas, sprites: Sprites, size: float
     ) -> None:
         animation: Animation = []
         match ghost.state:
@@ -85,13 +82,13 @@ class Gameplay(Scene):
 
     @staticmethod
     def animate_entity(
-            entity: Entity, canvas: Canvas, size: float, animation: Animation
+        entity: Entity, canvas: Canvas, size: float, animation: Animation
     ) -> None:
         x = (entity.pos.x + entity.direction.dx * entity.progress + 0.5) * size
         y = (entity.pos.y + entity.direction.dy * entity.progress + 0.5) * size
         canvas.create_image(
             (x, y),
-            image=animation[int(entity.anim_progress) % len(animation)]
+            image=animation[int(entity.anim_progress) % len(animation)],
         )
 
     @staticmethod

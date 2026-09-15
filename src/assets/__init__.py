@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from config import Config
-from .font import Font, FontColor, load_fonts
+from .font import Font, FontColor, Fonts, load_fonts
 from .sheet import SpriteSheet
 from .sprites import Animation, Sprites, load_sprites
 
@@ -8,7 +8,7 @@ from .sprites import Animation, Sprites, load_sprites
 @dataclass(frozen=True)
 class Assets:
     sprites: Sprites
-    fonts: dict[FontColor, Font]
+    fonts: Fonts
 
 
 def load_assets(config: Config) -> Assets:
@@ -23,6 +23,7 @@ __all__ = [
     "Assets",
     "Font",
     "FontColor",
+    "Fonts",
     "Sprites",
     "SpriteSheet",
     "load_assets",

@@ -30,6 +30,7 @@ class SceneManager:
         if not self.stack:
             self.tk.destroy()
             return
+        self.canvas.delete("all")
         now = time.perf_counter()
         dt, self.last = now - self.last, now
         keys, self.keys = self.keys, set()
@@ -37,7 +38,8 @@ class SceneManager:
         transition = self.top.update(dt, keys)
         self.apply(transition)
         if self.stack:
-            self.top.draw(self.canvas)
+            for scene in self.stack:
+                scene.draw(self.canvas)
         self.tk.after(1, self.tick)
 
     def apply(self, transition: Transition) -> None:

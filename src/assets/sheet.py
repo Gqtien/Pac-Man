@@ -16,4 +16,4 @@ class SpriteSheet:
         return self.cut(col * size, row * size, size, size)
 
     def sprites(self, cols: range, row: int) -> list[PhotoImage]:
-        return list(self.sprite(col, row) for col in cols)
+        return [self.sprite(col, row) for col in cols]
