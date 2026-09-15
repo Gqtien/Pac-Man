@@ -14,13 +14,16 @@ def pathfind(
     Return an empty list if there is no path.
     """
 
+    goal = to_tuple(target)
+    if not is_valid_pos(goal, map):
+        return []
     to_visit: list[tuple[int, int]] = [to_tuple(start)]
     visited: set[tuple[int, int]] = set()
     previous: dict[tuple[int, int], tuple[int, int]] = dict()
     while to_visit:
         current = to_visit.pop(0)
-        if current == to_tuple(target):
-            return build_path(previous, to_tuple(target))
+        if current == goal:
+            return build_path(previous, goal)
         visited.add(current)
         for cell in get_neighbors(current, visited, map):
             to_visit.append(cell)
