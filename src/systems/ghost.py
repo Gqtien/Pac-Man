@@ -34,10 +34,9 @@ def update_pinky(ghost: Ghost, world: World) -> None:
 
 
 def update_inky(ghost: Ghost, world: World) -> None:
-    blinky: Ghost = list(filter(
-        lambda g: g.personality == GhostPersonality.BLINKY,
-        world.ghosts
-    ))[0]
+    blinky: Ghost = next(
+        g for g in world.ghosts if g.personality == GhostPersonality.BLINKY
+    )
     d: Vec2 = world.pacman.pos + Vec2(*world.pacman.direction.value)
     d -= blinky.pos
     d *= 2
