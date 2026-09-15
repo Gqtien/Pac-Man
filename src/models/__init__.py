@@ -1,8 +1,9 @@
 from .colors import Color
 from .direction import Direction
 from .entity import Entity, Ghost, GhostPersonality, GhostState, Pacman
+from .map import Map, Maze, from_maze, open_sides
 from .vec import Vec2
-from .world import Map, World
+from .world import World
 
 __all__ = [
     "Color",
@@ -11,8 +12,11 @@ __all__ = [
     "Ghost",
     "GhostPersonality",
     "GhostState",
-    "World",
+    "Map",
+    "Maze",
     "Pacman",
     "Vec2",
-    "Map",
+    "World",
+    "from_maze",
+    "open_sides",
 ]

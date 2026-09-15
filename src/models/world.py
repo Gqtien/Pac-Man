@@ -1,9 +1,7 @@
 from dataclasses import dataclass, field
-from typing import TypeAlias
 from config import Config
 from .entity import Pacman, Ghost
-
-Map: TypeAlias = list[list[int]]
+from .map import Map
 
 
 @dataclass

@@ -1,5 +1,4 @@
-from models.vec import Vec2
-from models.world import Map
+from models import Map, Vec2
 
 
 def to_tuple(a: Vec2) -> tuple[int, int]:

@@ -1,50 +1,44 @@
-from systems.animate import animate
-from assets import Animation
 from tkinter import Canvas
-from config import Config
+
 from mazegenerator import MazeGenerator
+
 import systems
-from assets.sprites import Sprites, load_sprites
-from assets.sheet import SpriteSheet
+from assets import Animation, Sprites, SpriteSheet
+from assets.sprites import load_sprites
+from config import Config
+from models import (
+    Color,
+    Direction,
+    Entity,
+    Ghost,
+    GhostPersonality,
+    GhostState,
+    Map,
+    Pacman,
+    Vec2,
+    World,
+    from_maze,
+    open_sides,
+)
 from systems import Outcome
 from .base import Scene
 from .death import Death
 from .main import Main
 from .pause import Pause
 from .transition import Push, Reset, Transition
-from models import (
-    Direction,
-    Entity,
-    Ghost,
-    Pacman,
-    GhostPersonality,
-    Vec2,
-    World,
-    Color,
-    Map,
-    GhostState,
-)
-from utils import (
-    WALL_NORTH,
-    WALL_EAST,
-    WALL_SOUTH,
-    WALL_WEST,
-    maze_to_grid,
-    grid_to_walls,
-)
 
 
 class Gameplay(Scene):
     def __init__(self, config: Config) -> None:
         self.world = World(
-            grid_to_walls(maze_to_grid(MazeGenerator().maze)),
+            from_maze(MazeGenerator().maze),
             Pacman(Vec2(1, 1), Direction.NONE),
             [
                 Ghost(Vec2(11, 1), Direction.NONE, GhostPersonality.BLINKY),
                 Ghost(Vec2(11, 3), Direction.NONE, GhostPersonality.PINKY),
                 Ghost(Vec2(11, 5), Direction.NONE, GhostPersonality.INKY),
                 Ghost(Vec2(11, 7), Direction.NONE, GhostPersonality.CLYDE),
-             ],
+            ],
             config,
         )
         sheet = SpriteSheet(path=config.spritesheet, cell=16)
@@ -115,13 +109,6 @@ class Gameplay(Scene):
 
     @staticmethod
     def draw_map(map: Map, size: float, canvas: Canvas) -> None:
-        wall_sides: dict[int, tuple[int, int, int, int]] = {
-            WALL_NORTH: (0, 0, 1, 0),
-            WALL_WEST: (0, 0, 0, 1),
-            WALL_EAST: (1, 0, 1, 1),
-            WALL_SOUTH: (0, 1, 1, 1),
-        }
-
         for y, line in enumerate(map):
             for x, cell in enumerate(line):
                 if not cell:
@@ -131,12 +118,20 @@ class Gameplay(Scene):
                 canvas.create_rectangle(
                     px, py, px + size, py + size, fill=Color.WALL, width=0
                 )
-                for wall, (x0, y0, x1, y1) in wall_sides.items():
-                    if not cell & wall:
-                        canvas.create_line(
-                            px + x0 * size,
-                            py + y0 * size,
-                            px + x1 * size,
-                            py + y1 * size,
-                            fill=Color.WALL_OUTLINE,
-                        )
+                for direction in open_sides(cell):
+                    Gameplay.draw_edge(px, py, size, direction, canvas)
+
+    @staticmethod
+    def draw_edge(
+        px: float, py: float, size: float, direction: Direction, canvas: Canvas
+    ) -> None:
+        half = size / 2
+        mx = px + half + direction.dx * half
+        my = py + half + direction.dy * half
+        canvas.create_line(
+            mx - direction.dy * half,
+            my - direction.dx * half,
+            mx + direction.dy * half,
+            my + direction.dx * half,
+            fill=Color.WALL_OUTLINE,
+        )
