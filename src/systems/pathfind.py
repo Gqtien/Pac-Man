@@ -28,7 +28,9 @@ def pathfind(
         visited.add(current)
         neighbors: list[tuple[int, int]] = []
         if current == to_tuple(start):
-            neighbors = get_neighbors(current, visited, map, restricted_init_dir)
+            neighbors = get_neighbors(
+                current, visited, map, restricted_init_dir
+            )
         else:
             neighbors = get_neighbors(current, visited, map)
         for cell in neighbors:

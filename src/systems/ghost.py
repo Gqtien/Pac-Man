@@ -19,7 +19,9 @@ from models import (
 def pathfind_to(
         source: Vec2, target: Vec2, map: Map, ghost_dir: Direction
 ) -> Direction:
-    path = pathfind(source, target, map, restricted_init_dir=ghost_dir.opposite)
+    path = pathfind(
+        source, target, map, restricted_init_dir=ghost_dir.opposite
+    )
     if not path or not path[1:]:
         return Direction.NONE
     next_x, next_y = path[1]
@@ -48,7 +50,9 @@ def update_inky(ghost: Ghost, world: World) -> None:
     d -= blinky.pos
     d *= 2
     target = blinky.pos + d
-    ghost.direction = pathfind_to(ghost.pos, target, world.map, ghost.direction)
+    ghost.direction = pathfind_to(
+        ghost.pos, target, world.map, ghost.direction
+    )
 
 
 def update_clyde(ghost: Ghost, world: World) -> None:
