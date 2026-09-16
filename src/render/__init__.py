@@ -1,3 +1,3 @@
-from .text import put_text, put_text_centered
+from .text import Line, put_lines_centered, put_text, put_text_centered
 
-__all__ = ["put_text", "put_text_centered"]
+__all__ = ["Line", "put_lines_centered", "put_text", "put_text_centered"]

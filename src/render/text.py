@@ -1,5 +1,8 @@
 from tkinter import Canvas
+from typing import TypeAlias
 from assets import Font
+
+Line: TypeAlias = tuple[str, Font]
 
 
 def char_or_space(char: str, font: Font) -> str:
@@ -33,3 +36,13 @@ def put_text_centered(
     upper = text.upper()
     width, height = text_size(upper, font)
     put_text(upper, font, canvas, x - width / 2, y - height / 2)
+
+
+def put_lines_centered(
+    lines: list[Line], canvas: Canvas, x: float, y: float, gap: float = 0.0
+) -> None:
+    heights = [text_size(text, font)[1] for text, font in lines]
+    top = y - (sum(heights) + gap * (len(lines) - 1)) / 2
+    for (text, font), height in zip(lines, heights):
+        put_text_centered(text, font, canvas, x, top + height / 2)
+        top += height + gap
