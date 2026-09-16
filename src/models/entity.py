@@ -45,4 +45,5 @@ class GhostState(Enum):
 class Ghost(Entity):
     personality: GhostPersonality
     home: Vec2
+    frightened_timer: float = 0.0
     state: GhostState = GhostState.CHASE

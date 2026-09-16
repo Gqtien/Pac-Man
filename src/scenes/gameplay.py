@@ -82,6 +82,10 @@ class Gameplay(Scene):
             case GhostState.DEAD:
                 return [sprites.eyes[ghost.direction]]
             case GhostState.FRIGHTENED:
+                # TODO: config
+                if ghost.frightened_timer < 3 and \
+                   int(ghost.frightened_timer * 4) % 2 == 0:
+                    return sprites.flashing
                 return sprites.frightened
 
     def draw_entity(self, entity: Entity, animation: Animation) -> None:

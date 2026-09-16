@@ -59,7 +59,7 @@ chase_map: dict[GhostPersonality, Callable[[Ghost, World], None]] = {
 }
 
 
-def update_ghost_frightened(ghost: Ghost, maze: Map) -> None:
+def update_frightened_dir(ghost: Ghost, maze: Map) -> None:
     dirs = list(map(Direction, [(0, 1), (1, 0), (0, -1), (-1, 0)]))
     possible_dirs = []
     for dir in dirs:
@@ -74,11 +74,17 @@ def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
     factor = ghost_factor(ghost, world)
     move(ghost, world, config.speed * factor, dt)
     animate(ghost, config.anim_speed * factor, dt)
+
+    if ghost.state == GhostState.FRIGHTENED:
+        ghost.frightened_timer -= dt
+        if ghost.frightened_timer <= 0.0:
+            ghost.state = GhostState.CHASE
+
     if ghost.dirty or ghost.direction is Direction.NONE:
         # recompute direction
         match ghost.state:
             case GhostState.FRIGHTENED:
-                update_ghost_frightened(ghost, world.map)
+                update_frightened_dir(ghost, world.map)
             case GhostState.SCATTER | GhostState.DEAD:
                 ghost.direction = pathfind_to(ghost.pos, ghost.home, world.map)
                 if ghost.pos == ghost.home:

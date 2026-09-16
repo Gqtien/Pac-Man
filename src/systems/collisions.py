@@ -17,6 +17,7 @@ def eat(world: World) -> None:
         for ghost in world.ghosts:
             if ghost.state is not GhostState.DEAD:
                 ghost.state = GhostState.FRIGHTENED
+                ghost.frightened_timer = 10  # TODO: config
 
 
 def collide(world: World) -> None:
@@ -38,5 +39,5 @@ def apply(world: World, ghost: Ghost) -> None:
             world.freeze = 1.0
         case GhostState.DEAD:
             pass
-        case _:
+        case GhostState.CHASE | GhostState.SCATTER:
             world.pacman.alive = False
