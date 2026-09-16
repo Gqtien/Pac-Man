@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from tkinter import PhotoImage
 from typing import TypeAlias
-from models import Direction, GhostPersonality
+from models import Direction, GhostPersonality, Item
 from .sheet import SpriteSheet
 
 Animation: TypeAlias = list[PhotoImage]
@@ -16,6 +16,7 @@ class Sprites:
     flashing: Animation
     eyes: dict[Direction, PhotoImage]
     ghost_score: dict[int, PhotoImage]
+    items: dict[Item, PhotoImage]
 
 
 def load_sprites(sheet: SpriteSheet) -> Sprites:
@@ -52,5 +53,17 @@ def load_sprites(sheet: SpriteSheet) -> Sprites:
             400: sheet.sprite(1, 8),
             800: sheet.sprite(2, 8),
             1600: sheet.sprite(3, 8),
+        },
+        items={
+            Item.CHERRIES: sheet.sprite(3, 3),
+            Item.STRAWBERRY: sheet.sprite(4, 3),
+            Item.PEACH: sheet.sprite(5, 3),
+            Item.APPLE: sheet.sprite(6, 3),
+            Item.GRAPES: sheet.sprite(7, 3),
+            Item.GALAXIAN: sheet.sprite(8, 3),
+            Item.BELL: sheet.sprite(9, 3),
+            Item.KEY: sheet.sprite(10, 3),
+            Item.PACGUM: sheet.sprite(11, 3),
+            Item.SUPER_PACGUM: sheet.sprite(12, 3),
         },
     )

@@ -18,7 +18,6 @@ from assets import (
     Frame,
     Sprites,
     Wall,
-    Walls,
 )
 from models import (
     Direction,
@@ -33,19 +32,18 @@ from models import (
     is_door,
     is_house,
     is_solid,
+    init_items,
 )
 
 
 class Gameplay(Scene):
-    canvas: Canvas
-    size: float
-    walls: Walls
-
     def __init__(self, config: Config, assets: Assets) -> None:
         self.config = config
         self.assets = assets
+        map = from_maze(MazeGenerator().maze)
         self.world = World(
-            from_maze(MazeGenerator().maze),
+            map,
+            init_items(map),
             Pacman(Vec2(1, 1), Direction.NONE),
             [
                 Ghost(Vec2(11, 1), Direction.NONE, GhostPersonality.BLINKY),
@@ -74,6 +72,7 @@ class Gameplay(Scene):
         sprites = self.assets.sprites[zoom]
 
         self.draw_map()
+        self.draw_items(sprites)
         pacman = self.world.pacman
         self.draw_entity(pacman, sprites.pacman[pacman.direction])
         for ghost in self.world.ghosts:
@@ -157,3 +156,12 @@ class Gameplay(Scene):
         if 0 <= y < len(map) and 0 <= x < len(map[y]):
             return map[y][x]
         return 0
+
+    def draw_items(self, sprites: Sprites) -> None:
+        for (x, y), item in self.world.items.items():
+            self.canvas.create_image(
+                x * self.size,
+                y * self.size,
+                image=sprites.items[item],
+                anchor="nw",
+            )
