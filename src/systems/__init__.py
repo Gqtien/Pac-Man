@@ -10,12 +10,12 @@ def step(world: World, config: Config, dt: float, keys: set[str]) -> Outcome:
     pacman_step(world, config, dt, keys)
     for ghost in world.ghosts:
         ghost_step(ghost, world, config, dt)
-    collisions_step(world, config)
+    collisions_step(world)
     return outcome(world)
 
 
 def outcome(world: World) -> Outcome:
-    if not world.pacman:
+    if not world.pacman.alive:
         return Outcome.LOST
     if not world.items:
         return Outcome.WON
