@@ -1,5 +1,6 @@
 from typing import TypeAlias
 from .direction import Direction
+from mazegenerator import MazeGenerator
 
 Maze: TypeAlias = list[list[int]]
 Map: TypeAlias = list[list[int]]
@@ -10,6 +11,10 @@ WALLS = {
     Direction.SOUTH: 0b0100,
     Direction.WEST: 0b1000,
 }
+
+
+def new_map() -> Map:
+    return from_maze(MazeGenerator().maze)
 
 
 def has_wall(cell: int, direction: Direction) -> bool:
