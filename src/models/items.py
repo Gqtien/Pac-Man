@@ -1,19 +1,19 @@
-from enum import Enum, auto
+from enum import Enum
 from typing import TypeAlias
 from .map import Map, is_solid
 
 
 class Item(Enum):
-    PACGUM = auto()
-    SUPER_PACGUM = auto()
-    CHERRIES = auto()
-    STRAWBERRY = auto()
-    PEACH = auto()
-    APPLE = auto()
-    GRAPES = auto()
-    GALAXIAN = auto()
-    BELL = auto()
-    KEY = auto()
+    PACGUM = 1
+    SUPER_PACGUM = 50
+    CHERRIES = 100
+    STRAWBERRY = 300
+    PEACH = 500
+    APPLE = 700
+    GRAPES = 1000
+    GALAXIAN = 2000
+    BELL = 3000
+    KEY = 5000
 
 
 Items: TypeAlias = dict[tuple[int, int], Item]
