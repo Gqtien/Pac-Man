@@ -18,21 +18,27 @@ class World:
 
 
 def new_world(map: Map) -> World:
-    return World(map, init_items(map), spawn_pacman(), spawn_ghosts())
+    return World(map, init_items(map), spawn_pacman(map), spawn_ghosts(map))
 
 
 def next_level(world: World, map: Map) -> World:
     return replace(new_world(map), score=world.score, level=world.level + 1)
 
 
-def spawn_pacman() -> Pacman:
-    return Pacman(Vec2(1, 1), Direction.NONE)
+def spawn_pacman(map: Map) -> Pacman:
+    height = len(map)
+    width = len(map[0])
+    x = width // 2
+    y = height // 2
+    return Pacman(Vec2(x, y), Direction.NONE)
 
 
-def spawn_ghosts() -> list[Ghost]:
+def spawn_ghosts(map: Map) -> list[Ghost]:
+    height = len(map)
+    width = len(map[0])
     return [
-        Ghost(Vec2(11, 1), Direction.NONE, GhostPersonality.BLINKY),
-        Ghost(Vec2(11, 3), Direction.NONE, GhostPersonality.PINKY),
-        Ghost(Vec2(11, 5), Direction.NONE, GhostPersonality.INKY),
-        Ghost(Vec2(11, 7), Direction.NONE, GhostPersonality.CLYDE),
+        Ghost(Vec2(width - 2, 1), Direction.NONE, GhostPersonality.BLINKY, home=Vec2(width - 2, 1)),
+        Ghost(Vec2(width - 2, height - 2), Direction.NONE, GhostPersonality.INKY, home=Vec2(width - 2, height - 2)),
+        Ghost(Vec2(1, 1), Direction.NONE, GhostPersonality.PINKY, home=Vec2(1, 1)),
+        Ghost(Vec2(1, height - 2), Direction.NONE, GhostPersonality.CLYDE, home=Vec2(1, height - 2)),
     ]

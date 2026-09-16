@@ -77,12 +77,12 @@ def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
     if ghost.dirty or ghost.direction is Direction.NONE:
         # recompute direction
         match ghost.state:
-            case GhostState.DEAD:
-                pass  # TODO: go back to spawn
             case GhostState.FRIGHTENED:
                 update_ghost_frightened(ghost, world.map)
-            case GhostState.SCATTER:
-                pass  # TODO: go to each personality's corner
+            case GhostState.SCATTER | GhostState.DEAD:
+                ghost.direction = pathfind_to(ghost.pos, ghost.home, world.map)
+                if ghost.pos == ghost.home:
+                    ghost.state = GhostState.CHASE
             case GhostState.CHASE:
                 chase_map[ghost.personality](ghost, world)
         ghost.dirty = False

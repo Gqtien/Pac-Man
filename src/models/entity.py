@@ -44,4 +44,5 @@ class GhostState(Enum):
 @dataclass
 class Ghost(Entity):
     personality: GhostPersonality
+    home: Vec2
     state: GhostState = GhostState.CHASE
