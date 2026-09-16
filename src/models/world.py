@@ -37,8 +37,27 @@ def spawn_ghosts(map: Map) -> list[Ghost]:
     height = len(map)
     width = len(map[0])
     return [
-        Ghost(Vec2(width - 2, 1), Direction.NONE, GhostPersonality.BLINKY, home=Vec2(width - 2, 1)),
-        Ghost(Vec2(width - 2, height - 2), Direction.NONE, GhostPersonality.INKY, home=Vec2(width - 2, height - 2)),
-        Ghost(Vec2(1, 1), Direction.NONE, GhostPersonality.PINKY, home=Vec2(1, 1)),
-        Ghost(Vec2(1, height - 2), Direction.NONE, GhostPersonality.CLYDE, home=Vec2(1, height - 2)),
+        Ghost(
+            Vec2(width - 2, 1),
+            Direction.NONE,
+            GhostPersonality.BLINKY,
+            home=Vec2(width - 2, 1),
+        ),
+        Ghost(
+            Vec2(width - 2, height - 2),
+            Direction.NONE,
+            GhostPersonality.INKY,
+            home=Vec2(width - 2, height - 2),
+        ),
+        Ghost(
+            Vec2(1, 1), Direction.NONE,
+            GhostPersonality.PINKY,
+            home=Vec2(1, 1)
+        ),
+        Ghost(
+            Vec2(1, height - 2),
+            Direction.NONE,
+            GhostPersonality.CLYDE,
+            home=Vec2(1, height - 2),
+        ),
     ]
