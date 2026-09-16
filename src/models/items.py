@@ -15,6 +15,17 @@ class Item(Enum):
     BELL = 3000
     KEY = 5000
 
+    @property
+    def stall(self) -> float:
+        frame = 1 / 60
+        match self:
+            case Item.PACGUM:
+                return frame
+            case Item.SUPER_PACGUM:
+                return 3 * frame
+            case _:
+                return 0
+
 
 Items: TypeAlias = dict[tuple[int, int], Item]
 

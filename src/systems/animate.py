@@ -1,8 +1,5 @@
-from config import Config
-from models import Entity, World
+from models import Entity
 
 
-def animate(entity: Entity, world: World, config: Config, dt: float) -> None:
-    entity.anim_progress += config.anim_speed * dt
-    # if entity.anim_progress >= 1.0:
-    #     entity.anim_progress -= 1.0
+def animate(entity: Entity, speed: float, dt: float) -> None:
+    entity.anim_progress += speed * dt

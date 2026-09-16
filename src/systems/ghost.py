@@ -4,6 +4,7 @@ from config import Config
 from .pathfind import pathfind
 from .movement import can_move, move
 from .animate import animate
+from .speed import ghost_factor
 from models import (
     Direction,
     World,
@@ -46,7 +47,6 @@ def update_inky(ghost: Ghost, world: World) -> None:
 
 def update_clyde(ghost: Ghost, world: World) -> None:
     ghost.direction = pathfind_to(ghost.pos, world.pacman.pos, world.map)
-    # TODO: config
     if (world.pacman.pos - ghost.pos).norm() <= 8:
         ghost.state = GhostState.SCATTER
 
@@ -65,15 +65,15 @@ def update_ghost_frightened(ghost: Ghost, maze: Map) -> None:
     for dir in dirs:
         if can_move(ghost.pos, dir, maze):
             possible_dirs.append(dir)
-    # FIXME: the ghost does sometimes turn around. How ?
     if ghost.direction.opposite in possible_dirs:
         possible_dirs.remove(ghost.direction.opposite)
     ghost.wanted = random.choice(possible_dirs)
 
 
 def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
-    move(ghost, world, config, dt)
-    animate(ghost, world, config, dt)
+    factor = ghost_factor(ghost, world)
+    move(ghost, world, config.speed * factor, dt)
+    animate(ghost, config.anim_speed * factor, dt)
     if ghost.dirty or ghost.direction is Direction.NONE:
         # recompute direction
         match ghost.state:

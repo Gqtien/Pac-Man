@@ -4,6 +4,7 @@ from .entity import Entity, Ghost, GhostPersonality, GhostState, Pacman
 from .vec import Vec2
 from .world import World, new_world, next_level
 from .items import Items, Item, init_items
+from .speed import Speed, Speeds, speeds
 from .map import (
     Map,
     Maze,
@@ -38,4 +39,7 @@ __all__ = [
     "is_solid",
     "open_sides",
     "init_items",
+    "Speed",
+    "Speeds",
+    "speeds",
 ]

@@ -9,8 +9,10 @@ def step(world: World) -> None:
 def eat(world: World) -> None:
     pos = world.pacman.pos
     item = world.items.pop((pos.x, pos.y), None)
-    if item is not None:
-        world.score += item.value
+    if item is None:
+        return
+    world.score += item.value
+    world.pacman.stall += item.stall
     if item is Item.SUPER_PACGUM:
         for ghost in world.ghosts:
             if ghost.state is not GhostState.DEAD:
@@ -33,6 +35,7 @@ def apply(world: World, ghost: Ghost) -> None:
         case GhostState.FRIGHTENED:
             ghost.state = GhostState.DEAD
             world.score += 200
+            world.freeze = 1.0
         case GhostState.DEAD:
             pass
         case _:

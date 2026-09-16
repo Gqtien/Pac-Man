@@ -14,6 +14,7 @@ class World:
     ghosts: list[Ghost]
     score: int = 0
     level: int = 1
+    freeze: float = 0.0
 
 
 def new_world(map: Map) -> World:

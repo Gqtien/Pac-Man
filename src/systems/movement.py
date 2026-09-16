@@ -1,10 +1,9 @@
-from config import Config
 from models import Direction, Entity, Map, Vec2, World
 
 
-def move(entity: Entity, world: World, config: Config, dt: float) -> None:
+def move(entity: Entity, world: World, speed: float, dt: float) -> None:
     if not entity.direction.is_still:
-        entity.progress += config.speed * dt
+        entity.progress += speed * dt
         if entity.progress < 1.0:
             entity.dirty = False
             return
