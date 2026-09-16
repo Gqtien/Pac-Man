@@ -1,4 +1,4 @@
-from models import Map, Vec2
+from models import Map, Vec2, Direction
 
 
 def to_tuple(a: Vec2) -> tuple[int, int]:
@@ -7,7 +7,8 @@ def to_tuple(a: Vec2) -> tuple[int, int]:
 
 
 def pathfind(
-        start: Vec2, target: Vec2, map: Map
+        start: Vec2, target: Vec2, map: Map,
+        restricted_init_dir: Direction = Direction.NONE
 ) -> list[tuple[int, int]]:
     """Breadth first search in a 2D grid.
 
@@ -25,7 +26,12 @@ def pathfind(
         if current == goal:
             return build_path(previous, goal)
         visited.add(current)
-        for cell in get_neighbors(current, visited, map):
+        neighbors: list[tuple[int, int]] = []
+        if current == to_tuple(start):
+            neighbors = get_neighbors(current, visited, map, restricted_init_dir)
+        else:
+            neighbors = get_neighbors(current, visited, map)
+        for cell in neighbors:
             to_visit.append(cell)
             previous[cell] = current
     # no path found
@@ -49,7 +55,8 @@ def is_valid_pos(pos: tuple[int, int], maze: list[list[int]]) -> bool:
 def get_neighbors(
         current: tuple[int, int],
         visited: set[tuple[int, int]],
-        maze: list[list[int]]
+        maze: list[list[int]],
+        restricted_dir: Direction = Direction.NONE
 ) -> list[tuple[int, int]]:
     """Get surounding cells that are not visited nor a wall."""
     x, y = current
@@ -57,6 +64,8 @@ def get_neighbors(
     directions = [
         (0, 1), (0, -1), (1, 0), (-1, 0)
     ]
+    if restricted_dir.value in directions:
+        directions.remove(restricted_dir.value)
     for dx, dy in directions:
         neighbor = (x + dx, y + dy)
         if neighbor in visited:

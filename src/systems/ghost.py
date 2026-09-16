@@ -16,8 +16,10 @@ from models import (
 )
 
 
-def pathfind_to(source: Vec2, target: Vec2, map: Map) -> Direction:
-    path = pathfind(source, target, map)
+def pathfind_to(
+        source: Vec2, target: Vec2, map: Map, ghost_dir: Direction
+) -> Direction:
+    path = pathfind(source, target, map, restricted_init_dir=ghost_dir.opposite)
     if not path or not path[1:]:
         return Direction.NONE
     next_x, next_y = path[1]
@@ -26,12 +28,16 @@ def pathfind_to(source: Vec2, target: Vec2, map: Map) -> Direction:
 
 
 def update_blinky(ghost: Ghost, world: World) -> None:
-    ghost.direction = pathfind_to(ghost.pos, world.pacman.pos, world.map)
+    ghost.direction = pathfind_to(
+        ghost.pos, world.pacman.pos, world.map, ghost.direction
+    )
 
 
 def update_pinky(ghost: Ghost, world: World) -> None:
     target: Vec2 = world.pacman.pos + Vec2(*world.pacman.direction.value) * 2
-    ghost.direction = pathfind_to(ghost.pos, target, world.map)
+    ghost.direction = pathfind_to(
+        ghost.pos, target, world.map, ghost.direction
+    )
 
 
 def update_inky(ghost: Ghost, world: World) -> None:
@@ -42,11 +48,13 @@ def update_inky(ghost: Ghost, world: World) -> None:
     d -= blinky.pos
     d *= 2
     target = blinky.pos + d
-    ghost.direction = pathfind_to(ghost.pos, target, world.map)
+    ghost.direction = pathfind_to(ghost.pos, target, world.map, ghost.direction)
 
 
 def update_clyde(ghost: Ghost, world: World) -> None:
-    ghost.direction = pathfind_to(ghost.pos, world.pacman.pos, world.map)
+    ghost.direction = pathfind_to(
+        ghost.pos, world.pacman.pos, world.map, ghost.direction
+    )
     if (world.pacman.pos - ghost.pos).norm() <= 8:
         ghost.state = GhostState.SCATTER
 
@@ -67,7 +75,7 @@ def update_frightened_dir(ghost: Ghost, maze: Map) -> None:
             possible_dirs.append(dir)
     if ghost.direction.opposite in possible_dirs:
         possible_dirs.remove(ghost.direction.opposite)
-    ghost.wanted = random.choice(possible_dirs)
+    ghost.direction = random.choice(possible_dirs)
 
 
 def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
@@ -86,7 +94,9 @@ def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
             case GhostState.FRIGHTENED:
                 update_frightened_dir(ghost, world.map)
             case GhostState.SCATTER | GhostState.DEAD:
-                ghost.direction = pathfind_to(ghost.pos, ghost.home, world.map)
+                ghost.direction = pathfind_to(
+                    ghost.pos, ghost.home, world.map, ghost.direction
+                )
                 if ghost.pos == ghost.home:
                     ghost.state = GhostState.CHASE
             case GhostState.CHASE:

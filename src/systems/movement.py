@@ -15,8 +15,6 @@ def move(entity: Entity, world: World, speed: float, dt: float) -> None:
     map = world.map
     if not entity.wanted.is_still and can_move(entity.pos, entity.wanted, map):
         entity.direction = entity.wanted
-    elif not can_move(entity.pos, entity.direction, map):
-        entity.direction = Direction.NONE
 
 
 def can_move(pos: Vec2, direction: Direction, map: Map) -> bool:
