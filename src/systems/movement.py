@@ -2,22 +2,31 @@ from models import Direction, Entity, Map, Vec2, World
 
 
 def move(entity: Entity, world: World, speed: float, dt: float) -> None:
-    if not entity.direction.is_still:
-        entity.progress += speed * dt
-        if entity.progress < 1.0:
-            entity.dirty = False
-            return
-        entity.progress -= 1.0
-        entity.pos.x += entity.direction.dx
-        entity.pos.y += entity.direction.dy
-        entity.dirty = True
-
-    map = world.map
-    if not entity.wanted.is_still and can_move(entity.pos, entity.wanted, map):
+    # update direction from wanted
+    if entity.just_moved and \
+       not entity.wanted.is_still and \
+       can_move(entity.pos, entity.wanted, world.map):
         entity.direction = entity.wanted
+    # update progress from direction
+    if entity.direction.is_still:
+        return
+    if not can_move(entity.pos, entity.direction, world.map):
+        entity.direction = Direction.NONE
+        return
+    entity.progress += speed * dt
+    # update pos from progress
+    if entity.progress < 1.0:
+        entity.just_moved = False
+        return
+    entity.progress -= 1.0
+    entity.pos.x += entity.direction.dx
+    entity.pos.y += entity.direction.dy
+    entity.just_moved = True
 
 
 def can_move(pos: Vec2, direction: Direction, map: Map) -> bool:
+    if direction.is_still:
+        return True
     x = pos.x + direction.dx
     y = pos.y + direction.dy
     if x < 0 or y < 0:

@@ -77,7 +77,7 @@ def update_frightened_dir(ghost: Ghost, maze: Map) -> None:
     for dir in dirs:
         if can_move(ghost.pos, dir, maze):
             possible_dirs.append(dir)
-    if ghost.direction.opposite in possible_dirs:
+    if ghost.direction.opposite in possible_dirs and len(possible_dirs) > 1:
         possible_dirs.remove(ghost.direction.opposite)
     ghost.direction = random.choice(possible_dirs)
 
@@ -92,7 +92,7 @@ def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
         if ghost.frightened_timer <= 0.0:
             ghost.state = GhostState.CHASE
 
-    if ghost.dirty or ghost.direction is Direction.NONE:
+    if ghost.just_moved or ghost.direction is Direction.NONE:
         # recompute direction
         match ghost.state:
             case GhostState.FRIGHTENED:
@@ -105,4 +105,4 @@ def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
                     ghost.state = GhostState.CHASE
             case GhostState.CHASE:
                 chase_map[ghost.personality](ghost, world)
-        ghost.dirty = False
+        ghost.just_moved = False
