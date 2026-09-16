@@ -1,13 +1,11 @@
 from tkinter import Canvas
-from mazegenerator import MazeGenerator
 from typing import Callable
 from config import Config
 from systems import Outcome, step
 from .base import Scene
 from .death import Death
-from .main import Main
 from .pause import Pause
-from .transition import Push, Reset, Transition
+from .transition import Push, Transition
 from assets import (
     DOOR,
     FRAME,
@@ -23,16 +21,13 @@ from models import (
     Direction,
     Entity,
     Ghost,
-    GhostPersonality,
     GhostState,
-    Pacman,
-    Vec2,
-    World,
-    from_maze,
+    new_map,
+    new_world,
+    next_level,
     is_door,
     is_house,
     is_solid,
-    init_items,
 )
 
 
@@ -40,29 +35,18 @@ class Gameplay(Scene):
     def __init__(self, config: Config, assets: Assets) -> None:
         self.config = config
         self.assets = assets
-        map = from_maze(MazeGenerator().maze)
-        self.world = World(
-            map,
-            init_items(map),
-            Pacman(Vec2(1, 1), Direction.NONE),
-            [
-                Ghost(Vec2(11, 1), Direction.NONE, GhostPersonality.BLINKY),
-                Ghost(Vec2(11, 3), Direction.NONE, GhostPersonality.PINKY),
-                Ghost(Vec2(11, 5), Direction.NONE, GhostPersonality.INKY),
-                Ghost(Vec2(11, 7), Direction.NONE, GhostPersonality.CLYDE),
-            ],
-        )
+        self.world = new_world(new_map())
 
     def update(self, dt: float, keys: set[str]) -> Transition:
         if "Escape" in keys:
             return Push(Pause(self.config, self.assets))
         match step(self.world, self.config, dt, keys):
             case Outcome.LOST:
-                return Push(Death())
+                self.world = new_world(new_map())
+                return Push(Death(self.config, self.assets))
             case Outcome.WON:
-                return Reset(Main())
-            case _:
-                return None
+                self.world = next_level(self.world, new_map())
+        return None
 
     def draw(self, canvas: Canvas) -> None:
         zoom = self.zoom(canvas)
