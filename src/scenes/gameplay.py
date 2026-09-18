@@ -1,7 +1,8 @@
-from tkinter import Canvas
+from tkinter import Canvas, PhotoImage
 from typing import Callable
 from config import Config
 from models.world import respawn
+from render import glyphs, images_size, put_images
 from systems import Outcome, step
 from .base import Scene
 from .death import Death
@@ -14,6 +15,7 @@ from assets import (
     RIM,
     Animation,
     Assets,
+    FontColor,
     Frame,
     Sprites,
     Wall,
@@ -64,18 +66,19 @@ class Gameplay(Scene):
         self.draw_entity(pacman, sprites.pacman[pacman.direction])
         for ghost in self.world.ghosts:
             self.draw_entity(ghost, self.ghost_animation(ghost, sprites))
+        self.draw_hud(sprites)
         self.center()
 
     def zoom(self, canvas: Canvas) -> int:
         rows, cols = len(self.world.map), len(self.world.map[0])
         w, h = canvas.winfo_width(), canvas.winfo_height()
-        return max(1, min(w // (16 * cols), h // (16 * rows)))
+        return max(1, min(w // (16 * cols), h // (16 * (rows + 2))))
 
     def center(self) -> None:
         rows, cols = len(self.world.map), len(self.world.map[0])
         dx = (self.canvas.winfo_width() - cols * self.size) // 2
-        dy = (self.canvas.winfo_height() - rows * self.size) // 2
-        self.canvas.move("all", dx, dy)
+        dy = (self.canvas.winfo_height() - (rows + 2) * self.size) // 2
+        self.canvas.move("all", dx, dy + self.size)
 
     @staticmethod
     def ghost_animation(ghost: Ghost, sprites: Sprites) -> Animation:
@@ -163,3 +166,24 @@ class Gameplay(Scene):
                 image=sprites.items[item],
                 anchor="nw",
             )
+
+    def draw_hud(self, sprites: Sprites) -> None:
+        rows, cols = len(self.world.map), len(self.world.map[0])
+        font = self.assets.fonts.fit(self.size / 2)[FontColor.WHITE]
+        score, level = self.world.score, self.world.level
+        self.put_hud(glyphs(f"Score {score}", font), 0, -1)
+        self.put_hud(glyphs(f"Level {level}", font), cols, -1, right=True)
+        life = sprites.pacman[Direction.EAST][1]
+        self.put_hud([life] * self.world.lives, 0, rows)
+
+    def put_hud(
+        self,
+        images: list[PhotoImage],
+        cx: float,
+        cy: float,
+        right: bool = False,
+    ) -> None:
+        width, height = images_size(images)
+        x = cx * self.size - (width if right else 0)
+        y = cy * self.size + (self.size - height) / 2
+        put_images(images, self.canvas, x, y)
