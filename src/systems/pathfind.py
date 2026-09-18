@@ -1,4 +1,4 @@
-from models import Map, Vec2, Direction
+from models import Map, Vec2, Direction, can_cross, is_wall
 
 
 def to_tuple(a: Vec2) -> tuple[int, int]:
@@ -8,7 +8,8 @@ def to_tuple(a: Vec2) -> tuple[int, int]:
 
 def pathfind(
         start: Vec2, target: Vec2, map: Map,
-        restricted_init_dir: Direction = Direction.NONE
+        restricted_init_dir: Direction = Direction.NONE,
+        door_open: bool = False
 ) -> list[tuple[int, int]]:
     """Breadth first search in a 2D grid.
 
@@ -29,10 +30,10 @@ def pathfind(
         neighbors: list[tuple[int, int]] = []
         if current == to_tuple(start):
             neighbors = get_neighbors(
-                current, visited, map, restricted_init_dir
+                current, visited, map, door_open, restricted_init_dir
             )
         else:
-            neighbors = get_neighbors(current, visited, map)
+            neighbors = get_neighbors(current, visited, map, door_open)
         for cell in neighbors:
             to_visit.append(cell)
             previous[cell] = current
@@ -49,7 +50,7 @@ def is_valid_pos(pos: tuple[int, int], maze: list[list[int]]) -> bool:
         return False
     if not (0 <= y < height):
         return False
-    if maze[y][x]:
+    if is_wall(maze[y][x]):
         return False
     return True
 
@@ -58,6 +59,7 @@ def get_neighbors(
         current: tuple[int, int],
         visited: set[tuple[int, int]],
         maze: list[list[int]],
+        door_open: bool = False,
         restricted_dir: Direction = Direction.NONE
 ) -> list[tuple[int, int]]:
     """Get surounding cells that are not visited nor a wall."""
@@ -73,6 +75,8 @@ def get_neighbors(
         if neighbor in visited:
             continue
         if not is_valid_pos(neighbor, maze):
+            continue
+        if not can_cross(maze[y][x], maze[y + dy][x + dx], door_open):
             continue
         neighbors.append(neighbor)
     return neighbors

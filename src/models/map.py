@@ -30,16 +30,38 @@ def is_solid(cell: int) -> bool:
 
 
 def is_house(cell: int) -> bool:
-    return cell in (-1, -2)
+    return cell in (-1, -2, -3)
 
 
 def is_door(cell: int) -> bool:
     return cell == -2
 
 
+def is_wall(cell: int) -> bool:
+    return cell > 0 or cell == -1
+
+
+def can_cross(src: int, dst: int, door_open: bool = False) -> bool:
+    if is_wall(dst):
+        return False
+    if is_door(src) or is_door(dst):
+        return door_open
+    return is_house(src) == is_house(dst)
+
+
+def doors(map: Map) -> list[tuple[int, int]]:
+    return [
+        (x, y)
+        for y, row in enumerate(map)
+        for x, cell in enumerate(row)
+        if is_door(cell)
+    ]
+
+
 def from_maze(maze: Maze) -> Map:
     enclosed = enclosed_cells(maze)
     house = house_cells(enclosed)
+    inner = inner_cells(house)
     doors = door_cells(enclosed)
 
     grid = maze_to_grid(maze)
@@ -48,6 +70,8 @@ def from_maze(maze: Maze) -> Map:
     map = grid_to_walls(grid)
     for x, y in house:
         map[y][x] = -1
+    for x, y in inner:
+        map[y][x] = -3
     for x, y in doors:
         map[y][x] = -2
     return map
@@ -74,6 +98,18 @@ def house_cells(enclosed: set[tuple[int, int]]) -> set[tuple[int, int]]:
             for dy in (-1, 0, 1):
                 house.add((gx + dx, gy + dy))
     return house
+
+
+def inner_cells(house: set[tuple[int, int]]) -> set[tuple[int, int]]:
+    return {
+        (x, y)
+        for x, y in house
+        if all(
+            (x + dx, y + dy) in house
+            for dx in (-1, 0, 1)
+            for dy in (-1, 0, 1)
+        )
+    }
 
 
 def door_cells(enclosed: set[tuple[int, int]]) -> set[tuple[int, int]]:
