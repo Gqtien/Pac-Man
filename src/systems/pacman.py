@@ -14,6 +14,9 @@ KEYMAP: dict[str, Direction] = {
 
 
 def step(world: World, config: Config, dt: float, keys: set[str]) -> None:
+    if not world.pacman.alive:
+        world.pacman.death += dt
+        return
     steer(world.pacman, keys)
     world.pacman.stall, dt = spend(world.pacman.stall, dt)
     factor = pacman_factor(world)

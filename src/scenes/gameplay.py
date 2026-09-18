@@ -25,6 +25,7 @@ from models import (
     Entity,
     Ghost,
     GhostState,
+    Pacman,
     new_map,
     new_world,
     next_level,
@@ -63,9 +64,12 @@ class Gameplay(Scene):
         self.draw_map()
         self.draw_items(sprites)
         pacman = self.world.pacman
-        self.draw_entity(pacman, sprites.pacman[pacman.direction])
-        for ghost in self.world.ghosts:
-            self.draw_entity(ghost, self.ghost_animation(ghost, sprites))
+        if pacman.alive or self.world.freeze > 0:
+            self.draw_entity(pacman, sprites.pacman[pacman.direction])
+            for ghost in self.world.ghosts:
+                self.draw_entity(ghost, self.ghost_animation(ghost, sprites))
+        else:
+            self.draw_death(pacman, sprites.death)
         self.draw_hud(sprites)
         self.center()
 
@@ -102,9 +106,16 @@ class Gameplay(Scene):
                 return sprites.frightened
 
     def draw_entity(self, entity: Entity, animation: Animation) -> None:
+        frame = animation[int(entity.anim_progress) % len(animation)]
+        self.draw_sprite(entity, frame)
+
+    def draw_death(self, pacman: Pacman, frames: Animation) -> None:
+        index = int(pacman.death / self.config.anim_speed * len(frames))
+        self.draw_sprite(pacman, frames[min(index, len(frames) - 1)])
+
+    def draw_sprite(self, entity: Entity, frame: PhotoImage) -> None:
         x = entity.pos.x + entity.direction.dx * entity.progress + 0.5
         y = entity.pos.y + entity.direction.dy * entity.progress + 0.5
-        frame = animation[int(entity.anim_progress) % len(animation)]
         self.canvas.create_image(x * self.size, y * self.size, image=frame)
 
     def draw_map(self) -> None:

@@ -24,6 +24,7 @@ class Entity:
 @dataclass
 class Pacman(Entity):
     alive: bool = True
+    death: float = 0.0
     stall: float = 0.0
     starve: float = 0.0
 
