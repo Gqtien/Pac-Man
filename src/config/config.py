@@ -10,3 +10,5 @@ class Config:
     walls: str = "assets/walls.png"
     font: str = "assets/font.png"
     overlay: str = "assets/overlay.png"
+    cheat_win_key: str = "w"
+    cheat_invisible_key: str = "i"

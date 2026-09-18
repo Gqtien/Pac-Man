@@ -14,6 +14,8 @@ KEYMAP: dict[str, Direction] = {
 
 
 def step(world: World, config: Config, dt: float, keys: set[str]) -> None:
+    if config.cheat_invisible_key in keys:
+        world.pacman.is_invisible = not world.pacman.is_invisible
     if not world.pacman.alive:
         world.pacman.death += dt
         return

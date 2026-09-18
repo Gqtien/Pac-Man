@@ -9,6 +9,8 @@ from .outcome import Outcome
 
 
 def step(world: World, config: Config, dt: float, keys: set[str]) -> Outcome:
+    if config.cheat_win_key in keys:
+        return Outcome.WON
     world.freeze, dt = spend(world.freeze, dt)
     pacman_step(world, config, dt, keys)
     if world.pacman.alive:
