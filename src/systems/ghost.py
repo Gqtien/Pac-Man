@@ -13,14 +13,23 @@ from models import (
     GhostPersonality,
     Map,
     Vec2,
+    is_solid,
 )
 
 
 def pathfind_to(
-        source: Vec2, target: Vec2, map: Map, ghost_dir: Direction
+    source: Vec2,
+    target: Vec2,
+    map: Map,
+    ghost_dir: Direction,
+    door_open: bool = False,
 ) -> Direction:
     path = pathfind(
-        source, target, map, restricted_init_dir=ghost_dir.opposite
+        source,
+        target,
+        map,
+        restricted_init_dir=ghost_dir.opposite,
+        door_open=door_open,
     )
     if not path or not path[1:]:
         return Direction.NONE
@@ -72,9 +81,8 @@ chase_map: dict[GhostPersonality, Callable[[Ghost, World], None]] = {
 
 
 def update_frightened_dir(ghost: Ghost, maze: Map) -> None:
-    dirs = list(map(Direction, [(0, 1), (1, 0), (0, -1), (-1, 0)]))
     possible_dirs = []
-    for dir in dirs:
+    for dir in [dir for dir in Direction if not dir.is_still]:
         if can_move(ghost.pos, dir, maze):
             possible_dirs.append(dir)
     if ghost.direction.opposite in possible_dirs and len(possible_dirs) > 1:
@@ -82,9 +90,20 @@ def update_frightened_dir(ghost: Ghost, maze: Map) -> None:
     ghost.direction = random.choice(possible_dirs)
 
 
+def idle(ghost: Ghost, maze: Map) -> None:
+    options = [
+        direction
+        for direction in [d for d in Direction if not d.is_still]
+        if direction is not ghost.direction.opposite
+        and can_move(ghost.pos, direction, maze)
+    ]
+    ghost.direction = options[0] if options else ghost.direction.opposite
+
+
 def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
     factor = ghost_factor(ghost, world)
-    move(ghost, world, config.speed * factor, dt)
+    door_open = ghost.state in (GhostState.LEAVING, GhostState.DEAD)
+    move(ghost, world, config.speed * factor, dt, door_open)
     animate(ghost, config.anim_speed * factor, dt)
 
     if ghost.state == GhostState.FRIGHTENED:
@@ -95,9 +114,31 @@ def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
     if ghost.just_moved or ghost.direction is Direction.NONE:
         # recompute direction
         match ghost.state:
+            case GhostState.HOUSE:
+                idle(ghost, world.map)
+            case GhostState.LEAVING:
+                ghost.direction = pathfind_to(
+                    ghost.pos,
+                    ghost.home,
+                    world.map,
+                    ghost.direction,
+                    door_open=True,
+                )
+                if not is_solid(world.map[ghost.pos.y][ghost.pos.x]):
+                    ghost.state = GhostState.CHASE
+            case GhostState.DEAD:
+                ghost.direction = pathfind_to(
+                    ghost.pos,
+                    ghost.spawn,
+                    world.map,
+                    ghost.direction,
+                    door_open=True,
+                )
+                if ghost.pos == ghost.spawn:
+                    ghost.state = GhostState.HOUSE
             case GhostState.FRIGHTENED:
                 update_frightened_dir(ghost, world.map)
-            case GhostState.SCATTER | GhostState.DEAD:
+            case GhostState.SCATTER:
                 ghost.direction = pathfind_to(
                     ghost.pos, ghost.home, world.map, ghost.direction
                 )

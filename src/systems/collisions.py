@@ -1,4 +1,5 @@
 from models import World, Item, GhostState, Entity, Ghost
+from .house import preferred
 
 
 def step(world: World) -> None:
@@ -13,9 +14,17 @@ def eat(world: World) -> None:
         return
     world.score += item.value
     world.pacman.stall += item.stall
+    if item is Item.PACGUM:
+        world.pacman.starve = 0.0
+        if (ghost := preferred(world)) is not None:
+            ghost.dots += 1
     if item is Item.SUPER_PACGUM:
         for ghost in world.ghosts:
-            if ghost.state is not GhostState.DEAD:
+            if ghost.state in (
+                GhostState.CHASE,
+                GhostState.SCATTER,
+                GhostState.FRIGHTENED,
+            ):
                 ghost.state = GhostState.FRIGHTENED
                 ghost.frightened_timer = 10  # TODO: config
 
@@ -39,5 +48,5 @@ def apply(world: World, ghost: Ghost) -> None:
             world.freeze = 1.0
         case GhostState.DEAD:
             pass
-        case GhostState.CHASE | GhostState.SCATTER:
+        case GhostState.CHASE | GhostState.SCATTER | GhostState.LEAVING:
             world.pacman.alive = False

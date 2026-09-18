@@ -5,6 +5,7 @@ from .vec import Vec2
 from .world import World, new_world, next_level
 from .items import Items, Item, init_items
 from .speed import Speed, Speeds, speeds
+from .house import dot_limit, starve_limit
 from .map import (
     Map,
     Maze,
@@ -48,4 +49,6 @@ __all__ = [
     "Speed",
     "Speeds",
     "speeds",
+    "starve_limit",
+    "dot_limit"
 ]

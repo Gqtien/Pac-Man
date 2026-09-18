@@ -4,6 +4,7 @@ from .timer import spend
 from .pacman import step as pacman_step
 from .ghost import step as ghost_step
 from .collisions import step as collisions_step
+from .house import step as house_step
 from .outcome import Outcome
 
 
@@ -13,6 +14,7 @@ def step(world: World, config: Config, dt: float, keys: set[str]) -> Outcome:
     for ghost in world.ghosts:
         ghost_step(ghost, world, config, dt)
     collisions_step(world)
+    house_step(world, dt)
     return outcome(world)
 
 

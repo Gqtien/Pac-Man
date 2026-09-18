@@ -25,6 +25,7 @@ class Entity:
 class Pacman(Entity):
     alive: bool = True
     stall: float = 0.0
+    starve: float = 0.0
 
 
 class GhostPersonality(Enum):
@@ -39,11 +40,15 @@ class GhostState(Enum):
     SCATTER = auto()
     DEAD = auto()
     FRIGHTENED = auto()
+    HOUSE = auto()
+    LEAVING = auto()
 
 
 @dataclass
 class Ghost(Entity):
     personality: GhostPersonality
     home: Vec2
+    spawn: Vec2
     frightened_timer: float = 0.0
-    state: GhostState = GhostState.CHASE
+    state: GhostState = GhostState.HOUSE
+    dots: int = 0
