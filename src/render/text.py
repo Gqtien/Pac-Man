@@ -1,4 +1,4 @@
-from tkinter import Canvas
+from tkinter import Canvas, PhotoImage
 from typing import TypeAlias
 from assets import Font
 
@@ -13,29 +13,39 @@ def char_or_space(char: str, font: Font) -> str:
         return " "
 
 
-def text_size(text: str, font: Font) -> tuple[int, int]:
-    glyphs = [font[char_or_space(char, font)] for char in text]
-    width = sum(glyph.width() for glyph in glyphs)
-    height = max((glyph.height() for glyph in glyphs), default=0)
+def glyphs(text: str, font: Font) -> list[PhotoImage]:
+    return [font[char_or_space(char, font)] for char in text.upper()]
+
+
+def images_size(images: list[PhotoImage]) -> tuple[int, int]:
+    width = sum(image.width() for image in images)
+    height = max((image.height() for image in images), default=0)
     return width, height
+
+
+def text_size(text: str, font: Font) -> tuple[int, int]:
+    return images_size(glyphs(text, font))
+
+
+def put_images(
+    images: list[PhotoImage], canvas: Canvas, x: float, y: float
+) -> None:
+    for image in images:
+        canvas.create_image(x, y, image=image, anchor="nw")
+        x += image.width()
 
 
 def put_text(
     text: str, font: Font, canvas: Canvas, x: float, y: float
 ) -> None:
-    upper = text.upper()
-    for char in upper:
-        glyph = font[char_or_space(char, font)]
-        canvas.create_image(x, y, image=glyph, anchor="nw")
-        x += glyph.width()
+    put_images(glyphs(text, font), canvas, x, y)
 
 
 def put_text_centered(
     text: str, font: Font, canvas: Canvas, x: float, y: float
 ) -> None:
-    upper = text.upper()
-    width, height = text_size(upper, font)
-    put_text(upper, font, canvas, x - width / 2, y - height / 2)
+    width, height = text_size(text, font)
+    put_text(text, font, canvas, x - width / 2, y - height / 2)
 
 
 def put_lines_centered(
