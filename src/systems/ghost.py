@@ -110,6 +110,8 @@ def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
         ghost.frightened_timer -= dt
         if ghost.frightened_timer <= 0.0:
             ghost.state = GhostState.CHASE
+    if ghost.state == GhostState.EATEN and not world.freeze:
+        ghost.state = GhostState.DEAD
 
     if ghost.just_moved or ghost.direction is Direction.NONE:
         # recompute direction
@@ -136,6 +138,8 @@ def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
                 )
                 if ghost.pos == ghost.spawn:
                     ghost.state = GhostState.HOUSE
+            case GhostState.EATEN:
+                pass
             case GhostState.FRIGHTENED:
                 update_frightened_dir(ghost, world.map)
             case GhostState.SCATTER:

@@ -16,6 +16,7 @@ class World:
     lives: int = 3
     level: int = 1
     freeze: float = 0.0
+    multiplier: int = 1
 
 
 def new_world(map: Map) -> World:

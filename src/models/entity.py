@@ -40,6 +40,7 @@ class GhostState(Enum):
     CHASE = auto()
     SCATTER = auto()
     DEAD = auto()
+    EATEN = auto()
     FRIGHTENED = auto()
     HOUSE = auto()
     LEAVING = auto()
@@ -53,3 +54,4 @@ class Ghost(Entity):
     frightened_timer: float = 0.0
     state: GhostState = GhostState.HOUSE
     dots: int = 0
+    value: int = 0

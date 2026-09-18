@@ -96,6 +96,8 @@ class Gameplay(Scene):
                 return sprites.ghost[ghost.personality][ghost.direction]
             case GhostState.DEAD:
                 return [sprites.eyes[ghost.direction]]
+            case GhostState.EATEN:
+                return [sprites.ghost_score[ghost.value]]
             case GhostState.FRIGHTENED:
                 # TODO: config
                 if (
