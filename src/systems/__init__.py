@@ -19,8 +19,10 @@ def step(world: World, config: Config, dt: float, keys: set[str]) -> Outcome:
 
 
 def outcome(world: World) -> Outcome:
-    if not world.pacman.alive:
+    if not world.lives:
         return Outcome.LOST
+    if not world.pacman.alive:
+        return Outcome.DIED
     if not world.items:
         return Outcome.WON
     return Outcome.CONTINUE

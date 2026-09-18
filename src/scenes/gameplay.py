@@ -1,6 +1,7 @@
 from tkinter import Canvas
 from typing import Callable
 from config import Config
+from models.world import respawn
 from systems import Outcome, step
 from .base import Scene
 from .death import Death
@@ -44,6 +45,8 @@ class Gameplay(Scene):
             case Outcome.LOST:
                 self.world = new_world(new_map())
                 return Push(Death(self.config, self.assets))
+            case Outcome.DIED:
+                self.world = respawn(self.world)
             case Outcome.WON:
                 self.world = next_level(self.world, new_map())
         return None

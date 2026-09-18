@@ -13,12 +13,21 @@ class World:
     pacman: Pacman
     ghosts: list[Ghost]
     score: int = 0
+    lives: int = 3
     level: int = 1
     freeze: float = 0.0
 
 
 def new_world(map: Map) -> World:
     return World(map, init_items(map), spawn_pacman(map), spawn_ghosts(map))
+
+
+def respawn(world: World) -> World:
+    return replace(
+        world,
+        pacman=spawn_pacman(world.map),
+        ghosts=spawn_ghosts(world.map),
+    )
 
 
 def next_level(world: World, map: Map) -> World:

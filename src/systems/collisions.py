@@ -50,3 +50,4 @@ def apply(world: World, ghost: Ghost) -> None:
             pass
         case GhostState.CHASE | GhostState.SCATTER | GhostState.LEAVING:
             world.pacman.alive = False
+            world.lives -= 1
