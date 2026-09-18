@@ -81,16 +81,20 @@ class Gameplay(Scene):
     def ghost_animation(ghost: Ghost, sprites: Sprites) -> Animation:
         match ghost.state:
             case (
-                GhostState.CHASE | GhostState.SCATTER
-                | GhostState.HOUSE | GhostState.LEAVING
+                GhostState.CHASE
+                | GhostState.SCATTER
+                | GhostState.HOUSE
+                | GhostState.LEAVING
             ):
                 return sprites.ghost[ghost.personality][ghost.direction]
             case GhostState.DEAD:
                 return [sprites.eyes[ghost.direction]]
             case GhostState.FRIGHTENED:
                 # TODO: config
-                if ghost.frightened_timer < 3 and \
-                   int(ghost.frightened_timer * 4) % 2 == 0:
+                if (
+                    ghost.frightened_timer < 3
+                    and int(ghost.frightened_timer * 4) % 2 == 0
+                ):
                     return sprites.flashing
                 return sprites.frightened
 
