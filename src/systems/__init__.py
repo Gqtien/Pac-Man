@@ -14,7 +14,7 @@ def step(world: World, config: Config, dt: float, keys: set[str]) -> Outcome:
     if world.pacman.alive:
         for ghost in world.ghosts:
             ghost_step(ghost, world, config, dt)
-        collisions_step(world)
+        collisions_step(world, config)
         house_step(world, dt)
     return outcome(world, config)
 

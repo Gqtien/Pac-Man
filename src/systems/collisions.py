@@ -1,10 +1,11 @@
+from config import Config
 from models import World, Item, GhostState, Entity, Ghost
 from .house import preferred
 
 
-def step(world: World) -> None:
+def step(world: World, config: Config) -> None:
     eat(world)
-    collide(world)
+    collide(world, config)
 
 
 def eat(world: World) -> None:
@@ -29,15 +30,15 @@ def eat(world: World) -> None:
                 ghost.frightened_timer = 10  # TODO: config
 
 
-def collide(world: World) -> None:
+def collide(world: World, config: Config) -> None:
     for ghost in world.ghosts:
-        if touching(world.pacman, ghost):
+        if touching(world.pacman, ghost, config.entity_hitbox):
             apply(world, ghost)
 
 
-def touching(a: Entity, b: Entity) -> bool:
+def touching(a: Entity, b: Entity, hitbox: float) -> bool:
     (ax, ay), (bx, by) = a.center, b.center
-    return abs(ax - bx) < 1 and abs(ay - by) < 1
+    return abs(ax - bx) < hitbox and abs(ay - by) < hitbox
 
 
 def apply(world: World, ghost: Ghost) -> None:
