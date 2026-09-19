@@ -12,3 +12,8 @@ class Config:
     overlay: str = "assets/overlay.png"
     cheat_win_key: str = "w"
     cheat_invisible_key: str = "i"
+    cheat_freeze_ghosts_key: str = "f"
+    # lives: int = 3
+    # points_per_pacgum: int = 10
+    # points_per_super_pacgum: int = 50
+    # points_per_ghost: int = 200
