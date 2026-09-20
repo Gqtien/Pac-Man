@@ -7,7 +7,7 @@ from .base import Scene
 from .transition import Pop, Transition
 
 
-class Death(Scene):
+class Win(Scene):
     def __init__(self, config: Config, assets: Assets, score: int) -> None:
         self.config = config
         self.assets = assets
@@ -30,7 +30,7 @@ class Death(Scene):
         sub = self.assets.fonts.fit(h / 32)[FontColor.BEIGE]
         put_lines_centered(
             [
-                ("You Died", title),
+                ("You Won !", title),
                 (f"score - {self.score}", sub),
                 (f"highscore - {self.highscore}", sub),
                 ('Press "Space" to Retry', sub)

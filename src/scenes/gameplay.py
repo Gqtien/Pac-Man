@@ -1,3 +1,4 @@
+import config
 from tkinter import Canvas, PhotoImage
 from typing import Callable
 from config import Config
@@ -6,8 +7,9 @@ from render import glyphs, images_size, put_images
 from systems import Outcome, step
 from .base import Scene
 from .death import Death
+from .win import Win
 from .pause import Pause
-from .transition import Push, Transition
+from .transition import Push, Transition, Reset
 from assets import (
     DOOR,
     FRAME,
@@ -47,11 +49,15 @@ class Gameplay(Scene):
         match step(self.world, self.config, dt, keys):
             case Outcome.LOST:
                 self.world = new_world(new_map())
-                return Push(Death(self.config, self.assets))
+                return Push(Death(self.config, self.assets, self.world.score))
             case Outcome.DIED:
                 self.world = respawn(self.world)
             case Outcome.WON:
-                self.world = next_level(self.world, new_map())
+                if self.world.level < self.config.levels_to_win:
+                    self.world = next_level(self.world, new_map())
+                    return None
+                self.world = new_world(new_map())
+                return Reset(Win(self.config, self.assets, self.world.score))
         return None
 
     def draw(self, canvas: Canvas) -> None:
@@ -99,7 +105,6 @@ class Gameplay(Scene):
             case GhostState.EATEN:
                 return [sprites.ghost_score[ghost.value]]
             case GhostState.FRIGHTENED:
-                # TODO: config
                 if (
                     ghost.frightened_timer < 3
                     and int(ghost.frightened_timer * 4) % 2 == 0
