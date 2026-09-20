@@ -48,16 +48,18 @@ class Gameplay(Scene):
             return Push(Pause(self.config, self.assets))
         match step(self.world, self.config, dt, keys):
             case Outcome.LOST:
+                score = self.world.score
                 self.world = new_world(new_map())
-                return Push(Death(self.config, self.assets, self.world.score))
+                return Push(Death(self.config, self.assets, score))
             case Outcome.DIED:
                 self.world = respawn(self.world)
             case Outcome.WON:
                 if self.world.level < self.config.levels_to_win:
                     self.world = next_level(self.world, new_map())
                     return None
+                score = self.world.score
                 self.world = new_world(new_map())
-                return Reset(Win(self.config, self.assets, self.world.score))
+                return Reset(Win(self.config, self.assets, score))
         return None
 
     def draw(self, canvas: Canvas) -> None:

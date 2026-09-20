@@ -6,7 +6,6 @@ def load_highscore(filepath: str) -> int:
     if not path.exists():
         save_highscore(0, filepath)
     highscore: int = json.loads(path.read_text())
-    print(highscore)
     return highscore
 
 

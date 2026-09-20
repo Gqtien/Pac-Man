@@ -15,8 +15,10 @@ class SceneManager:
         self.keys: set[str] = set()
         self.tk.bind("<KeyPress>", self.on_key)
         self.tk.after(0, self.tick)
+        self.initial_scene: Scene | None = None
 
     def start(self, initial_scene: Scene) -> None:
+        self.initial_scene = initial_scene
         self.stack.append(initial_scene)
         self.tk.mainloop()
 
@@ -38,9 +40,10 @@ class SceneManager:
 
         transition = self.top.update(dt, keys)
         self.apply(transition)
-        if self.stack:
-            for scene in self.stack:
-                scene.draw(self.canvas)
+        if self.stack == [] and self.initial_scene is not None:
+            self.stack.append(self.initial_scene)
+        for scene in self.stack:
+            scene.draw(self.canvas)
         self.tk.after(1, self.tick)
 
     def apply(self, transition: Transition) -> None:
