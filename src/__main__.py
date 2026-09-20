@@ -2,7 +2,7 @@ import argparse
 from pathlib import Path
 from assets import load_assets
 from config import load_config
-from scenes import Gameplay, SceneManager
+from scenes import Main, SceneManager
 
 
 def run() -> None:
@@ -18,7 +18,7 @@ def run() -> None:
     manager = SceneManager()
     config = load_config(args.config)
     assets = load_assets(config)
-    manager.start(Gameplay(config, assets))
+    manager.start(Main(config, assets))
 
 
 if __name__ == "__main__":

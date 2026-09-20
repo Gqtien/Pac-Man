@@ -61,6 +61,7 @@ class Gameplay(Scene):
         return None
 
     def draw(self, canvas: Canvas) -> None:
+        canvas.delete("all")
         zoom = self.zoom(canvas)
         self.canvas = canvas
         self.size = 16 * zoom
