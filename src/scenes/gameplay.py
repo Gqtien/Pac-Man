@@ -5,8 +5,7 @@ from models.world import respawn
 from render import glyphs, images_size, put_images
 from systems import Outcome, step
 from .base import Scene, Push, Transition, Reset
-from .death import Death
-from .win import Win
+from .end import Death, Win
 from .pause import Pause
 from assets import (
     DOOR,

@@ -5,9 +5,10 @@ from assets import Assets, FontColor
 from config import Config
 from render import put_lines_centered
 from .base import Scene, Pop, Transition
+from abc import ABC, abstractmethod
 
 
-class Win(Scene):
+class EndScene(Scene, ABC):
     def __init__(self, config: Config, assets: Assets, score: int) -> None:
         self.config = config
         self.assets = assets
@@ -32,6 +33,32 @@ class Win(Scene):
             self.name_buffer = self.name_buffer[:10]
         return None
 
+    @abstractmethod
+    def draw(self, canvas: Canvas) -> None:
+        ...
+
+
+class Death(EndScene):
+    def draw(self, canvas: Canvas) -> None:
+        canvas.delete("all")
+        w, h = canvas.winfo_width(), canvas.winfo_height()
+        title = self.assets.fonts.fit(h / 16)[FontColor.RED]
+        sub = self.assets.fonts.fit(h / 32)[FontColor.WHITE]
+        put_lines_centered(
+            [
+                ("You Died", title),
+                (f"score - {self.score}", sub),
+                (f"highscore - {self.highscore}", sub),
+                ('Press "Space" to Retry', sub)
+            ],
+            canvas,
+            w / 2,
+            h / 2,
+            gap=h / 32,
+        )
+
+
+class Win(EndScene):
     def draw(self, canvas: Canvas) -> None:
         canvas.delete("all")
         w, h = canvas.winfo_width(), canvas.winfo_height()
