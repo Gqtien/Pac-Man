@@ -5,7 +5,7 @@ from models.world import respawn
 from render import glyphs, images_size, put_images
 from systems import Outcome, step
 from .base import Scene, Push, Transition, Reset
-from .end import Death, Win
+from scenes.factories import SceneFactories
 from .pause import Pause
 from assets import (
     DOOR,
@@ -35,9 +35,12 @@ from models import (
 
 
 class Gameplay(Scene):
-    def __init__(self, config: Config, assets: Assets) -> None:
+    def __init__(
+        self, factories: SceneFactories, config: Config, assets: Assets
+    ) -> None:
         self.config = config
         self.assets = assets
+        self.factories = factories
         self.world = new_world(new_map())
 
     def update(self, dt: float, keys: set[str]) -> Transition:
@@ -47,7 +50,9 @@ class Gameplay(Scene):
             case Outcome.LOST:
                 score = self.world.score
                 self.world = new_world(new_map())
-                return Push(Death(self.config, self.assets, score))
+                return Push(
+                    self.factories.dead(self.config, self.assets, score)
+                )
             case Outcome.DIED:
                 self.world = respawn(self.world)
             case Outcome.WON:
@@ -56,7 +61,9 @@ class Gameplay(Scene):
                     return None
                 score = self.world.score
                 self.world = new_world(new_map())
-                return Reset(Win(self.config, self.assets, score))
+                return Reset(
+                    self.factories.win(self.config, self.assets, score)
+                )
         return None
 
     def draw(self, canvas: Canvas) -> None:

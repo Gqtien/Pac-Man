@@ -1,31 +1,44 @@
-from tkinter import Canvas
+from tkinter import Canvas, PhotoImage
 from .base import Scene, Transition, Push
 from config import Config
 from assets import Assets, FontColor
-from .gameplay import Gameplay
+from scenes.factories import SceneFactories
 from render import put_lines_centered
+from systems.highscore import load_highscore, HighScore
 
 
 class Main(Scene):
-    def __init__(self, config: Config, assets: Assets) -> None:
+    def __init__(
+            self, factories: SceneFactories, config: Config, assets: Assets
+    ) -> None:
         self.config = config
         self.assets = assets
+        self.factories = factories
+        self.highscore: HighScore = load_highscore(config.highscore_filepath)
 
     def update(self, dt: float, keys: set[str]) -> Transition:
         if "space" in keys:
-            return Push(Gameplay(self.config, self.assets))
+            return Push(
+                self.factories.gameplay(self.config, self.assets)
+            )
         return None
 
     def draw(self, canvas: Canvas) -> None:
         canvas.delete("all")
         w, h = canvas.winfo_width(), canvas.winfo_height()
-        title = self.assets.fonts.fit(h / 16)[FontColor.WHITE]
-        sub = self.assets.fonts.fit(h / 32)[FontColor.BEIGE]
+        title = self.assets.fonts.fit(h / 16)[FontColor.YELLOW]
+        sub = self.assets.fonts.fit(h / 32)[FontColor.WHITE]
+        highscore_table = self.assets.fonts.fit(h / 32)[FontColor.CYAN]
+        lines:  list[tuple[str, dict[str, PhotoImage]]] = [("Pacman", title)]
+        lines.append(("", title))
+        lines.extend(
+            (f"{name:10} - {score:07}", highscore_table)
+            for name, score in self.highscore.items()
+        )
+        lines.append(("", title))
+        lines.append(('Press "Space" to play', sub))
         put_lines_centered(
-            [
-                ("Pacman", title),
-                ('Press "Space" to play', sub)
-            ],
+            lines,
             canvas,
             w / 2,
             h / 2,

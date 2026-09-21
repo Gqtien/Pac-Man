@@ -1,28 +1,40 @@
+from scenes.factories import SceneFactories
 from assets.font import LINES
-from systems.highscore import load_highscore, save_highscore
-from tkinter import Canvas
+from tkinter import Canvas, PhotoImage
 from assets import Assets, FontColor
 from config import Config
 from render import put_lines_centered
-from .base import Scene, Pop, Transition
+from .base import Scene, Transition, Reset
 from abc import ABC, abstractmethod
+from systems.highscore import load_highscore, update_highscore, HighScore
 
 
 class EndScene(Scene, ABC):
-    def __init__(self, config: Config, assets: Assets, score: int) -> None:
+    def __init__(
+            self,
+            factories: SceneFactories,
+            config: Config,
+            assets: Assets,
+            score: int
+    ) -> None:
         self.config = config
         self.assets = assets
+        self.factories = factories
         self.score = score
-        self.highscore = load_highscore(config.highscore_filepath)
         self.name_buffer: str = ""
-        if self.score >= self.highscore:
-            # New highscore !
-            self.highscore = self.score
-            save_highscore(self.highscore, config.highscore_filepath)
 
     def update(self, dt: float, keys: set[str]) -> Transition:
-        if "space" in keys:
-            return Pop()
+        if "Return" in keys:
+            highscore: HighScore = load_highscore(
+                self.config.highscore_filepath
+            )
+            update_highscore(
+                highscore,
+                self.name_buffer,
+                self.score,
+                self.config.highscore_filepath
+            )
+            return Reset(self.factories.main(self.config, self.assets))
         if "BackSpace" in keys:
             self.name_buffer = self.name_buffer[:-1]
         for k in keys:
@@ -44,18 +56,12 @@ class Death(EndScene):
         w, h = canvas.winfo_width(), canvas.winfo_height()
         title = self.assets.fonts.fit(h / 16)[FontColor.RED]
         sub = self.assets.fonts.fit(h / 32)[FontColor.WHITE]
-        put_lines_centered(
-            [
-                ("You Died", title),
-                (f"score - {self.score}", sub),
-                (f"highscore - {self.highscore}", sub),
-                ('Press "Space" to Retry', sub)
-            ],
-            canvas,
-            w / 2,
-            h / 2,
-            gap=h / 32,
-        )
+        lines:  list[tuple[str, dict[str, PhotoImage]]] = [
+            ("You Died", title),
+            (f"score - {self.score}", sub),
+            ('Press "Space" to Retry', sub),
+        ]
+        put_lines_centered(lines, canvas, w / 2, h / 2, gap=h / 32)
 
 
 class Win(EndScene):
@@ -64,16 +70,10 @@ class Win(EndScene):
         w, h = canvas.winfo_width(), canvas.winfo_height()
         title = self.assets.fonts.fit(h / 16)[FontColor.YELLOW]
         sub = self.assets.fonts.fit(h / 32)[FontColor.WHITE]
-        put_lines_centered(
-            [
-                ("You Won !", title),
-                (f"score - {self.score}", sub),
-                (f"highscore - {self.highscore}", sub),
-                (f"name:  {self.name_buffer:->10}", sub),
-                ('Press "Space" to Retry', sub)
-            ],
-            canvas,
-            w / 2,
-            h / 2,
-            gap=h / 32,
-        )
+        lines: list[tuple[str, dict[str, PhotoImage]]] = [
+            ("You Won !", title),
+            (f"score - {self.score}", sub),
+            (f"name:  {self.name_buffer:->10}", sub),
+            ('Press "Enter" to validate', sub),
+        ]
+        put_lines_centered(lines, canvas, w / 2, h / 2, gap=h / 32)
