@@ -1,15 +1,13 @@
-import config
 from tkinter import Canvas, PhotoImage
 from typing import Callable
 from config import Config
 from models.world import respawn
 from render import glyphs, images_size, put_images
 from systems import Outcome, step
-from .base import Scene
+from .base import Scene, Push, Transition, Reset
 from .death import Death
 from .win import Win
 from .pause import Pause
-from .transition import Push, Transition, Reset
 from assets import (
     DOOR,
     FRAME,

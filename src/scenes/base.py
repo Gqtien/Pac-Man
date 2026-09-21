@@ -1,6 +1,8 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from tkinter import Canvas
-from .transition import Transition
+from typing import TypeAlias
 
 
 class Scene(ABC):
@@ -9,3 +11,21 @@ class Scene(ABC):
 
     @abstractmethod
     def draw(self, canvas: Canvas) -> None: ...
+
+
+@dataclass(frozen=True)
+class Push():
+    scene: Scene
+
+
+@dataclass(frozen=True)
+class Pop:
+    ...
+
+
+@dataclass(frozen=True)
+class Reset():
+    scene: Scene
+
+
+Transition: TypeAlias = Push | Pop | Reset | None

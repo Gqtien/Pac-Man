@@ -3,8 +3,7 @@ from tkinter import Canvas
 from assets import Assets, FontColor
 from config import Config
 from render import put_lines_centered
-from .base import Scene
-from .transition import Pop, Transition
+from .base import Scene, Pop, Transition
 
 
 class Death(Scene):

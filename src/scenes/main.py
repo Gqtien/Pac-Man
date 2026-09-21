@@ -1,6 +1,5 @@
 from tkinter import Canvas
-from .transition import Transition, Push
-from .base import Scene
+from .base import Scene, Transition, Push
 from config import Config
 from assets import Assets, FontColor
 from .gameplay import Gameplay
@@ -15,6 +14,7 @@ class Main(Scene):
     def update(self, dt: float, keys: set[str]) -> Transition:
         if "space" in keys:
             return Push(Gameplay(self.config, self.assets))
+        return None
 
     def draw(self, canvas: Canvas) -> None:
         canvas.delete("all")

@@ -1,6 +1,7 @@
 from pathlib import Path
 import base64
 
+
 def load_highscore(filepath: str) -> int:
     path = Path(filepath)
     if not path.exists():

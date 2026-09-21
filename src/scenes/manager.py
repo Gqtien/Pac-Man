@@ -1,7 +1,6 @@
 import time
 from tkinter import Canvas, Event, Tk
-from .base import Scene
-from .transition import Pop, Push, Reset, Transition
+from .base import Scene, Pop, Push, Reset, Transition
 
 
 class SceneManager:
@@ -38,7 +37,7 @@ class SceneManager:
         dt, self.last = now - self.last, now
         keys, self.keys = self.keys, set()
 
-        transition = self.top.update(dt, keys)
+        transition: Transition = self.top.update(dt, keys)
         self.apply(transition)
         if self.stack == [] and self.initial_scene is not None:
             self.stack.append(self.initial_scene)
@@ -48,11 +47,11 @@ class SceneManager:
 
     def apply(self, transition: Transition) -> None:
         match transition:
-            case Push(scene):
-                self.stack.append(scene)
+            case Push():
+                self.stack.append(transition.scene)
             case Pop():
                 self.stack.pop()
-            case Reset(scene):
-                self.stack = [scene]
+            case Reset():
+                self.stack = [transition.scene]
             case None:
                 pass

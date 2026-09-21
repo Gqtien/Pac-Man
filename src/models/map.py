@@ -1,6 +1,6 @@
 from typing import TypeAlias
 from .direction import Direction
-from mazegenerator import MazeGenerator
+from mazegenerator import MazeGenerator  # type: ignore[import-untyped]
 
 Maze: TypeAlias = list[list[int]]
 Map: TypeAlias = list[list[int]]
