@@ -26,18 +26,16 @@ def update_highscore(
     highscore: HighScore, name: str, score: int, filepath: str
 ) -> HighScore:
     highscore[name] = score
-    highscore.fromkeys
-    # sort
-    sorted_names: list[str] = sorted(
-        highscore, key=lambda k: highscore[k]
-    )
-    for n in reversed(sorted_names):
-        highscore.move_to_end(n)
-    # limit length to 10
-    for i, k in enumerate(highscore.copy().keys()):
-        print(i, k)
+    highscore.move_to_end(name, last=False)
+    keys = list(highscore.keys())
+    # shift new entry to the right until it's sorted
+    for k in reversed(keys[1:]):
+        if highscore[k] > highscore[name]:
+            highscore.move_to_end(k, last=False)
+    # if more than ten, remove last elements
+    for i, k in enumerate(highscore.copy()):
         if i >= 10:
-            del highscore[n]
+            del highscore[k]
     save_highscore(highscore, filepath)
     return highscore
 
