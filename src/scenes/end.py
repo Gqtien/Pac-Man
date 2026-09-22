@@ -24,7 +24,7 @@ class EndScene(Scene, ABC):
         self.name_buffer: str = ""
 
     def update(self, dt: float, keys: set[str]) -> Transition:
-        if "Return" in keys:
+        if "Return" in keys and self.name_buffer:
             highscore: HighScore = load_highscore(
                 self.config.highscore_filepath
             )
