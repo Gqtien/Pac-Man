@@ -60,7 +60,8 @@ class Death(EndScene):
         lines:  list[tuple[str, dict[str, Image]]] = [
             ("You Died", title),
             (f"score - {self.score}", sub),
-            ('Press "Space" to Retry', sub),
+            (f"name:  {self.name_buffer:->10}", sub),
+            ('Press "Enter" to validate', sub),
         ]
         put_lines_centered(lines, framebuffer, w / 2, h / 2, gap=h / 32)
 

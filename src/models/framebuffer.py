@@ -41,6 +41,8 @@ class FrameBuffer:
         self.origin = self.origin[0] + dx, self.origin[1] + dy
 
     def put_image(self, image: Image, x: int | float, y: int | float) -> None:
+        if x < 0 or y < 0:
+            return
         x += self.origin[0]
         y += self.origin[1]
         x,  y = int(x), int(y)

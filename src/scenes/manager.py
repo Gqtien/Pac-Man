@@ -47,15 +47,22 @@ class SceneManager:
         return self.stack[-1]
 
     def on_key(self, keycode: int, _: None) -> None:
-        print(keycode)
         key = chr(keycode)
         match keycode:
-            case 65307:
-                key = "Return"
             case 65293:
                 key = "Return"
             case 65288:
                 key = "BackSpace"
+            case 65364:
+                key = "Down"
+            case 65361:
+                key = "Left"
+            case 65362:
+                key = "Up"
+            case 65363:
+                key = "Right"
+            case 65307:
+                key = "Escape"
         self.keys.add(key)
 
     def tick(self, _: None) -> None:
