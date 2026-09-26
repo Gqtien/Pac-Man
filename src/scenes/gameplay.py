@@ -128,8 +128,8 @@ class Gameplay(Scene):
         self.draw_sprite(pacman, frames[min(index, len(frames) - 1)])
 
     def draw_sprite(self, entity: Entity, frame: Image) -> None:
-        x = entity.pos.x + entity.direction.dx * entity.progress + 0.5
-        y = entity.pos.y + entity.direction.dy * entity.progress + 0.5
+        x = entity.pos.x + entity.direction.dx * entity.progress
+        y = entity.pos.y + entity.direction.dy * entity.progress
         self.framebuffer.put_image(frame, x * self.size, y * self.size)
 
     def draw_map(self) -> None:
