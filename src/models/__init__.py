@@ -6,6 +6,7 @@ from .world import World, new_world, next_level
 from .items import Items, Item, init_items
 from .speed import Speed, Speeds, speeds
 from .house import dot_limit, starve_limit
+from .framebuffer import FrameBuffer
 from .map import (
     Map,
     Maze,
@@ -21,6 +22,7 @@ from .map import (
 )
 
 __all__ = [
+    "FrameBuffer",
     "Color",
     "Direction",
     "Entity",

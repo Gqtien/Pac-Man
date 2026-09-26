@@ -1,5 +1,5 @@
 from enum import Enum
-from tkinter import PhotoImage
+from PIL.Image import Image
 from typing import TypeAlias
 from models import Direction
 from .sheet import SpriteSheet
@@ -46,7 +46,7 @@ class Wall(Enum):
     DOOR_W_BOTTOM = (15, 3)
 
 
-Walls: TypeAlias = dict[Wall, PhotoImage]
+Walls: TypeAlias = dict[Wall, Image]
 
 Frame: TypeAlias = dict[
     tuple[Direction, Direction],

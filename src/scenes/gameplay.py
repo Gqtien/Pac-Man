@@ -1,5 +1,5 @@
-from tkinter import Canvas, PhotoImage
 from typing import Callable
+from PIL.Image import Image
 from config import Config
 from models.world import respawn
 from render import glyphs, images_size, put_images
@@ -30,7 +30,7 @@ from models import (
     next_level,
     is_door,
     is_house,
-    is_solid,
+    is_solid, FrameBuffer,
 )
 
 
@@ -66,10 +66,10 @@ class Gameplay(Scene):
                 )
         return None
 
-    def draw(self, canvas: Canvas) -> None:
-        canvas.delete("all")
-        zoom = self.zoom(canvas)
-        self.canvas = canvas
+    def draw(self, framebuffer: FrameBuffer) -> None:
+        framebuffer.clear(b"\x00\x00\x00\xFF")
+        zoom = self.zoom(framebuffer)
+        self.framebuffer = framebuffer
         self.size = 16 * zoom
         self.walls = self.assets.walls[zoom]
         sprites = self.assets.sprites[zoom]
@@ -86,16 +86,16 @@ class Gameplay(Scene):
         self.draw_hud(sprites)
         self.center()
 
-    def zoom(self, canvas: Canvas) -> int:
+    def zoom(self, framebuffer: FrameBuffer) -> int:
         rows, cols = len(self.world.map), len(self.world.map[0])
-        w, h = canvas.winfo_width(), canvas.winfo_height()
+        w, h = framebuffer.width, framebuffer.height
         return max(1, min(w // (16 * cols), h // (16 * (rows + 2))))
 
     def center(self) -> None:
         rows, cols = len(self.world.map), len(self.world.map[0])
-        dx = (self.canvas.winfo_width() - cols * self.size) // 2
-        dy = (self.canvas.winfo_height() - (rows + 2) * self.size) // 2
-        self.canvas.move("all", dx, dy + self.size)
+        dx = (self.framebuffer.width - cols * self.size) // 2
+        dy = (self.framebuffer.height - (rows + 2) * self.size) // 2
+        self.framebuffer.move(dx, dy + self.size)
 
     @staticmethod
     def ghost_animation(ghost: Ghost, sprites: Sprites) -> Animation:
@@ -127,10 +127,10 @@ class Gameplay(Scene):
         index = int(pacman.death / self.config.anim_speed * len(frames))
         self.draw_sprite(pacman, frames[min(index, len(frames) - 1)])
 
-    def draw_sprite(self, entity: Entity, frame: PhotoImage) -> None:
+    def draw_sprite(self, entity: Entity, frame: Image) -> None:
         x = entity.pos.x + entity.direction.dx * entity.progress + 0.5
         y = entity.pos.y + entity.direction.dy * entity.progress + 0.5
-        self.canvas.create_image(x * self.size, y * self.size, image=frame)
+        self.framebuffer.put_image(frame, x * self.size, y * self.size)
 
     def draw_map(self) -> None:
         for y, line in enumerate(self.world.map):
@@ -175,7 +175,7 @@ class Gameplay(Scene):
         half = self.size / 2
         px = self.size * x + (half if h is Direction.EAST else 0)
         py = self.size * y + (half if v is Direction.SOUTH else 0)
-        self.canvas.create_image(px, py, image=self.walls[tile], anchor="nw")
+        self.framebuffer.put_image(self.walls[tile], px, py)
 
     def cell_at(self, x: int, y: int) -> int:
         map = self.world.map
@@ -185,11 +185,8 @@ class Gameplay(Scene):
 
     def draw_items(self, sprites: Sprites) -> None:
         for (x, y), item in self.world.items.items():
-            self.canvas.create_image(
-                x * self.size,
-                y * self.size,
-                image=sprites.items[item],
-                anchor="nw",
+            self.framebuffer.put_image(
+                sprites.items[item], x * self.size, y * self.size,
             )
 
     def draw_hud(self, sprites: Sprites) -> None:
@@ -203,7 +200,7 @@ class Gameplay(Scene):
 
     def put_hud(
         self,
-        images: list[PhotoImage],
+        images: list[Image],
         cx: float,
         cy: float,
         right: bool = False,
@@ -211,4 +208,4 @@ class Gameplay(Scene):
         width, height = images_size(images)
         x = cx * self.size - (width if right else 0)
         y = cy * self.size + (self.size - height) / 2
-        put_images(images, self.canvas, x, y)
+        put_images(images, self.framebuffer, int(x), int(y))

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from tkinter import Canvas
+from models import FrameBuffer
 from typing import TypeAlias
 
 
@@ -10,7 +10,7 @@ class Scene(ABC):
     def update(self, dt: float, keys: set[str]) -> Transition: ...
 
     @abstractmethod
-    def draw(self, canvas: Canvas) -> None: ...
+    def draw(self, framebuffer: FrameBuffer) -> None: ...
 
 
 @dataclass(frozen=True)

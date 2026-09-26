@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from tkinter import PhotoImage
 from typing import TypeAlias
 from models import Direction, GhostPersonality, Item
 from .sheet import SpriteSheet
+from PIL.Image import Image
 
-Animation: TypeAlias = list[PhotoImage]
+Animation: TypeAlias = list[Image]
 
 
 @dataclass(frozen=True)
@@ -14,9 +14,9 @@ class Sprites:
     ghost: dict[GhostPersonality, dict[Direction, Animation]]
     frightened: Animation
     flashing: Animation
-    eyes: dict[Direction, PhotoImage]
-    ghost_score: dict[int, PhotoImage]
-    items: dict[Item, PhotoImage]
+    eyes: dict[Direction, Image]
+    ghost_score: dict[int, Image]
+    items: dict[Item, Image]
 
 
 def load_sprites(sheet: SpriteSheet) -> Sprites:
