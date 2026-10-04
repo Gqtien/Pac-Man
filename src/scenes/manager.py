@@ -34,7 +34,8 @@ class SceneManager:
         self.last: float = time.perf_counter()
         self.keys: set[str] = set()
 
-        self.mlx.mlx_key_hook(self.window, self.on_key, None)
+        self.mlx.mlx_hook(self.window, 2, 1, self.on_key_press, None)
+        self.mlx.mlx_hook(self.window, 3, 2, self.on_key_release, None)
         self.mlx.mlx_loop_hook(self.mlx_ptr, self.tick, None)
 
     def start(self, initial_scene: Scene) -> None:
@@ -46,7 +47,7 @@ class SceneManager:
     def top(self) -> Scene:
         return self.stack[-1]
 
-    def on_key(self, keycode: int, _: None) -> None:
+    def get_key(self, keycode: int) -> str:
         key = chr(keycode)
         match keycode:
             case 65293:
@@ -63,7 +64,15 @@ class SceneManager:
                 key = "Right"
             case 65307:
                 key = "Escape"
-        self.keys.add(key)
+        return key
+
+    def on_key_release(self, keycode: int, _: None) -> None:
+        key: str = self.get_key(keycode)
+        if key in self.keys:
+            self.keys.remove(key)
+
+    def on_key_press(self, keycode: int, _: None) -> None:
+        self.keys.add(self.get_key(keycode))
 
     def tick(self, _: None) -> None:
         if not self.stack:
