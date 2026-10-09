@@ -4,7 +4,7 @@ from .vec import Vec2
 from .world import World, new_world, next_level, respawn
 from .items import Items, Item, init_items
 from .speed import Speed, Speeds, speeds
-from .house import dot_limit, starve_limit
+from .house import GLOBAL_DOT_LIMITS, dot_limit, starve_limit
 from .keys import Keys
 from .map import (
     Map,
@@ -51,5 +51,6 @@ __all__ = [
     "speeds",
     "starve_limit",
     "dot_limit",
+    "GLOBAL_DOT_LIMITS",
     "respawn",
 ]

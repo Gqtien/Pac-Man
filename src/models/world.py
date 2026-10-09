@@ -17,6 +17,7 @@ class World:
     level: int = 1
     freeze: float = 0.0
     multiplier: int = 1
+    global_dots: int | None = None
 
 
 def new_world(map: Map, lives: int) -> World:
@@ -30,10 +31,15 @@ def new_world(map: Map, lives: int) -> World:
 
 
 def respawn(world: World) -> World:
+    dots = {ghost.personality: ghost.dots for ghost in world.ghosts}
+    ghosts = spawn_ghosts(world.map)
+    for ghost in ghosts:
+        ghost.dots = dots[ghost.personality]
     return replace(
         world,
         pacman=spawn_pacman(world.map),
-        ghosts=spawn_ghosts(world.map),
+        ghosts=ghosts,
+        global_dots=0,
     )
 
 

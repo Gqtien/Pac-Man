@@ -17,7 +17,9 @@ def eat(world: World) -> None:
     world.pacman.stall += item.stall
     if item is Item.PACGUM:
         world.pacman.starve = 0.0
-        if (ghost := preferred(world)) is not None:
+        if world.global_dots is not None:
+            world.global_dots += 1
+        elif (ghost := preferred(world)) is not None:
             ghost.dots += 1
     if item is Item.SUPER_PACGUM:
         for ghost in world.ghosts:

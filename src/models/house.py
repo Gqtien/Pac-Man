@@ -22,6 +22,13 @@ DOT_LIMITS: dict[int, dict[GhostPersonality, int]] = {
     },
 }
 
+GLOBAL_DOT_LIMITS: dict[GhostPersonality, int] = {
+    GhostPersonality.BLINKY: 0,
+    GhostPersonality.PINKY: 7,
+    GhostPersonality.INKY: 17,
+    GhostPersonality.CLYDE: 32,
+}
+
 STARVE_LIMITS: dict[int, float] = {1: 4.0, 5: 3.0}
 
 
