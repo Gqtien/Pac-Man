@@ -80,7 +80,7 @@ class SceneManager:
             return
 
         now = time.perf_counter()
-        dt, self.last = now - self.last, now
+        dt, self.last = min(now - self.last, 0.1), now
         keys, self.keys = self.keys, set()
 
         framebuffer = FrameBuffer(self.mlx, self.image_a)

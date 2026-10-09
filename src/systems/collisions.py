@@ -33,6 +33,8 @@ def eat(world: World) -> None:
 
 def collide(world: World, config: Config) -> None:
     for ghost in world.ghosts:
+        if not world.pacman.alive:
+            break
         if touching(world.pacman, ghost, config.entity_hitbox):
             apply(world, ghost)
 

@@ -5,7 +5,7 @@ from assets import Assets, FontColor
 from config import Config
 from render import put_lines_centered
 from .base import Scene, Transition, Reset
-from abc import ABC, abstractmethod
+from abc import ABC
 from systems.highscore import load_highscore, update_highscore, HighScore
 from PIL.Image import Image
 
@@ -46,10 +46,6 @@ class EndScene(Scene, ABC):
             self.name_buffer = self.name_buffer[:10]
         return None
 
-    @abstractmethod
-    def draw(self, framebuffer: FrameBuffer) -> None:
-        ...
-
 
 class Death(EndScene):
     def draw(self, framebuffer: FrameBuffer) -> None:
@@ -59,8 +55,8 @@ class Death(EndScene):
         sub = self.assets.fonts.fit(h / 32)[FontColor.WHITE]
         lines:  list[tuple[str, dict[str, Image]]] = [
             ("You Died", title),
-            (f"score - {self.score}", sub),
-            (f"name:  {self.name_buffer:->10}", sub),
+            (f"Score - {self.score}", sub),
+            (f"Name:  {self.name_buffer:->10}", sub),
             ('Press "Enter" to validate', sub),
         ]
         put_lines_centered(lines, framebuffer, w / 2, h / 2, gap=h / 32)
@@ -74,8 +70,8 @@ class Win(EndScene):
         sub = self.assets.fonts.fit(h / 32)[FontColor.WHITE]
         lines: list[tuple[str, dict[str, Image]]] = [
             ("You Won !", title),
-            (f"score - {self.score}", sub),
-            (f"name:  {self.name_buffer:->10}", sub),
+            (f"Score - {self.score}", sub),
+            (f"Name:  {self.name_buffer:->10}", sub),
             ('Press "Enter" to validate', sub),
         ]
         put_lines_centered(lines, framebuffer, w / 2, h / 2, gap=h / 32)

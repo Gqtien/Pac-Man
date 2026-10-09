@@ -5,6 +5,8 @@ def move(
     entity: Entity, world: World, speed: float, dt: float,
     door_open: bool = False
 ) -> None:
+    if entity.direction.is_still:
+        entity.progress = 0.0
     # update direction from wanted
     if entity.just_moved and \
        not entity.wanted.is_still and \

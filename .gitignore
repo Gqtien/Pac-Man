@@ -212,3 +212,6 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 .zed
+
+# Pac-Man runtime data
+highscore.json
