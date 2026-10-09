@@ -25,7 +25,7 @@ def outcome(world: World, config: Config) -> Outcome:
     if not world.pacman.alive:
         if world.pacman.death < config.anim_speed:
             return Outcome.CONTINUE
-        return Outcome.LOST if not world.lives else Outcome.DIED
+        return Outcome.LOST if world.lives <= 0 else Outcome.DIED
     if not world.items:
         return Outcome.WON
     return Outcome.CONTINUE
