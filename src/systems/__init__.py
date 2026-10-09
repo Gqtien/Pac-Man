@@ -1,6 +1,7 @@
 from storage import Config
 from models import World
 from .timer import spend
+from .cheats import step as cheats_step
 from .pacman import step as pacman_step
 from .ghost import step as ghost_step
 from .collisions import step as collisions_step
@@ -9,8 +10,7 @@ from .outcome import Outcome
 
 
 def step(world: World, config: Config, dt: float, keys: set[int]) -> Outcome:
-    if config.cheat_win_key in keys:
-        return Outcome.WON
+    cheats_step(world, config, keys)
     world.freeze, dt = spend(world.freeze, dt)
     pacman_step(world, config, dt, keys)
     if world.pacman.alive:

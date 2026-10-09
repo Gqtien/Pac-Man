@@ -1,3 +1,4 @@
+from .cheat import Cheat
 from .direction import Direction
 from .entity import Entity, Ghost, GhostPersonality, GhostState, Pacman
 from .vec import Vec2
@@ -53,4 +54,5 @@ __all__ = [
     "dot_limit",
     "GLOBAL_DOT_LIMITS",
     "respawn",
+    "Cheat",
 ]

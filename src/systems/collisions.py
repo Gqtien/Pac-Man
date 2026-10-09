@@ -1,5 +1,5 @@
 from storage import Config
-from models import World, Item, GhostState, Entity, Ghost
+from models import Cheat, World, Item, GhostState, Entity, Ghost
 from .house import preferred
 
 
@@ -57,7 +57,7 @@ def apply(world: World, ghost: Ghost) -> None:
         case GhostState.DEAD | GhostState.EATEN:
             pass
         case GhostState.CHASE | GhostState.SCATTER | GhostState.LEAVING:
-            if world.pacman.invincible:
+            if Cheat.INVINCIBLE in world.cheats:
                 return
             world.pacman.alive = False
             world.lives -= 1

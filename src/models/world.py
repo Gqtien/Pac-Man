@@ -1,4 +1,5 @@
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
+from .cheat import Cheat
 from .direction import Direction
 from .entity import Ghost, GhostPersonality, GhostState, Pacman
 from .items import Items, init_items
@@ -18,6 +19,7 @@ class World:
     freeze: float = 0.0
     multiplier: int = 1
     global_dots: int | None = None
+    cheats: set[Cheat] = field(default_factory=set)
 
 
 def new_world(map: Map, lives: int) -> World:
@@ -48,6 +50,7 @@ def next_level(world: World, map: Map) -> World:
         new_world(map, world.lives),
         score=world.score,
         level=world.level + 1,
+        cheats=world.cheats,
     )
 
 
