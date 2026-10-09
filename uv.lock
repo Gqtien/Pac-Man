@@ -233,10 +233,10 @@ wheels = [
 
 [[package]]
 name = "mlx"
-version = "2.4"
-source = { path = "mlx-2.4-py3-none-any.whl" }
+version = "2.2"
+source = { path = "mlx-2.2-py3-none-any.whl" }
 wheels = [
-    { filename = "mlx-2.4-py3-none-any.whl", hash = "sha256:5231dd69baba62b3690437046781307c68ffc2a9162fe3739af72c7647f2b21e" },
+    { filename = "mlx-2.2-py3-none-any.whl", hash = "sha256:7a1a44b50b6295f574522ba1a1e589632c6299d193dec57c951e8fdfb3337195" },
 ]
 
 [[package]]
@@ -334,7 +334,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "mazegenerator", path = "mazegenerator-2.1.0-py3-none-any.whl" },
-    { name = "mlx", path = "mlx-2.4-py3-none-any.whl" },
+    { name = "mlx", path = "mlx-2.2-py3-none-any.whl" },
     { name = "pillow", specifier = ">=12.3.0" },
 ]
 
