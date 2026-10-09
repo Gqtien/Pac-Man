@@ -46,7 +46,6 @@ class EndScene(Scene, ABC):
         return None
 
 
-
 class Death(EndScene):
     def draw(self, canvas: Canvas) -> None:
         canvas.delete("all")
@@ -55,8 +54,9 @@ class Death(EndScene):
         sub = self.assets.fonts.fit(h / 32)[FontColor.WHITE]
         lines:  list[tuple[str, dict[str, PhotoImage]]] = [
             ("You Died", title),
-            (f"score - {self.score}", sub),
-            ('Press "Space" to Retry', sub),
+            (f"Score - {self.score}", sub),
+            (f"Name:  {self.name_buffer:->10}", sub),
+            ('Press "Enter" to validate', sub),
         ]
         put_lines_centered(lines, canvas, w / 2, h / 2, gap=h / 32)
 
@@ -69,8 +69,8 @@ class Win(EndScene):
         sub = self.assets.fonts.fit(h / 32)[FontColor.WHITE]
         lines: list[tuple[str, dict[str, PhotoImage]]] = [
             ("You Won !", title),
-            (f"score - {self.score}", sub),
-            (f"name:  {self.name_buffer:->10}", sub),
+            (f"Score - {self.score}", sub),
+            (f"Name:  {self.name_buffer:->10}", sub),
             ('Press "Enter" to validate', sub),
         ]
         put_lines_centered(lines, canvas, w / 2, h / 2, gap=h / 32)
