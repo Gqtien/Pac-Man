@@ -24,7 +24,7 @@ class Entity:
 @dataclass
 class Pacman(Entity):
     alive: bool = True
-    is_invisible: bool = False
+    invincible: bool = False
     death: float = 0.0
     stall: float = 0.0
     starve: float = 0.0
@@ -54,9 +54,9 @@ class GhostState(Enum):
 @dataclass
 class Ghost(Entity):
     personality: GhostPersonality
-    home: Vec2
+    corner: Vec2
     spawn: Vec2
-    frightened_timer: float = 0.0
+    frightened: float = 0.0
     state: GhostState = GhostState.HOUSE
     dots: int = 0
-    value: int = 0
+    bounty: int = 0

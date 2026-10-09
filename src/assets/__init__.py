@@ -18,10 +18,10 @@ class Assets:
 
 def load_assets(config: Config) -> Assets:
     return Assets(
-        Scaled(SpriteSheet.load(config.spritesheet, cell=16), load_sprites),
-        Scaled(SpriteSheet.load(config.font, cell=8), load_fonts),
-        Scaled(SpriteSheet.load(config.walls, cell=8), load_walls),
-        Resized(load_image(config.overlay)),
+        Scaled(SpriteSheet.load(config.spritesheet_path), load_sprites),
+        Scaled(SpriteSheet.load(config.font_path, cell=8), load_fonts),
+        Scaled(SpriteSheet.load(config.walls_path, cell=8), load_walls),
+        Resized(load_image(config.overlay_path)),
     )
 
 

@@ -19,7 +19,7 @@ class Main(Scene):
         self.config = config
         self.assets = assets
         self.factories = factories
-        self.highscores = load_highscores(config.highscore_filepath)
+        self.highscores = load_highscores(config.highscore_path)
 
     def update(self, dt: float, keys: set[int]) -> Transition:
         if Keys.Q in keys:

@@ -1,5 +1,4 @@
 from storage import Config
-from models.world import respawn
 from render import (
     FrameBuffer,
     Grid,
@@ -14,7 +13,7 @@ from .base import Scene, Push, Transition, Reset
 from scenes.factories import SceneFactories
 from .pause import Pause
 from assets import Assets, FontColor, Sprites
-from models import Direction, Keys, new_map, new_world, next_level
+from models import Direction, Keys, new_map, new_world, next_level, respawn
 
 
 class Gameplay(Scene):
@@ -34,7 +33,7 @@ class Gameplay(Scene):
                 score = self.world.score
                 self.world = new_world(new_map(), self.config.lives)
                 return Push(
-                    self.factories.dead(self.config, self.assets, score)
+                    self.factories.lost(self.config, self.assets, score)
                 )
             case Outcome.DIED:
                 self.world = respawn(self.world)
@@ -45,7 +44,7 @@ class Gameplay(Scene):
                 score = self.world.score
                 self.world = new_world(new_map(), self.config.lives)
                 return Reset(
-                    self.factories.win(self.config, self.assets, score)
+                    self.factories.won(self.config, self.assets, score)
                 )
         return None
 

@@ -3,7 +3,7 @@ from pathlib import Path
 from assets import load_assets
 from storage import load_config
 from scenes.factories import SceneFactories
-from scenes import SceneManager, Main, Gameplay, Win, Death
+from scenes import SceneManager, Main, Gameplay, Won, Lost
 from functools import partial
 
 
@@ -11,8 +11,8 @@ def build_scenes() -> SceneFactories:
     s = SceneFactories()
     s.main = partial(Main, s)
     s.gameplay = partial(Gameplay, s)
-    s.win = partial(Win, s)
-    s.dead = partial(Death, s)
+    s.won = partial(Won, s)
+    s.lost = partial(Lost, s)
     return s
 
 

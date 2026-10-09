@@ -72,7 +72,7 @@ def update_clyde(ghost: Ghost, world: World) -> None:
         ghost.state = GhostState.SCATTER
 
 
-chase_map: dict[GhostPersonality, Callable[[Ghost, World], None]] = {
+CHASE_MAP: dict[GhostPersonality, Callable[[Ghost, World], None]] = {
     GhostPersonality.BLINKY: update_blinky,
     GhostPersonality.PINKY: update_pinky,
     GhostPersonality.INKY: update_inky,
@@ -80,22 +80,22 @@ chase_map: dict[GhostPersonality, Callable[[Ghost, World], None]] = {
 }
 
 
-def update_frightened_dir(ghost: Ghost, maze: Map) -> None:
+def update_frightened_dir(ghost: Ghost, map: Map) -> None:
     possible_dirs = []
     for dir in [dir for dir in Direction if not dir.is_still]:
-        if can_move(ghost.pos, dir, maze):
+        if can_move(ghost.pos, dir, map):
             possible_dirs.append(dir)
     if ghost.direction.opposite in possible_dirs and len(possible_dirs) > 1:
         possible_dirs.remove(ghost.direction.opposite)
     ghost.direction = random.choice(possible_dirs)
 
 
-def idle(ghost: Ghost, maze: Map) -> None:
+def idle(ghost: Ghost, map: Map) -> None:
     options = [
         direction
         for direction in [d for d in Direction if not d.is_still]
         if direction is not ghost.direction.opposite
-        and can_move(ghost.pos, direction, maze)
+        and can_move(ghost.pos, direction, map)
     ]
     ghost.direction = options[0] if options else ghost.direction.opposite
 
@@ -106,11 +106,11 @@ def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
     move(ghost, world, config.speed * factor, dt, door_open)
     animate(ghost, config.anim_speed * factor, dt)
 
-    if ghost.state == GhostState.FRIGHTENED:
-        ghost.frightened_timer -= dt
-        if ghost.frightened_timer <= 0.0:
+    if ghost.state is GhostState.FRIGHTENED:
+        ghost.frightened -= dt
+        if ghost.frightened <= 0.0:
             ghost.state = GhostState.CHASE
-    if ghost.state == GhostState.EATEN and not world.freeze:
+    if ghost.state is GhostState.EATEN and not world.freeze:
         ghost.state = GhostState.DEAD
 
     if ghost.just_moved or ghost.direction is Direction.NONE:
@@ -121,7 +121,7 @@ def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
             case GhostState.LEAVING:
                 ghost.direction = pathfind_to(
                     ghost.pos,
-                    ghost.home,
+                    ghost.corner,
                     world.map,
                     ghost.direction,
                     door_open=True,
@@ -144,10 +144,10 @@ def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
                 update_frightened_dir(ghost, world.map)
             case GhostState.SCATTER:
                 ghost.direction = pathfind_to(
-                    ghost.pos, ghost.home, world.map, ghost.direction
+                    ghost.pos, ghost.corner, world.map, ghost.direction
                 )
-                if ghost.pos == ghost.home:
+                if ghost.pos == ghost.corner:
                     ghost.state = GhostState.CHASE
             case GhostState.CHASE:
-                chase_map[ghost.personality](ghost, world)
+                CHASE_MAP[ghost.personality](ghost, world)
         ghost.just_moved = False

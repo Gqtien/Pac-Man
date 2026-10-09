@@ -27,7 +27,7 @@ def eat(world: World) -> None:
                 GhostState.FRIGHTENED,
             ):
                 ghost.state = GhostState.FRIGHTENED
-                ghost.frightened_timer = 10
+                ghost.frightened = 10
                 world.multiplier = 1
 
 
@@ -48,14 +48,14 @@ def apply(world: World, ghost: Ghost) -> None:
     match ghost.state:
         case GhostState.FRIGHTENED:
             ghost.state = GhostState.EATEN
-            ghost.value = 200 * world.multiplier
-            world.score += ghost.value
+            ghost.bounty = 200 * world.multiplier
+            world.score += ghost.bounty
             world.multiplier *= 2
             world.freeze = 1.0
         case GhostState.DEAD | GhostState.EATEN:
             pass
         case GhostState.CHASE | GhostState.SCATTER | GhostState.LEAVING:
-            if world.pacman.is_invisible:
+            if world.pacman.invincible:
                 return
             world.pacman.alive = False
             world.lives -= 1

@@ -14,7 +14,7 @@ class SpriteSheet:
         self.cell = cell
 
     @classmethod
-    def load(cls, path: Path, cell: int) -> "SpriteSheet":
+    def load(cls, path: Path, cell: int = 16) -> "SpriteSheet":
         return cls(load_image(path), cell)
 
     def zoom(self, scale: int) -> "SpriteSheet":

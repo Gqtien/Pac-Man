@@ -16,13 +16,13 @@ class Config:
     anim_speed: float = 10.0
     entity_hitbox: float = 0.5
     cheat_win_key: Keys = Keys.W
-    cheat_invisible_key: Keys = Keys.I
+    cheat_invincible_key: Keys = Keys.I
     cheat_freeze_ghosts_key: Keys = Keys.F
-    highscore_filepath: Path = Path("saves/highscore.json")
-    spritesheet: Path = Path("assets/spritesheet.png")
-    walls: Path = Path("assets/walls.png")
-    font: Path = Path("assets/font.png")
-    overlay: Path = Path("assets/overlay.png")
+    highscore_path: Path = Path("saves/highscore.json")
+    spritesheet_path: Path = Path("assets/spritesheet.png")
+    walls_path: Path = Path("assets/walls.png")
+    font_path: Path = Path("assets/font.png")
+    overlay_path: Path = Path("assets/pause_overlay.png")
 
 
 def load_config(path: Path) -> Config:

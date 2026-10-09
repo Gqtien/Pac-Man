@@ -5,11 +5,11 @@
   "anim_speed": 10.0,
   "entity_hitbox": 0.5,
   "cheat_win_key": "w",
-  "cheat_invisible_key": "i",
+  "cheat_invincible_key": "i",
   "cheat_freeze_ghosts_key": "f",
-  "highscore_filepath": "saves/highscore.json",
-  "spritesheet": "assets/spritesheet.png",
-  "walls": "assets/walls.png",
-  "font": "assets/font.png",
-  "overlay": "assets/overlay.png"
+  "highscore_path": "saves/highscore.json",
+  "spritesheet_path": "assets/spritesheet.png",
+  "walls_path": "assets/walls.png",
+  "font_path": "assets/font.png",
+  "overlay_path": "assets/pause_overlay.png"
 }

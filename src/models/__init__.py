@@ -1,7 +1,7 @@
 from .direction import Direction
 from .entity import Entity, Ghost, GhostPersonality, GhostState, Pacman
 from .vec import Vec2
-from .world import World, new_world, next_level
+from .world import World, new_world, next_level, respawn
 from .items import Items, Item, init_items
 from .speed import Speed, Speeds, speeds
 from .house import dot_limit, starve_limit
@@ -51,4 +51,5 @@ __all__ = [
     "speeds",
     "starve_limit",
     "dot_limit",
+    "respawn",
 ]

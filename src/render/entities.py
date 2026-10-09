@@ -35,11 +35,11 @@ def ghost_animation(ghost: Ghost, sprites: Sprites) -> Animation:
         case GhostState.DEAD:
             return [sprites.eyes[ghost.direction]]
         case GhostState.EATEN:
-            return [sprites.ghost_score[ghost.value]]
+            return [sprites.ghost_score[ghost.bounty]]
         case GhostState.FRIGHTENED:
             if (
-                ghost.frightened_timer < 3
-                and int(ghost.frightened_timer * 4) % 2 == 0
+                ghost.frightened < 3
+                and int(ghost.frightened * 4) % 2 == 0
             ):
                 return sprites.flashing
             return sprites.frightened

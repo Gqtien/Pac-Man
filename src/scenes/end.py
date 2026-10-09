@@ -33,7 +33,7 @@ class EndScene(Scene):
     def update(self, dt: float, keys: set[int]) -> Transition:
         if Keys.Return in keys and self.name_buffer:
             save_score(
-                self.config.highscore_filepath,
+                self.config.highscore_path,
                 self.name_buffer,
                 self.score,
             )
@@ -61,11 +61,11 @@ class EndScene(Scene):
         put_screen(framebuffer, lines)
 
 
-class Death(EndScene):
+class Lost(EndScene):
     message = "You Died"
     color = FontColor.RED
 
 
-class Win(EndScene):
+class Won(EndScene):
     message = "You Won !"
     color = FontColor.YELLOW
