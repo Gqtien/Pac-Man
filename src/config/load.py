@@ -15,29 +15,26 @@ def load_config(path: Path) -> Config:
         data = json.loads(path.read_text())
     except (OSError, ValueError) as e:
         log.warning(f"{path}: {e}, using default config")
-        save_config(path, config)
         return config
     if not isinstance(data, dict):
         log.warning(f"{path}: expected an object, using default config")
-        save_config(path, config)
         return config
 
-    needs_save: bool = False
+    missing: bool = False
 
     for field in fields(config):
         name, default = field.name, field.default
         if name not in data:
-            needs_save = True
+            missing = True
             continue
 
-        value = data.pop(name)
+        value = data[name]
 
         if not same_type(value, default):
             log.warning(
                 f"{path}: {name!r} must be a {type(default).__name__}, "
                 f"got {type(value).__name__}, using default {default}"
             )
-            needs_save = True
             continue
 
         if isinstance(default, float) and isinstance(value, int):
@@ -45,20 +42,20 @@ def load_config(path: Path) -> Config:
 
         setattr(config, name, value)
 
+    known = {field.name for field in fields(config)}
     for key in data:
-        log.warning(f"{path}: unknown key '{key}' ignored and will be removed")
-        needs_save = True
+        if key not in known:
+            log.warning(f"{path}: unknown key '{key}' ignored")
 
-    if needs_save:
-        save_config(path, config)
+    if missing:
+        save_config(path, {**asdict(Config()), **data})
 
     return config
 
 
-def save_config(path: Path, config: Config) -> None:
+def save_config(path: Path, data: dict[str, Any]) -> None:
     try:
-        config_dict = asdict(config)
-        path.write_text(json.dumps(config_dict, indent=2) + "\n")
+        path.write_text(json.dumps(data, indent=2) + "\n")
     except OSError as e:
         log.error(f"Failed to write config to {path}: {e}")
 
