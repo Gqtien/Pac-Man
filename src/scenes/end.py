@@ -5,7 +5,7 @@ from assets import Assets, FontColor
 from config import Config
 from render import put_lines_centered
 from .base import Scene, Transition, Reset
-from abc import ABC, abstractmethod
+from abc import ABC
 from systems.highscore import load_highscore, update_highscore, HighScore
 
 
@@ -45,9 +45,6 @@ class EndScene(Scene, ABC):
             self.name_buffer = self.name_buffer[:10]
         return None
 
-    @abstractmethod
-    def draw(self, canvas: Canvas) -> None:
-        ...
 
 
 class Death(EndScene):

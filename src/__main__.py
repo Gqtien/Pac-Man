@@ -1,4 +1,4 @@
-import argparse
+from argparse import ArgumentParser
 from pathlib import Path
 from assets import load_assets
 from config import load_config
@@ -17,7 +17,7 @@ def build_scenes() -> SceneFactories:
 
 
 def run() -> None:
-    parser = argparse.ArgumentParser()
+    parser = ArgumentParser()
     parser.add_argument(
         "config",
         nargs="?",

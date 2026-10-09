@@ -14,7 +14,7 @@ class Scene(ABC):
 
 
 @dataclass(frozen=True)
-class Push():
+class Push:
     scene: Scene
 
 
@@ -24,7 +24,7 @@ class Pop:
 
 
 @dataclass(frozen=True)
-class Reset():
+class Reset:
     scene: Scene
 
 
