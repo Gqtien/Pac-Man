@@ -215,3 +215,6 @@ __marimo__/
 
 # Pac-Man runtime data
 highscore.json
+
+# Pac-Man dependencies, provided as wheels (the template above ignores wheels/)
+!/wheels/

@@ -20,5 +20,5 @@ explicit_package_bases = true
 mypy_path = "src"
 
 [tool.uv.sources]
-mazegenerator = { path = "mazegenerator-2.1.0-py3-none-any.whl" }
-mlx = { path = "mlx-2.2-py3-none-any.whl" }
+mazegenerator = { path = "wheels/mazegenerator-2.1.0-py3-none-any.whl" }
+mlx = { path = "wheels/mlx-2.2-py3-none-any.whl" }

@@ -7,7 +7,7 @@
   "cheat_win_key": "w",
   "cheat_invisible_key": "i",
   "cheat_freeze_ghosts_key": "f",
-  "highscore_filepath": "highscore.json",
+  "highscore_filepath": "saves/highscore.json",
   "spritesheet": "assets/spritesheet.png",
   "walls": "assets/walls.png",
   "font": "assets/font.png",

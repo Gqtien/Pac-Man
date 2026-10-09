@@ -18,7 +18,7 @@ class Config:
     cheat_win_key: Keys = Keys.W
     cheat_invisible_key: Keys = Keys.I
     cheat_freeze_ghosts_key: Keys = Keys.F
-    highscore_filepath: Path = Path("highscore.json")
+    highscore_filepath: Path = Path("saves/highscore.json")
     spritesheet: Path = Path("assets/spritesheet.png")
     walls: Path = Path("assets/walls.png")
     font: Path = Path("assets/font.png")
