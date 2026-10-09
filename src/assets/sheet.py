@@ -2,6 +2,12 @@ from pathlib import Path
 from PIL import Image
 
 
+def load_image(path: Path) -> Image.Image:
+    with Image.open(path) as image:
+        image.load()
+    return image
+
+
 class SpriteSheet:
     def __init__(self, image: Image.Image, cell: int) -> None:
         self.image = image
@@ -9,9 +15,7 @@ class SpriteSheet:
 
     @classmethod
     def load(cls, path: Path, cell: int) -> "SpriteSheet":
-        with Image.open(path) as img:
-            img.load()
-        return cls(img, cell)
+        return cls(load_image(path), cell)
 
     def zoom(self, scale: int) -> "SpriteSheet":
         return SpriteSheet(

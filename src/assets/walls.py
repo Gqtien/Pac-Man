@@ -1,7 +1,6 @@
 from enum import Enum
 from PIL.Image import Image
 from typing import TypeAlias
-from models import Direction
 from .sheet import SpriteSheet
 
 
@@ -47,35 +46,6 @@ class Wall(Enum):
 
 
 Walls: TypeAlias = dict[Wall, Image]
-
-Frame: TypeAlias = dict[
-    tuple[Direction, Direction],
-    tuple[Wall, Wall, Wall, Wall],
-]
-
-
-def frame(corner: str, edge: str, inner: str) -> Frame:
-    tiles = {}
-    for v in (Direction.NORTH, Direction.SOUTH):
-        for h in (Direction.WEST, Direction.EAST):
-            quarter = v.name[0] + h.name[0]
-            tiles[v, h] = (
-                Wall[f"{corner}_{quarter}"],
-                Wall[f"{edge}_{v.name[0]}"],
-                Wall[f"{edge}_{h.name[0]}"],
-                Wall[f"{inner}_{quarter}"],
-            )
-    return tiles
-
-
-FRAME = frame("CORNER", "EDGE", "INNER")
-HOUSE_FRAME = frame("HOUSE", "EDGE", "HOUSE_INNER")
-RIM = frame("RIM", "RIM", "RIM_INNER")
-
-DOOR = {
-    Direction.EAST: (Wall.DOOR_E_TOP, Wall.DOOR_E_BOTTOM),
-    Direction.WEST: (Wall.DOOR_W_TOP, Wall.DOOR_W_BOTTOM),
-}
 
 
 def load_walls(sheet: SpriteSheet) -> Walls:

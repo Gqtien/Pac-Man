@@ -1,15 +1,22 @@
-from models import FrameBuffer, Keys
+from models import Keys
 from scenes.factories import SceneFactories
 from assets.font import LINES
 from assets import Assets, FontColor
 from storage import Config, save_score
-from render import put_lines_centered
+from render import (
+    FrameBuffer,
+    Line,
+    put_screen,
+    text_font,
+    title_font,
+)
 from .base import Scene, Transition, Reset
-from abc import ABC
-from PIL.Image import Image
 
 
-class EndScene(Scene, ABC):
+class EndScene(Scene):
+    message: str
+    color: FontColor
+
     def __init__(
         self,
         factories: SceneFactories,
@@ -41,32 +48,24 @@ class EndScene(Scene, ABC):
             self.name_buffer = self.name_buffer[:10]
         return None
 
+    def draw(self, framebuffer: FrameBuffer) -> None:
+        title = title_font(framebuffer, self.assets, self.color)
+        text = text_font(framebuffer, self.assets, FontColor.WHITE)
+        lines: list[Line] = [
+            (self.message, title),
+            (f"Score - {self.score}", text),
+            (f"Name:  {self.name_buffer:->10}", text),
+            ('Press "Enter" to validate', text),
+        ]
+        framebuffer.clear()
+        put_screen(framebuffer, lines)
+
 
 class Death(EndScene):
-    def draw(self, framebuffer: FrameBuffer) -> None:
-        framebuffer.clear(b"\x00\x00\x00\xff")
-        w, h = framebuffer.width, framebuffer.height
-        title = self.assets.fonts.fit(h / 16)[FontColor.RED]
-        sub = self.assets.fonts.fit(h / 32)[FontColor.WHITE]
-        lines: list[tuple[str, dict[str, Image]]] = [
-            ("You Died", title),
-            (f"Score - {self.score}", sub),
-            (f"Name:  {self.name_buffer:->10}", sub),
-            ('Press "Enter" to validate', sub),
-        ]
-        put_lines_centered(lines, framebuffer, w / 2, h / 2, gap=h / 32)
+    message = "You Died"
+    color = FontColor.RED
 
 
 class Win(EndScene):
-    def draw(self, framebuffer: FrameBuffer) -> None:
-        framebuffer.clear(b"\x00\x00\x00\xff")
-        w, h = framebuffer.width, framebuffer.height
-        title = self.assets.fonts.fit(h / 16)[FontColor.YELLOW]
-        sub = self.assets.fonts.fit(h / 32)[FontColor.WHITE]
-        lines: list[tuple[str, dict[str, Image]]] = [
-            ("You Won !", title),
-            (f"Score - {self.score}", sub),
-            (f"Name:  {self.name_buffer:->10}", sub),
-            ('Press "Enter" to validate', sub),
-        ]
-        put_lines_centered(lines, framebuffer, w / 2, h / 2, gap=h / 32)
+    message = "You Won !"
+    color = FontColor.YELLOW

@@ -1,11 +1,13 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from models import FrameBuffer
+from render import FrameBuffer
 from typing import TypeAlias
 
 
 class Scene(ABC):
+    transparent: bool = False
+
     @abstractmethod
     def update(self, dt: float, keys: set[int]) -> Transition: ...
 

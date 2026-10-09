@@ -1,39 +1,18 @@
-from models import FrameBuffer
-from PIL.Image import Image
 from typing import TypeAlias
-from assets import Font
+from PIL.Image import Image
+from assets import Assets, Font, FontColor
+from .framebuffer import FrameBuffer
+from .images import images_size, put_images
 
 Line: TypeAlias = tuple[str, Font]
 
 
-def char_or_space(char: str, font: Font) -> str:
-    try:
-        font[char]
-        return char
-    except KeyError:
-        return " "
-
-
 def glyphs(text: str, font: Font) -> list[Image]:
-    return [font[char_or_space(char, font)] for char in text.upper()]
-
-
-def images_size(images: list[Image]) -> tuple[int, int]:
-    width = sum(image.width for image in images)
-    height = max((image.height for image in images), default=0)
-    return width, height
+    return [font.get(char, font[" "]) for char in text.upper()]
 
 
 def text_size(text: str, font: Font) -> tuple[int, int]:
     return images_size(glyphs(text, font))
-
-
-def put_images(
-    images: list[Image], framebuffer: FrameBuffer, x: int, y: int
-) -> None:
-    for image in images:
-        framebuffer.put_image(image, x, y)
-        x += image.width
 
 
 def put_text(
@@ -52,13 +31,30 @@ def put_text_centered(
 def put_lines_centered(
     lines: list[Line],
     framebuffer: FrameBuffer,
-    x: int | float,
-    y: int | float,
-    gap: int | float = 0
+    x: float,
+    y: float,
+    gap: float = 0,
 ) -> None:
-    x,  y, gap = int(x), int(y), int(gap)
+    x, y, gap = int(x), int(y), int(gap)
     heights = [text_size(text, font)[1] for text, font in lines]
     top: int = y - (sum(heights) + gap * (len(lines) - 1)) // 2
     for (text, font), height in zip(lines, heights):
         put_text_centered(text, font, framebuffer, x, top + height // 2)
         top += height + gap
+
+
+def title_font(
+    framebuffer: FrameBuffer, assets: Assets, color: FontColor
+) -> Font:
+    return assets.fonts.fit(framebuffer.height / 16)[color]
+
+
+def text_font(
+    framebuffer: FrameBuffer, assets: Assets, color: FontColor
+) -> Font:
+    return assets.fonts.fit(framebuffer.height / 32)[color]
+
+
+def put_screen(framebuffer: FrameBuffer, lines: list[Line]) -> None:
+    w, h = framebuffer.width, framebuffer.height
+    put_lines_centered(lines, framebuffer, w / 2, h / 2, gap=h / 32)

@@ -1,10 +1,15 @@
-from models import FrameBuffer, Keys
-from PIL.Image import Image
+from models import Keys
 from .base import Scene, Transition, Push, Pop
 from storage import Config, load_highscores
 from assets import Assets, FontColor
 from scenes.factories import SceneFactories
-from render import put_lines_centered
+from render import (
+    FrameBuffer,
+    Line,
+    put_screen,
+    text_font,
+    title_font,
+)
 
 
 class Main(Scene):
@@ -26,24 +31,15 @@ class Main(Scene):
         return None
 
     def draw(self, framebuffer: FrameBuffer) -> None:
-        color_bytes = b"\x00\x00\x00\xFF"
-        framebuffer.clear(color_bytes)
-        w, h = framebuffer.width, framebuffer.height
-        title = self.assets.fonts.fit(h / 16)[FontColor.YELLOW]
-        sub = self.assets.fonts.fit(h / 32)[FontColor.WHITE]
-        highscore_table = self.assets.fonts.fit(h / 32)[FontColor.CYAN]
-        lines:  list[tuple[str, dict[str, Image]]] = [("Pacman", title)]
-        lines.append(("", title))
+        title = title_font(framebuffer, self.assets, FontColor.YELLOW)
+        table = text_font(framebuffer, self.assets, FontColor.CYAN)
+        text = text_font(framebuffer, self.assets, FontColor.WHITE)
+        lines: list[Line] = [("Pacman", title), ("", title)]
         lines.extend(
-            (f"{name:10} - {score:07}", highscore_table)
+            (f"{name:10} - {score:07}", table)
             for name, score in self.highscores.items()
         )
         lines.append(("", title))
-        lines.append(('Press "Space" to play', sub))
-        put_lines_centered(
-            lines,
-            framebuffer,
-            w / 2,
-            h / 2,
-            gap=h / 32,
-        )
+        lines.append(('Press "Space" to play', text))
+        framebuffer.clear()
+        put_screen(framebuffer, lines)

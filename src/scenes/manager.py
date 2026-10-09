@@ -1,6 +1,6 @@
 import sys
-from models import FrameBuffer
 import time
+from render import FrameBuffer
 from .base import Scene, Pop, Push, Reset, Transition
 from mlx import Mlx
 
@@ -15,9 +15,7 @@ class SceneManager:
         self.mlx_ptr: int = mlx_ptr
 
         _, width, height = self.mlx.mlx_get_screen_size(self.mlx_ptr)
-        window = self.mlx.mlx_new_window(
-            self.mlx_ptr, width, height, "pacman"
-        )
+        window = self.mlx.mlx_new_window(self.mlx_ptr, width, height, "pacman")
         if window is None:
             print("failed to init window", file=sys.stderr)
             sys.exit(1)
@@ -62,15 +60,22 @@ class SceneManager:
 
         transition: Transition = self.top.update(dt, keys)
         self.apply(transition)
-        self.top.draw(framebuffer)
-        # for scene in self.stack:
-        #     scene.draw(framebuffer)
+        for scene in self.visible():
+            scene.draw(framebuffer)
+        framebuffer.flush()
 
         self.mlx.mlx_clear_window(self.mlx_ptr, self.window)
         self.mlx.mlx_put_image_to_window(
             self.mlx_ptr, self.window, self.image_a, 0, 0
         )
         self.image_a, self.image_b = self.image_b, self.image_a
+
+    # the top scene, and the scenes seen through it while it is transparent
+    def visible(self) -> list[Scene]:
+        start = len(self.stack) - 1
+        while start > 0 and self.stack[start].transparent:
+            start -= 1
+        return self.stack[start:]
 
     def apply(self, transition: Transition) -> None:
         match transition:

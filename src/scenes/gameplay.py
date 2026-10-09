@@ -1,39 +1,20 @@
-from typing import Callable
-from PIL.Image import Image
 from storage import Config
 from models.world import respawn
-from render import glyphs, images_size, put_images
+from render import (
+    FrameBuffer,
+    Grid,
+    draw_entities,
+    draw_items,
+    draw_maze,
+    fit_grid,
+    glyphs,
+)
 from systems import Outcome, step
 from .base import Scene, Push, Transition, Reset
 from scenes.factories import SceneFactories
 from .pause import Pause
-from assets import (
-    DOOR,
-    FRAME,
-    HOUSE_FRAME,
-    RIM,
-    Animation,
-    Assets,
-    FontColor,
-    Frame,
-    Sprites,
-    Wall,
-)
-from models import (
-    Keys,
-    Direction,
-    Entity,
-    Ghost,
-    GhostState,
-    Pacman,
-    new_map,
-    new_world,
-    next_level,
-    is_door,
-    is_house,
-    is_solid,
-    FrameBuffer,
-)
+from assets import Assets, FontColor, Sprites
+from models import Direction, Keys, new_map, new_world, next_level
 
 
 class Gameplay(Scene):
@@ -47,7 +28,7 @@ class Gameplay(Scene):
 
     def update(self, dt: float, keys: set[int]) -> Transition:
         if Keys.Escape in keys:
-            return Push(Pause(self.config, self.assets))
+            return Push(Pause(self.assets))
         match step(self.world, self.config, dt, keys):
             case Outcome.LOST:
                 score = self.world.score
@@ -69,149 +50,24 @@ class Gameplay(Scene):
         return None
 
     def draw(self, framebuffer: FrameBuffer) -> None:
-        framebuffer.clear(b"\x00\x00\x00\xFF")
-        self.framebuffer = framebuffer
-        scale = self.get_scale(framebuffer)
-        self.cell_size = self.assets.size * scale
-        self.walls = self.assets.walls[scale]
-        sprites = self.assets.sprites[scale]
+        world, assets = self.world, self.assets
+        rows, cols = len(world.map), len(world.map[0])
+        screen, scale = fit_grid(framebuffer, cols, rows + 2, assets.size)
+        grid = screen.offset(0, 1)
+        sprites = assets.sprites[scale]
+        framebuffer.clear()
+        draw_maze(grid, world.map, assets.walls[scale])
+        draw_items(grid, world.items, sprites)
+        draw_entities(grid, world, sprites)
+        self.draw_hud(grid, sprites, cols, rows)
 
-        self.draw_map()
-        self.draw_items(sprites)
-        pacman = self.world.pacman
-        if pacman.alive or self.world.freeze > 0:
-            self.draw_entity(pacman, sprites.pacman[pacman.direction])
-            for ghost in self.world.ghosts:
-                self.draw_entity(ghost, self.ghost_animation(ghost, sprites))
-        else:
-            self.draw_death(pacman, sprites.death)
-        self.draw_hud(sprites)
-        self.center()
-
-    def get_scale(self, framebuffer: FrameBuffer) -> int:
-        rows, cols = len(self.world.map), len(self.world.map[0])
-        w, h = framebuffer.width, framebuffer.height
-        return max(1, min(w // (16 * cols), h // (16 * (rows + 2))))
-
-    def center(self) -> None:
-        rows, cols = len(self.world.map), len(self.world.map[0])
-        dx = (self.framebuffer.width - cols * self.cell_size) // 2
-        dy = (self.framebuffer.height - (rows + 2) * self.cell_size) // 2
-        self.framebuffer.move(dx, dy + self.cell_size)
-
-    @staticmethod
-    def ghost_animation(ghost: Ghost, sprites: Sprites) -> Animation:
-        match ghost.state:
-            case (
-                GhostState.CHASE
-                | GhostState.SCATTER
-                | GhostState.HOUSE
-                | GhostState.LEAVING
-            ):
-                return sprites.ghost[ghost.personality][ghost.direction]
-            case GhostState.DEAD:
-                return [sprites.eyes[ghost.direction]]
-            case GhostState.EATEN:
-                return [sprites.ghost_score[ghost.value]]
-            case GhostState.FRIGHTENED:
-                if (
-                    ghost.frightened_timer < 3
-                    and int(ghost.frightened_timer * 4) % 2 == 0
-                ):
-                    return sprites.flashing
-                return sprites.frightened
-
-    def draw_entity(self, entity: Entity, animation: Animation) -> None:
-        frame = animation[int(entity.anim_progress) % len(animation)]
-        self.draw_sprite(entity, frame)
-
-    def draw_death(self, pacman: Pacman, frames: Animation) -> None:
-        index = int(pacman.death_progress * len(frames))
-        self.draw_sprite(pacman, frames[min(index, len(frames) - 1)])
-
-    def draw_sprite(self, entity: Entity, frame: Image) -> None:
-        x = entity.pos.x + entity.direction.dx * entity.progress
-        y = entity.pos.y + entity.direction.dy * entity.progress
-        self.framebuffer.put_image(
-            frame, x * self.cell_size, y * self.cell_size
-        )
-
-    def draw_map(self) -> None:
-        for y, line in enumerate(self.world.map):
-            for x, cell in enumerate(line):
-                if is_solid(cell):
-                    self.draw_cell(x, y)
-
-    def draw_cell(self, x: int, y: int) -> None:
-        cell = self.world.map[y][x]
-        if is_door(cell):
-            side = Direction.EAST
-            if is_solid(self.cell_at(x + 1, y)):
-                side = Direction.WEST
-            top, bottom = DOOR[side]
-            self.put(top, x, y, Direction.NORTH, side)
-            self.put(bottom, x, y, Direction.SOUTH, side)
-        elif is_house(cell):
-            self.draw_frame(x, y, HOUSE_FRAME, is_solid)
-            self.draw_frame(x, y, RIM, is_house)
-        else:
-            self.draw_frame(x, y, FRAME, is_solid)
-
-    def draw_frame(
-        self, x: int, y: int, frame: Frame, joined: Callable[[int], bool]
+    def draw_hud(
+        self, grid: Grid, sprites: Sprites, cols: int, row: int
     ) -> None:
-        for (v, h), (corner, edge_v, edge_h, inner) in frame.items():
-            side_v = joined(self.cell_at(x, y + v.dy))
-            side_h = joined(self.cell_at(x + h.dx, y))
-            diagonal = joined(self.cell_at(x + h.dx, y + v.dy))
-            if not side_v and not side_h:
-                self.put(corner, x, y, v, h)
-            elif not side_v:
-                self.put(edge_v, x, y, v, h)
-            elif not side_h:
-                self.put(edge_h, x, y, v, h)
-            elif not diagonal:
-                self.put(inner, x, y, v, h)
-
-    def put(
-        self, tile: Wall, x: int, y: int, v: Direction, h: Direction
-    ) -> None:
-        half = self.cell_size / 2
-        px = self.cell_size * x + (half if h is Direction.EAST else 0)
-        py = self.cell_size * y + (half if v is Direction.SOUTH else 0)
-        self.framebuffer.put_image(self.walls[tile], px, py)
-
-    def cell_at(self, x: int, y: int) -> int:
-        map = self.world.map
-        if 0 <= y < len(map) and 0 <= x < len(map[y]):
-            return map[y][x]
-        return 0
-
-    def draw_items(self, sprites: Sprites) -> None:
-        for (x, y), item in self.world.items.items():
-            self.framebuffer.put_image(
-                sprites.items[item], x * self.cell_size, y * self.cell_size,
-            )
-
-    def draw_hud(self, sprites: Sprites) -> None:
-        rows, cols = len(self.world.map), len(self.world.map[0])
-        font = self.assets.fonts.fit(self.cell_size / 2)[FontColor.WHITE]
-        score, level = self.world.score, self.world.level
-        self.put_hud(glyphs(f"Score {score}", font), cols // 2, rows)
-        self.put_hud(
-            glyphs(f"Level {level}", font), cols, rows, left_align=False
-        )
+        font = self.assets.fonts.fit(grid.cell_size / 2)[FontColor.WHITE]
+        score = glyphs(f"Score {self.world.score}", font)
+        level = glyphs(f"Level {self.world.level}", font)
+        grid.put_row(score, 0, -1)
+        grid.put_row(level, cols, -1, left_align=False)
         life = sprites.pacman[Direction.EAST][1]
-        self.put_hud([life] * self.world.lives, 0, rows)
-
-    def put_hud(
-        self,
-        images: list[Image],
-        cx: int,
-        cy: int,
-        left_align: bool = True,
-    ) -> None:
-        width, height = images_size(images)
-        x = cx * self.cell_size - (0 if left_align else width)
-        y = cy * self.cell_size + (self.cell_size - height) // 2
-        put_images(images, self.framebuffer, x, y)
+        grid.put_row([life] * self.world.lives, 0, row)

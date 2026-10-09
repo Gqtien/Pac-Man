@@ -1,16 +1,13 @@
-from models import FrameBuffer, Keys
+from models import Keys
 from assets import Assets, FontColor
-from storage import Config
-from render import put_lines_centered
+from render import FrameBuffer, Line, put_screen, text_font, title_font
 from .base import Scene, Pop, Transition
-from PIL.Image import Image, open as open_image
 
 
 class Pause(Scene):
-    def __init__(self, config: Config, assets: Assets) -> None:
-        with open_image(config.overlay) as img:
-            img.load()
-        self.overlay: Image = img
+    transparent = True
+
+    def __init__(self, assets: Assets) -> None:
         self.assets = assets
 
     def update(self, dt: float, keys: set[int]) -> Transition:
@@ -19,14 +16,12 @@ class Pause(Scene):
         return None
 
     def draw(self, framebuffer: FrameBuffer) -> None:
-        w, h = framebuffer.width, framebuffer.height
-        title = self.assets.fonts.fit(h / 16)[FontColor.WHITE]
-        sub = self.assets.fonts.fit(h / 32)[FontColor.BEIGE]
-        framebuffer.put_image(self.overlay, 0, 0)
-        put_lines_centered(
-            [("Paused", title), ('Press "Escape" to Resume', sub)],
-            framebuffer,
-            w / 2,
-            h / 2,
-            gap=h / 32,
-        )
+        title = title_font(framebuffer, self.assets, FontColor.WHITE)
+        text = text_font(framebuffer, self.assets, FontColor.BEIGE)
+        lines: list[Line] = [
+            ("Paused", title),
+            ('Press "Escape" to Resume', text),
+        ]
+        overlay = self.assets.overlay[framebuffer.width, framebuffer.height]
+        framebuffer.put_image(overlay, 0, 0)
+        put_screen(framebuffer, lines)
