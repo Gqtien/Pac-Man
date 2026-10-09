@@ -24,6 +24,7 @@ from models import (
     Entity,
     Ghost,
     GhostState,
+    Map,
     Pacman,
     new_map,
     new_world,
@@ -42,6 +43,9 @@ class Gameplay(Scene):
         self.assets = assets
         self.factories = factories
         self.world = new_world(new_map(), config.lives)
+        self.maze = PhotoImage()
+        self.maze_map: Map | None = None
+        self.maze_zoom = 0
 
     def update(self, dt: float, keys: set[str]) -> Transition:
         if "Escape" in keys:
@@ -74,7 +78,7 @@ class Gameplay(Scene):
         self.walls = self.assets.walls[zoom]
         sprites = self.assets.sprites[zoom]
 
-        self.draw_map()
+        self.draw_map(zoom)
         self.draw_items(sprites)
         pacman = self.world.pacman
         if pacman.alive or self.world.freeze > 0:
@@ -132,11 +136,18 @@ class Gameplay(Scene):
         y = entity.pos.y + entity.direction.dy * entity.progress + 0.5
         self.canvas.create_image(x * self.size, y * self.size, image=frame)
 
-    def draw_map(self) -> None:
-        for y, line in enumerate(self.world.map):
-            for x, cell in enumerate(line):
-                if is_solid(cell):
-                    self.draw_cell(x, y)
+    def draw_map(self, zoom: int) -> None:
+        map = self.world.map
+        if self.maze_map is not map or self.maze_zoom != zoom:
+            self.maze = PhotoImage(
+                width=len(map[0]) * self.size, height=len(map) * self.size
+            )
+            for y, line in enumerate(map):
+                for x, cell in enumerate(line):
+                    if is_solid(cell):
+                        self.draw_cell(x, y)
+            self.maze_map, self.maze_zoom = map, zoom
+        self.canvas.create_image(0, 0, image=self.maze, anchor="nw")
 
     def draw_cell(self, x: int, y: int) -> None:
         cell = self.world.map[y][x]
@@ -172,10 +183,10 @@ class Gameplay(Scene):
     def put(
         self, tile: Wall, x: int, y: int, v: Direction, h: Direction
     ) -> None:
-        half = self.size / 2
+        half = self.size // 2
         px = self.size * x + (half if h is Direction.EAST else 0)
         py = self.size * y + (half if v is Direction.SOUTH else 0)
-        self.canvas.create_image(px, py, image=self.walls[tile], anchor="nw")
+        self.maze.tk.call(self.maze, "copy", self.walls[tile], "-to", px, py)
 
     def cell_at(self, x: int, y: int) -> int:
         map = self.world.map
