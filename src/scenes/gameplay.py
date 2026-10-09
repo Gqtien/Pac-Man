@@ -41,7 +41,7 @@ class Gameplay(Scene):
         self.config = config
         self.assets = assets
         self.factories = factories
-        self.world = new_world(new_map())
+        self.world = new_world(new_map(), config.lives)
 
     def update(self, dt: float, keys: set[str]) -> Transition:
         if "Escape" in keys:
@@ -49,7 +49,7 @@ class Gameplay(Scene):
         match step(self.world, self.config, dt, keys):
             case Outcome.LOST:
                 score = self.world.score
-                self.world = new_world(new_map())
+                self.world = new_world(new_map(), self.config.lives)
                 return Push(
                     self.factories.dead(self.config, self.assets, score)
                 )
@@ -60,7 +60,7 @@ class Gameplay(Scene):
                     self.world = next_level(self.world, new_map())
                     return None
                 score = self.world.score
-                self.world = new_world(new_map())
+                self.world = new_world(new_map(), self.config.lives)
                 return Reset(
                     self.factories.win(self.config, self.assets, score)
                 )

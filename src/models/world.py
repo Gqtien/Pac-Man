@@ -19,8 +19,14 @@ class World:
     multiplier: int = 1
 
 
-def new_world(map: Map) -> World:
-    return World(map, init_items(map), spawn_pacman(map), spawn_ghosts(map))
+def new_world(map: Map, lives: int) -> World:
+    return World(
+        map,
+        init_items(map),
+        spawn_pacman(map),
+        spawn_ghosts(map),
+        lives=lives,
+    )
 
 
 def respawn(world: World) -> World:
@@ -32,7 +38,11 @@ def respawn(world: World) -> World:
 
 
 def next_level(world: World, map: Map) -> World:
-    return replace(new_world(map), score=world.score, level=world.level + 1)
+    return replace(
+        new_world(map, world.lives),
+        score=world.score,
+        level=world.level + 1,
+    )
 
 
 def spawn_pacman(map: Map) -> Pacman:
