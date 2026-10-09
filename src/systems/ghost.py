@@ -33,9 +33,8 @@ def pathfind_to(
     )
     if not path or not path[1:]:
         return Direction.NONE
-    next_x, next_y = path[1]
-    dx, dy = next_x - source.x, next_y - source.y
-    return Direction((dx, dy))
+    step = path[1] - source
+    return Direction((step.x, step.y))
 
 
 def update_blinky(ghost: Ghost, world: World) -> None:
@@ -45,7 +44,7 @@ def update_blinky(ghost: Ghost, world: World) -> None:
 
 
 def update_pinky(ghost: Ghost, world: World) -> None:
-    target: Vec2 = world.pacman.pos + Vec2(*world.pacman.direction.value) * 2
+    target = world.pacman.pos + world.pacman.direction.vec * 2
     ghost.direction = pathfind_to(
         ghost.pos, target, world.map, ghost.direction
     )
@@ -55,10 +54,8 @@ def update_inky(ghost: Ghost, world: World) -> None:
     blinky: Ghost = next(
         g for g in world.ghosts if g.personality == GhostPersonality.BLINKY
     )
-    d: Vec2 = world.pacman.pos + Vec2(*world.pacman.direction.value)
-    d -= blinky.pos
-    d *= 2
-    target = blinky.pos + d
+    ahead = world.pacman.pos + world.pacman.direction.vec
+    target = blinky.pos + (ahead - blinky.pos) * 2
     ghost.direction = pathfind_to(
         ghost.pos, target, world.map, ghost.direction
     )

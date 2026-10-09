@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import TypeAlias
 from .map import Map, is_solid
+from .vec import Vec2
 
 
 class Item(Enum):
@@ -27,7 +28,7 @@ class Item(Enum):
                 return 0
 
 
-Items: TypeAlias = dict[tuple[int, int], Item]
+Items: TypeAlias = dict[Vec2, Item]
 
 
 def init_items(map: Map) -> Items:
@@ -39,20 +40,20 @@ def init_items(map: Map) -> Items:
     return items
 
 
-def pacgums(map: Map) -> list[tuple[int, int]]:
-    pacgums: list[tuple[int, int]] = []
+def pacgums(map: Map) -> list[Vec2]:
+    pacgums: list[Vec2] = []
     for y, row in enumerate(map):
         for x, tile in enumerate(row):
             if not is_solid(tile):
-                pacgums.append((x, y))
+                pacgums.append(Vec2(x, y))
     return pacgums
 
 
-def superpacgums(map: Map) -> list[tuple[int, int]]:
+def superpacgums(map: Map) -> list[Vec2]:
     offset = 1
     return [
-        (offset * 2 + 1, offset * 2 + 1),
-        (len(map) - (offset * 2 + 2), offset * 2 + 1),
-        (offset * 2 + 1, len(map) - (offset * 2 + 2)),
-        (len(map) - (offset * 2 + 2), len(map) - (offset * 2 + 2)),
+        Vec2(offset * 2 + 1, offset * 2 + 1),
+        Vec2(len(map) - (offset * 2 + 2), offset * 2 + 1),
+        Vec2(offset * 2 + 1, len(map) - (offset * 2 + 2)),
+        Vec2(len(map) - (offset * 2 + 2), len(map) - (offset * 2 + 2)),
     ]

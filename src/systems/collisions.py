@@ -9,8 +9,7 @@ def step(world: World, config: Config) -> None:
 
 
 def eat(world: World) -> None:
-    pos = world.pacman.pos
-    item = world.items.pop((pos.x, pos.y), None)
+    item = world.items.pop(world.pacman.pos, None)
     if item is None:
         return
     world.score += item.value

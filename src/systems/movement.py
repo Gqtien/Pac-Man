@@ -24,8 +24,7 @@ def move(
         entity.just_moved = False
         return
     entity.progress -= 1.0
-    entity.pos.x += entity.direction.dx
-    entity.pos.y += entity.direction.dy
+    entity.pos += entity.direction.vec
     entity.just_moved = True
 
 
@@ -34,10 +33,9 @@ def can_move(
 ) -> bool:
     if direction.is_still:
         return True
-    x = pos.x + direction.dx
-    y = pos.y + direction.dy
-    if x < 0 or y < 0:
+    to = pos + direction.vec
+    if to.x < 0 or to.y < 0:
         return False
-    if x >= len(map[0]) or y >= len(map):
+    if to.x >= len(map[0]) or to.y >= len(map):
         return False
-    return can_cross(map[pos.y][pos.x], map[y][x], door_open)
+    return can_cross(map[pos.y][pos.x], map[to.y][to.x], door_open)

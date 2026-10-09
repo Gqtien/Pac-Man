@@ -1,5 +1,6 @@
 from typing import TypeAlias
 from .direction import Direction
+from .vec import Vec2
 from mazegenerator import MazeGenerator
 
 Maze: TypeAlias = list[list[int]]
@@ -49,9 +50,9 @@ def can_cross(src: int, dst: int, door_open: bool = False) -> bool:
     return is_house(src) == is_house(dst)
 
 
-def doors(map: Map) -> list[tuple[int, int]]:
+def doors(map: Map) -> list[Vec2]:
     return [
-        (x, y)
+        Vec2(x, y)
         for y, row in enumerate(map)
         for x, cell in enumerate(row)
         if is_door(cell)
@@ -65,58 +66,59 @@ def from_maze(maze: Maze) -> Map:
     doors = door_cells(enclosed)
 
     grid = maze_to_grid(maze)
-    for x, y in house:
-        grid[y][x] = False
+    for cell in house:
+        grid[cell.y][cell.x] = False
     map = grid_to_walls(grid)
-    for x, y in house:
-        map[y][x] = -1
-    for x, y in inner:
-        map[y][x] = -3
-    for x, y in doors:
-        map[y][x] = -2
+    for cell in house:
+        map[cell.y][cell.x] = -1
+    for cell in inner:
+        map[cell.y][cell.x] = -3
+    for cell in doors:
+        map[cell.y][cell.x] = -2
     return map
 
 
-def enclosed_cells(maze: Maze) -> set[tuple[int, int]]:
+def enclosed_cells(maze: Maze) -> set[Vec2]:
     return {
-        (x, y)
+        Vec2(x, y)
         for y, line in enumerate(maze)
         for x, cell in enumerate(line)
         if all(has_wall(cell, direction) for direction in WALLS)
     }
 
 
-def grid_center(x: int, y: int) -> tuple[int, int]:
-    return 2 * x + 1, 2 * y + 1
+def grid_center(cell: Vec2) -> Vec2:
+    return cell * 2 + Vec2(1, 1)
 
 
-def house_cells(enclosed: set[tuple[int, int]]) -> set[tuple[int, int]]:
-    house = set()
-    for x, y in enclosed:
-        gx, gy = grid_center(x, y)
+def house_cells(enclosed: set[Vec2]) -> set[Vec2]:
+    house: set[Vec2] = set()
+    for cell in enclosed:
+        center = grid_center(cell)
         for dx in (-1, 0, 1):
             for dy in (-1, 0, 1):
-                house.add((gx + dx, gy + dy))
+                house.add(center + Vec2(dx, dy))
     return house
 
 
-def inner_cells(house: set[tuple[int, int]]) -> set[tuple[int, int]]:
+def inner_cells(house: set[Vec2]) -> set[Vec2]:
     return {
-        (x, y)
-        for x, y in house
+        cell
+        for cell in house
         if all(
-            (x + dx, y + dy) in house
+            cell + Vec2(dx, dy) in house
             for dx in (-1, 0, 1)
             for dy in (-1, 0, 1)
         )
     }
 
 
-def door_cells(enclosed: set[tuple[int, int]]) -> set[tuple[int, int]]:
-    xs = {x for x, _ in enclosed}
-    ys = {y for _, y in enclosed}
-    gx, gy = grid_center((min(xs) + max(xs)) // 2, (min(ys) + max(ys)) // 2)
-    return {(gx - 1, gy), (gx + 1, gy)}
+def door_cells(enclosed: set[Vec2]) -> set[Vec2]:
+    xs = {cell.x for cell in enclosed}
+    ys = {cell.y for cell in enclosed}
+    middle = Vec2((min(xs) + max(xs)) // 2, (min(ys) + max(ys)) // 2)
+    center = grid_center(middle)
+    return {center - Vec2(1, 0), center + Vec2(1, 0)}
 
 
 def maze_to_grid(maze: Maze) -> list[list[bool]]:
@@ -157,7 +159,7 @@ def fill_holes(grid: list[list[bool]]) -> None:
         return
     width = len(grid[0])
 
-    to_fill: list[tuple[int, int]] = []
+    to_fill: list[Vec2] = []
     for y in range(1, height - 1):
         for x in range(1, width - 1):
             if all(
@@ -165,9 +167,9 @@ def fill_holes(grid: list[list[bool]]) -> None:
                 for dx in range(-1, 2)
                 for dy in range(-1, 2)
             ):
-                to_fill.append((x, y))
-    for x, y in to_fill:
-        grid[y][x] = True
+                to_fill.append(Vec2(x, y))
+    for cell in to_fill:
+        grid[cell.y][cell.x] = True
 
 
 def grid_to_walls(grid: list[list[bool]]) -> Map:

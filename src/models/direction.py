@@ -1,4 +1,5 @@
 from enum import Enum
+from .vec import Vec2
 
 
 class Direction(Enum):
@@ -15,6 +16,10 @@ class Direction(Enum):
     @property
     def dy(self) -> int:
         return self.value[1]
+
+    @property
+    def vec(self) -> Vec2:
+        return Vec2(self.dx, self.dy)
 
     @property
     def opposite(self) -> "Direction":

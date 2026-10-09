@@ -1,30 +1,25 @@
 from models import Map, Vec2, Direction, can_cross, is_wall
 
 
-def to_tuple(a: Vec2) -> tuple[int, int]:
-    return (int(a.x), int(a.y))
-
-
 def pathfind(
     start: Vec2,
     target: Vec2,
     map: Map,
     restricted_init_dir: Direction = Direction.NONE,
     door_open: bool = False,
-) -> list[tuple[int, int]]:
-    goal = to_tuple(target)
-    if not is_valid_pos(goal, map):
+) -> list[Vec2]:
+    if not is_valid_pos(target, map):
         return []
-    to_visit: list[tuple[int, int]] = [to_tuple(start)]
-    visited: set[tuple[int, int]] = set()
-    previous: dict[tuple[int, int], tuple[int, int]] = dict()
+    to_visit: list[Vec2] = [start]
+    visited: set[Vec2] = set()
+    previous: dict[Vec2, Vec2] = {}
     while to_visit:
         current = to_visit.pop(0)
-        if current == goal:
-            return build_path(previous, goal)
+        if current == target:
+            return build_path(previous, target)
         visited.add(current)
-        neighbors: list[tuple[int, int]] = []
-        if current == to_tuple(start):
+        neighbors: list[Vec2] = []
+        if current == start:
             neighbors = get_neighbors(
                 current, visited, map, door_open, restricted_init_dir
             )
@@ -37,50 +32,53 @@ def pathfind(
     return []
 
 
-def is_valid_pos(pos: tuple[int, int], map: Map) -> bool:
+def is_valid_pos(pos: Vec2, map: Map) -> bool:
     width = len(map[0])
     height = len(map)
-    x, y = pos
-    if not (0 <= x < width):
+    if not (0 <= pos.x < width):
         return False
-    if not (0 <= y < height):
+    if not (0 <= pos.y < height):
         return False
-    if is_wall(map[y][x]):
+    if is_wall(map[pos.y][pos.x]):
         return False
     return True
 
 
 def get_neighbors(
-    current: tuple[int, int],
-    visited: set[tuple[int, int]],
+    current: Vec2,
+    visited: set[Vec2],
     map: Map,
     door_open: bool = False,
     restricted_dir: Direction = Direction.NONE,
-) -> list[tuple[int, int]]:
-    x, y = current
-    neighbors: list[tuple[int, int]] = []
-    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-    if restricted_dir.value in directions:
-        directions.remove(restricted_dir.value)
-    for dx, dy in directions:
-        neighbor = (x + dx, y + dy)
+) -> list[Vec2]:
+    neighbors: list[Vec2] = []
+    for direction in (
+        Direction.SOUTH,
+        Direction.NORTH,
+        Direction.EAST,
+        Direction.WEST,
+    ):
+        if direction is restricted_dir:
+            continue
+        neighbor = current + direction.vec
         if neighbor in visited:
             continue
         if not is_valid_pos(neighbor, map):
             continue
-        if not can_cross(map[y][x], map[y + dy][x + dx], door_open):
+        here, there = map[current.y][current.x], map[neighbor.y][neighbor.x]
+        if not can_cross(here, there, door_open):
             continue
         neighbors.append(neighbor)
     return neighbors
 
 
 def build_path(
-    previous: dict[tuple[int, int], tuple[int, int]], target: tuple[int, int]
-) -> list[tuple[int, int]]:
-    path: list[tuple[int, int]] = []
-    current: tuple[int, int] | None = target
-    while current:
+    previous: dict[Vec2, Vec2], target: Vec2
+) -> list[Vec2]:
+    path: list[Vec2] = []
+    current: Vec2 | None = target
+    while current is not None:
         path.append(current)
-        current = previous.get(current, None)
+        current = previous.get(current)
     path.reverse()
     return path

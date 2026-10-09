@@ -4,5 +4,5 @@ from .grid import Grid
 
 
 def draw_items(grid: Grid, items: Items, sprites: Sprites) -> None:
-    for (x, y), item in items.items():
-        grid.put(sprites.items[item], x, y)
+    for pos, item in items.items():
+        grid.put(sprites.items[item], *pos)
