@@ -8,16 +8,19 @@ def pathfind(
     restricted_init_dir: Direction = Direction.NONE,
     door_open: bool = False,
 ) -> list[Vec2]:
-    if not is_valid_pos(target, map):
-        return []
     to_visit: list[Vec2] = [start]
     visited: set[Vec2] = set()
     previous: dict[Vec2, Vec2] = {}
+    # a target in a wall or out of reach: head for the closest cell to it
+    closest, best = start, (start - target).norm()
     while to_visit:
         current = to_visit.pop(0)
         if current == target:
             return build_path(previous, target)
         visited.add(current)
+        distance = (current - target).norm()
+        if distance < best:
+            closest, best = current, distance
         neighbors: list[Vec2] = []
         if current == start:
             neighbors = get_neighbors(
@@ -28,8 +31,7 @@ def pathfind(
         for cell in neighbors:
             to_visit.append(cell)
             previous[cell] = current
-    # no path found
-    return []
+    return build_path(previous, closest)
 
 
 def is_valid_pos(pos: Vec2, map: Map) -> bool:
