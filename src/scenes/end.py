@@ -1,12 +1,13 @@
+from models import FrameBuffer
 from scenes.factories import SceneFactories
 from assets.font import LINES
-from tkinter import Canvas, PhotoImage
 from assets import Assets, FontColor
 from config import Config
 from render import put_lines_centered
 from .base import Scene, Transition, Reset
 from abc import ABC
 from systems.highscore import load_highscore, update_highscore, HighScore
+from PIL.Image import Image
 
 
 class EndScene(Scene, ABC):
@@ -47,30 +48,30 @@ class EndScene(Scene, ABC):
 
 
 class Death(EndScene):
-    def draw(self, canvas: Canvas) -> None:
-        canvas.delete("all")
-        w, h = canvas.winfo_width(), canvas.winfo_height()
+    def draw(self, framebuffer: FrameBuffer) -> None:
+        framebuffer.clear(b"\x00\x00\x00\xFF")
+        w, h = framebuffer.width, framebuffer.height
         title = self.assets.fonts.fit(h / 16)[FontColor.RED]
         sub = self.assets.fonts.fit(h / 32)[FontColor.WHITE]
-        lines:  list[tuple[str, dict[str, PhotoImage]]] = [
+        lines:  list[tuple[str, dict[str, Image]]] = [
             ("You Died", title),
             (f"Score - {self.score}", sub),
             (f"Name:  {self.name_buffer:->10}", sub),
             ('Press "Enter" to validate', sub),
         ]
-        put_lines_centered(lines, canvas, w / 2, h / 2, gap=h / 32)
+        put_lines_centered(lines, framebuffer, w / 2, h / 2, gap=h / 32)
 
 
 class Win(EndScene):
-    def draw(self, canvas: Canvas) -> None:
-        canvas.delete("all")
-        w, h = canvas.winfo_width(), canvas.winfo_height()
+    def draw(self, framebuffer: FrameBuffer) -> None:
+        framebuffer.clear(b"\x00\x00\x00\xFF")
+        w, h = framebuffer.width, framebuffer.height
         title = self.assets.fonts.fit(h / 16)[FontColor.YELLOW]
         sub = self.assets.fonts.fit(h / 32)[FontColor.WHITE]
-        lines: list[tuple[str, dict[str, PhotoImage]]] = [
+        lines: list[tuple[str, dict[str, Image]]] = [
             ("You Won !", title),
             (f"Score - {self.score}", sub),
             (f"Name:  {self.name_buffer:->10}", sub),
             ('Press "Enter" to validate', sub),
         ]
-        put_lines_centered(lines, canvas, w / 2, h / 2, gap=h / 32)
+        put_lines_centered(lines, framebuffer, w / 2, h / 2, gap=h / 32)

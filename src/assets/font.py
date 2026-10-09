@@ -1,14 +1,14 @@
 from enum import Enum
-from tkinter import PhotoImage
+from PIL.Image import Image
 from typing import TypeAlias
 from .sheet import SpriteSheet
 
-Font: TypeAlias = dict[str, PhotoImage]
+Font: TypeAlias = dict[str, Image]
 
 LINES = (
     "ABCDEFGHIJKLMNO",
     "PQRSTUVWXYZ!©pts",
-    '0123456789/-"',
+    '0123456789/-" ',
 )
 
 

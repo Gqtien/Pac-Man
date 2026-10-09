@@ -5,6 +5,8 @@ description = "Ghosts! More ghosts!"
 requires-python = ">=3.10"
 dependencies = [
     "mazegenerator",
+    "mlx",
+    "pillow>=12.3.0",
 ]
 
 [dependency-groups]
@@ -19,3 +21,4 @@ mypy_path = "src"
 
 [tool.uv.sources]
 mazegenerator = { path = "mazegenerator-2.1.0-py3-none-any.whl" }
+mlx = { path = "mlx-2.2-py3-none-any.whl" }

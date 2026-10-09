@@ -1,5 +1,5 @@
-from tkinter import Canvas, PhotoImage
 from typing import Callable
+from PIL.Image import Image
 from config import Config
 from models.world import respawn
 from render import glyphs, images_size, put_images
@@ -24,14 +24,13 @@ from models import (
     Entity,
     Ghost,
     GhostState,
-    Map,
     Pacman,
     new_map,
     new_world,
     next_level,
     is_door,
     is_house,
-    is_solid,
+    is_solid, FrameBuffer,
 )
 
 
@@ -43,9 +42,6 @@ class Gameplay(Scene):
         self.assets = assets
         self.factories = factories
         self.world = new_world(new_map(), config.lives)
-        self.maze = PhotoImage()
-        self.maze_map: Map | None = None
-        self.maze_zoom = 0
 
     def update(self, dt: float, keys: set[str]) -> Transition:
         if "Escape" in keys:
@@ -70,15 +66,15 @@ class Gameplay(Scene):
                 )
         return None
 
-    def draw(self, canvas: Canvas) -> None:
-        canvas.delete("all")
-        zoom = self.zoom(canvas)
-        self.canvas = canvas
-        self.size = 16 * zoom
-        self.walls = self.assets.walls[zoom]
-        sprites = self.assets.sprites[zoom]
+    def draw(self, framebuffer: FrameBuffer) -> None:
+        framebuffer.clear(b"\x00\x00\x00\xFF")
+        self.framebuffer = framebuffer
+        scale = self.get_scale(framebuffer)
+        self.cell_size = self.assets.size * scale
+        self.walls = self.assets.walls[scale]
+        sprites = self.assets.sprites[scale]
 
-        self.draw_map(zoom)
+        self.draw_map()
         self.draw_items(sprites)
         pacman = self.world.pacman
         if pacman.alive or self.world.freeze > 0:
@@ -90,16 +86,16 @@ class Gameplay(Scene):
         self.draw_hud(sprites)
         self.center()
 
-    def zoom(self, canvas: Canvas) -> int:
+    def get_scale(self, framebuffer: FrameBuffer) -> int:
         rows, cols = len(self.world.map), len(self.world.map[0])
-        w, h = canvas.winfo_width(), canvas.winfo_height()
+        w, h = framebuffer.width, framebuffer.height
         return max(1, min(w // (16 * cols), h // (16 * (rows + 2))))
 
     def center(self) -> None:
         rows, cols = len(self.world.map), len(self.world.map[0])
-        dx = (self.canvas.winfo_width() - cols * self.size) // 2
-        dy = (self.canvas.winfo_height() - (rows + 2) * self.size) // 2
-        self.canvas.move("all", dx, dy + self.size)
+        dx = (self.framebuffer.width - cols * self.cell_size) // 2
+        dy = (self.framebuffer.height - (rows + 2) * self.cell_size) // 2
+        self.framebuffer.move(dx, dy + self.cell_size)
 
     @staticmethod
     def ghost_animation(ghost: Ghost, sprites: Sprites) -> Animation:
@@ -131,23 +127,18 @@ class Gameplay(Scene):
         index = int(pacman.death_progress * len(frames))
         self.draw_sprite(pacman, frames[min(index, len(frames) - 1)])
 
-    def draw_sprite(self, entity: Entity, frame: PhotoImage) -> None:
-        x = entity.pos.x + entity.direction.dx * entity.progress + 0.5
-        y = entity.pos.y + entity.direction.dy * entity.progress + 0.5
-        self.canvas.create_image(x * self.size, y * self.size, image=frame)
+    def draw_sprite(self, entity: Entity, frame: Image) -> None:
+        x = entity.pos.x + entity.direction.dx * entity.progress
+        y = entity.pos.y + entity.direction.dy * entity.progress
+        self.framebuffer.put_image(
+            frame, x * self.cell_size, y * self.cell_size
+        )
 
-    def draw_map(self, zoom: int) -> None:
-        map = self.world.map
-        if self.maze_map is not map or self.maze_zoom != zoom:
-            self.maze = PhotoImage(
-                width=len(map[0]) * self.size, height=len(map) * self.size
-            )
-            for y, line in enumerate(map):
-                for x, cell in enumerate(line):
-                    if is_solid(cell):
-                        self.draw_cell(x, y)
-            self.maze_map, self.maze_zoom = map, zoom
-        self.canvas.create_image(0, 0, image=self.maze, anchor="nw")
+    def draw_map(self) -> None:
+        for y, line in enumerate(self.world.map):
+            for x, cell in enumerate(line):
+                if is_solid(cell):
+                    self.draw_cell(x, y)
 
     def draw_cell(self, x: int, y: int) -> None:
         cell = self.world.map[y][x]
@@ -183,10 +174,10 @@ class Gameplay(Scene):
     def put(
         self, tile: Wall, x: int, y: int, v: Direction, h: Direction
     ) -> None:
-        half = self.size // 2
-        px = self.size * x + (half if h is Direction.EAST else 0)
-        py = self.size * y + (half if v is Direction.SOUTH else 0)
-        self.maze.tk.call(self.maze, "copy", self.walls[tile], "-to", px, py)
+        half = self.cell_size / 2
+        px = self.cell_size * x + (half if h is Direction.EAST else 0)
+        py = self.cell_size * y + (half if v is Direction.SOUTH else 0)
+        self.framebuffer.put_image(self.walls[tile], px, py)
 
     def cell_at(self, x: int, y: int) -> int:
         map = self.world.map
@@ -196,30 +187,27 @@ class Gameplay(Scene):
 
     def draw_items(self, sprites: Sprites) -> None:
         for (x, y), item in self.world.items.items():
-            self.canvas.create_image(
-                x * self.size,
-                y * self.size,
-                image=sprites.items[item],
-                anchor="nw",
+            self.framebuffer.put_image(
+                sprites.items[item], x * self.cell_size, y * self.cell_size,
             )
 
     def draw_hud(self, sprites: Sprites) -> None:
         rows, cols = len(self.world.map), len(self.world.map[0])
-        font = self.assets.fonts.fit(self.size / 2)[FontColor.WHITE]
+        font = self.assets.fonts.fit(self.cell_size / 2)[FontColor.WHITE]
         score, level = self.world.score, self.world.level
-        self.put_hud(glyphs(f"Score {score}", font), 0, -1)
-        self.put_hud(glyphs(f"Level {level}", font), cols, -1, right=True)
+        self.put_hud(glyphs(f"Score {score}", font), cols // 2, rows)
+        self.put_hud(glyphs(f"Level {level}", font), cols, rows, left_align=False)
         life = sprites.pacman[Direction.EAST][1]
         self.put_hud([life] * self.world.lives, 0, rows)
 
     def put_hud(
         self,
-        images: list[PhotoImage],
-        cx: float,
-        cy: float,
-        right: bool = False,
+        images: list[Image],
+        cx: int,
+        cy: int,
+        left_align: bool = True,
     ) -> None:
         width, height = images_size(images)
-        x = cx * self.size - (width if right else 0)
-        y = cy * self.size + (self.size - height) / 2
-        put_images(images, self.canvas, x, y)
+        x = cx * self.cell_size - (0 if left_align else width)
+        y = cy * self.cell_size + (self.cell_size - height) // 2
+        put_images(images, self.framebuffer, x, y)

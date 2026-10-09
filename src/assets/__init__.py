@@ -21,6 +21,7 @@ class Assets:
     sprites: Scaled[Sprites]
     fonts: Scaled[Fonts]
     walls: Scaled[Walls]
+    size: int = 16
 
 
 def load_assets(config: Config) -> Assets:
