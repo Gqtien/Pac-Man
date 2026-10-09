@@ -24,7 +24,9 @@ def load_highscore(filepath: str) -> HighScore:
 
 def update_highscore(
     highscore: HighScore, name: str, score: int, filepath: str
-) -> HighScore:
+) -> None:
+    if highscore.get(name, 0) > score:
+        return
     highscore[name] = score
     highscore.move_to_end(name, last=False)
     keys = list(highscore.keys())
@@ -37,7 +39,6 @@ def update_highscore(
         if i >= 10:
             del highscore[k]
     save_highscore(highscore, filepath)
-    return highscore
 
 
 def save_highscore(highscore: HighScore, filepath: str) -> None:
