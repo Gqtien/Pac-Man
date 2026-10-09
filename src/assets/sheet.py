@@ -1,15 +1,15 @@
-from PIL.Image import Image
-import PIL
+from pathlib import Path
+from PIL import Image
 
 
 class SpriteSheet:
-    def __init__(self, image: Image, cell: int) -> None:
+    def __init__(self, image: Image.Image, cell: int) -> None:
         self.image = image
         self.cell = cell
 
     @classmethod
-    def load(cls, path: str, cell: int) -> "SpriteSheet":
-        with PIL.Image.open(path) as img:
+    def load(cls, path: Path, cell: int) -> "SpriteSheet":
+        with Image.open(path) as img:
             img.load()
         return cls(img, cell)
 
@@ -17,17 +17,17 @@ class SpriteSheet:
         return SpriteSheet(
             self.image.resize(
                 (self.image.width * scale, self.image.height * scale),
-                PIL.Image.Resampling.NEAREST
+                Image.Resampling.NEAREST
             ),
             self.cell * scale
         )
 
-    def cut(self, x: int, y: int, w: int, h: int) -> Image:
+    def cut(self, x: int, y: int, w: int, h: int) -> Image.Image:
         return self.image.crop((x, y, x + w, y + h))
 
-    def sprite(self, col: int, row: int) -> Image:
+    def sprite(self, col: int, row: int) -> Image.Image:
         size = self.cell
         return self.cut(col * size, row * size, size, size)
 
-    def sprites(self, cols: range, row: int) -> list[Image]:
+    def sprites(self, cols: range, row: int) -> list[Image.Image]:
         return [self.sprite(col, row) for col in cols]

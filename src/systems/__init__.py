@@ -1,4 +1,4 @@
-from config import Config
+from storage import Config
 from models import World
 from .timer import spend
 from .pacman import step as pacman_step

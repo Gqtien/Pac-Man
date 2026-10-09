@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from config import Config
+from storage import Config
 from .font import Font, FontColor, Fonts, load_fonts
 from .scaled import Scaled
 from .sheet import SpriteSheet

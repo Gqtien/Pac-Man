@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from pathlib import Path
 from assets import load_assets
-from config import load_config
+from storage import load_config
 from scenes.factories import SceneFactories
 from scenes import SceneManager, Main, Gameplay, Win, Death
 from functools import partial

@@ -1,4 +1,4 @@
-from config import Config
+from storage import Config
 from models import Direction, Pacman, World
 from .movement import move
 from .animate import animate

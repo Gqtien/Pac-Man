@@ -1,4 +1,4 @@
-from config import Config
+from storage import Config
 from models import World, Item, GhostState, Entity, Ghost
 from .house import preferred
 

@@ -2,11 +2,10 @@ from models import FrameBuffer
 from scenes.factories import SceneFactories
 from assets.font import LINES
 from assets import Assets, FontColor
-from config import Config
+from storage import Config, save_score
 from render import put_lines_centered
 from .base import Scene, Transition, Reset
 from abc import ABC
-from systems.highscore import load_highscore, update_highscore, HighScore
 from PIL.Image import Image
 
 
@@ -26,14 +25,10 @@ class EndScene(Scene, ABC):
 
     def update(self, dt: float, keys: set[str]) -> Transition:
         if "Return" in keys and self.name_buffer:
-            highscore: HighScore = load_highscore(
-                self.config.highscore_filepath
-            )
-            update_highscore(
-                highscore,
+            save_score(
+                self.config.highscore_filepath,
                 self.name_buffer,
                 self.score,
-                self.config.highscore_filepath
             )
             return Reset(self.factories.main(self.config, self.assets))
         if "BackSpace" in keys:

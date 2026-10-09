@@ -1,6 +1,6 @@
 from models import FrameBuffer
 from assets import Assets, FontColor
-from config import Config
+from storage import Config
 from render import put_lines_centered
 from .base import Scene, Pop, Transition
 from PIL.Image import Image, open as open_image

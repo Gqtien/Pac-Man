@@ -1,11 +1,10 @@
 from models import FrameBuffer
 from PIL.Image import Image
 from .base import Scene, Transition, Push, Pop
-from config import Config
+from storage import Config, load_highscores
 from assets import Assets, FontColor
 from scenes.factories import SceneFactories
 from render import put_lines_centered
-from systems.highscore import load_highscore, HighScore
 
 
 class Main(Scene):
@@ -15,7 +14,7 @@ class Main(Scene):
         self.config = config
         self.assets = assets
         self.factories = factories
-        self.highscore: HighScore = load_highscore(config.highscore_filepath)
+        self.highscores = load_highscores(config.highscore_filepath)
 
     def update(self, dt: float, keys: set[str]) -> Transition:
         if "q" in keys:
@@ -37,7 +36,7 @@ class Main(Scene):
         lines.append(("", title))
         lines.extend(
             (f"{name:10} - {score:07}", highscore_table)
-            for name, score in self.highscore.items()
+            for name, score in self.highscores.items()
         )
         lines.append(("", title))
         lines.append(('Press "Space" to play', sub))

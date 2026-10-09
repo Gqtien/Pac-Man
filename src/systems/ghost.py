@@ -1,6 +1,6 @@
 import random
 from typing import Callable
-from config import Config
+from storage import Config
 from .pathfind import pathfind
 from .movement import can_move, move
 from .animate import animate

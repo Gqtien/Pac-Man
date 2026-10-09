@@ -1,6 +1,6 @@
 from typing import Callable
 from PIL.Image import Image
-from config import Config
+from storage import Config
 from models.world import respawn
 from render import glyphs, images_size, put_images
 from systems import Outcome, step
