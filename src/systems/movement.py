@@ -2,15 +2,20 @@ from models import Direction, Entity, Map, Vec2, World, can_cross
 
 
 def move(
-    entity: Entity, world: World, speed: float, dt: float,
-    door_open: bool = False
+    entity: Entity,
+    world: World,
+    speed: float,
+    dt: float,
+    door_open: bool = False,
 ) -> None:
     if entity.direction.is_still:
         entity.progress = 0.0
     # update direction from wanted
-    if entity.just_moved and \
-       not entity.wanted.is_still and \
-       can_move(entity.pos, entity.wanted, world.map, door_open):
+    if (
+        entity.just_moved
+        and not entity.wanted.is_still
+        and can_move(entity.pos, entity.wanted, world.map, door_open)
+    ):
         entity.direction = entity.wanted
     # update progress from direction
     if entity.direction.is_still:

@@ -1,5 +1,5 @@
 from models import Keys
-from scenes.factories import SceneFactories
+from .factories import SceneFactories
 from assets.font import LINES
 from assets import Assets, FontColor
 from storage import Config, save_score
@@ -62,7 +62,7 @@ class EndScene(Scene):
 
 
 class Lost(EndScene):
-    message = "You Died"
+    message = "Game Over !"
     color = FontColor.RED
 
 

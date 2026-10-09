@@ -52,7 +52,7 @@ def update_pinky(ghost: Ghost, world: World) -> None:
 
 def update_inky(ghost: Ghost, world: World) -> None:
     blinky: Ghost = next(
-        g for g in world.ghosts if g.personality == GhostPersonality.BLINKY
+        g for g in world.ghosts if g.personality is GhostPersonality.BLINKY
     )
     ahead = world.pacman.pos + world.pacman.direction.vec
     target = blinky.pos + (ahead - blinky.pos) * 2

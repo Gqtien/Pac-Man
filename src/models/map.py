@@ -22,10 +22,6 @@ def has_wall(cell: int, direction: Direction) -> bool:
     return cell & WALLS[direction] != 0
 
 
-def open_sides(cell: int) -> list[Direction]:
-    return [direction for direction in WALLS if not has_wall(cell, direction)]
-
-
 def is_solid(cell: int) -> bool:
     return cell != 0
 

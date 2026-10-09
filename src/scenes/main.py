@@ -2,7 +2,7 @@ from models import Keys
 from .base import Scene, Transition, Push, Pop
 from storage import Config, load_highscores
 from assets import Assets, FontColor
-from scenes.factories import SceneFactories
+from .factories import SceneFactories
 from render import (
     FrameBuffer,
     Line,
@@ -14,7 +14,7 @@ from render import (
 
 class Main(Scene):
     def __init__(
-            self, factories: SceneFactories, config: Config, assets: Assets
+        self, factories: SceneFactories, config: Config, assets: Assets
     ) -> None:
         self.config = config
         self.assets = assets
@@ -25,9 +25,7 @@ class Main(Scene):
         if Keys.Q in keys:
             return Pop()
         if Keys.Space in keys:
-            return Push(
-                self.factories.gameplay(self.config, self.assets)
-            )
+            return Push(self.factories.gameplay(self.config, self.assets))
         return None
 
     def draw(self, framebuffer: FrameBuffer) -> None:

@@ -18,7 +18,6 @@ from .map import (
     is_house,
     is_solid,
     is_wall,
-    open_sides,
 )
 
 __all__ = [
@@ -45,7 +44,6 @@ __all__ = [
     "is_house",
     "is_solid",
     "is_wall",
-    "open_sides",
     "init_items",
     "Speed",
     "Speeds",

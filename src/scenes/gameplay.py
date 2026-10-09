@@ -10,7 +10,7 @@ from render import (
 )
 from systems import Outcome, step
 from .base import Scene, Push, Transition, Reset
-from scenes.factories import SceneFactories
+from .factories import SceneFactories
 from .pause import Pause
 from assets import Assets, FontColor, Sprites
 from models import Direction, Keys, new_map, new_world, next_level, respawn
