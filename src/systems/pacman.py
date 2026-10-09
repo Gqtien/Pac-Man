@@ -1,19 +1,19 @@
 from storage import Config
-from models import Direction, Pacman, World
+from models import Direction, Pacman, World, Keys
 from .movement import move
 from .animate import animate
 from .speed import pacman_factor
 from .timer import spend
 
-KEYMAP: dict[str, Direction] = {
-    "Up": Direction.NORTH,
-    "Down": Direction.SOUTH,
-    "Left": Direction.WEST,
-    "Right": Direction.EAST,
+KEYMAP: dict[int, Direction] = {
+    Keys.Up: Direction.NORTH,
+    Keys.Down: Direction.SOUTH,
+    Keys.Left: Direction.WEST,
+    Keys.Right: Direction.EAST,
 }
 
 
-def step(world: World, config: Config, dt: float, keys: set[str]) -> None:
+def step(world: World, config: Config, dt: float, keys: set[int]) -> None:
     if config.cheat_invisible_key in keys:
         world.pacman.is_invisible = not world.pacman.is_invisible
     if not world.pacman.alive:
@@ -26,7 +26,7 @@ def step(world: World, config: Config, dt: float, keys: set[str]) -> None:
     animate(world.pacman, config.anim_speed * factor, dt)
 
 
-def steer(pacman: Pacman, keys: set[str]) -> None:
+def steer(pacman: Pacman, keys: set[int]) -> None:
     for key in keys:
         if key in KEYMAP:
             pacman.wanted = KEYMAP[key]

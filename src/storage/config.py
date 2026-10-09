@@ -2,6 +2,7 @@ from dataclasses import asdict, dataclass, fields
 from logging import getLogger
 from pathlib import Path
 from typing import Any
+from models import Keys
 from .files import load_json, save_json
 
 log = getLogger(__name__)
@@ -14,9 +15,9 @@ class Config:
     speed: float = 10.0
     anim_speed: float = 10.0
     entity_hitbox: float = 0.5
-    cheat_win_key: str = "w"
-    cheat_invisible_key: str = "i"
-    cheat_freeze_ghosts_key: str = "f"
+    cheat_win_key: Keys = Keys.W
+    cheat_invisible_key: Keys = Keys.I
+    cheat_freeze_ghosts_key: Keys = Keys.F
     highscore_filepath: Path = Path("highscore.json")
     spritesheet: Path = Path("assets/spritesheet.png")
     walls: Path = Path("assets/walls.png")
@@ -63,6 +64,8 @@ def load_config(path: Path) -> Config:
 def parse(value: Any, default: Any) -> Any:
     if isinstance(value, bool) or isinstance(default, bool):
         return value if type(value) is type(default) else None
+    if isinstance(default, Keys) and isinstance(value, str):
+        return {key.name.lower(): key for key in Keys}.get(value.lower())
     if isinstance(default, Path) and isinstance(value, str):
         return Path(value)
     if isinstance(default, float) and isinstance(value, int):
@@ -75,6 +78,8 @@ def parse(value: Any, default: Any) -> Any:
 
 
 def to_json(value: Any) -> Any:
+    if isinstance(value, Keys):
+        return value.name.lower()
     if isinstance(value, Path):
         return str(value)
     return value

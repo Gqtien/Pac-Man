@@ -20,6 +20,7 @@ from assets import (
     Wall,
 )
 from models import (
+    Keys,
     Direction,
     Entity,
     Ghost,
@@ -30,7 +31,8 @@ from models import (
     next_level,
     is_door,
     is_house,
-    is_solid, FrameBuffer,
+    is_solid,
+    FrameBuffer,
 )
 
 
@@ -43,8 +45,8 @@ class Gameplay(Scene):
         self.factories = factories
         self.world = new_world(new_map(), config.lives)
 
-    def update(self, dt: float, keys: set[str]) -> Transition:
-        if "Escape" in keys:
+    def update(self, dt: float, keys: set[int]) -> Transition:
+        if Keys.Escape in keys:
             return Push(Pause(self.config, self.assets))
         match step(self.world, self.config, dt, keys):
             case Outcome.LOST:
@@ -196,7 +198,9 @@ class Gameplay(Scene):
         font = self.assets.fonts.fit(self.cell_size / 2)[FontColor.WHITE]
         score, level = self.world.score, self.world.level
         self.put_hud(glyphs(f"Score {score}", font), cols // 2, rows)
-        self.put_hud(glyphs(f"Level {level}", font), cols, rows, left_align=False)
+        self.put_hud(
+            glyphs(f"Level {level}", font), cols, rows, left_align=False
+        )
         life = sprites.pacman[Direction.EAST][1]
         self.put_hud([life] * self.world.lives, 0, rows)
 

@@ -1,4 +1,4 @@
-from models import FrameBuffer
+from models import FrameBuffer, Keys
 from PIL.Image import Image
 from .base import Scene, Transition, Push, Pop
 from storage import Config, load_highscores
@@ -16,10 +16,10 @@ class Main(Scene):
         self.factories = factories
         self.highscores = load_highscores(config.highscore_filepath)
 
-    def update(self, dt: float, keys: set[str]) -> Transition:
-        if "q" in keys:
+    def update(self, dt: float, keys: set[int]) -> Transition:
+        if Keys.Q in keys:
             return Pop()
-        if " " in keys:
+        if Keys.Space in keys:
             return Push(
                 self.factories.gameplay(self.config, self.assets)
             )

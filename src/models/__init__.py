@@ -6,6 +6,7 @@ from .items import Items, Item, init_items
 from .speed import Speed, Speeds, speeds
 from .house import dot_limit, starve_limit
 from .framebuffer import FrameBuffer
+from .keys import Keys
 from .map import (
     Map,
     Maze,
@@ -34,6 +35,7 @@ __all__ = [
     "World",
     "Items",
     "Item",
+    "Keys",
     "from_maze",
     "new_map",
     "new_world",
@@ -50,5 +52,5 @@ __all__ = [
     "Speeds",
     "speeds",
     "starve_limit",
-    "dot_limit"
+    "dot_limit",
 ]

@@ -1,4 +1,4 @@
-from models import FrameBuffer
+from models import FrameBuffer, Keys
 from assets import Assets, FontColor
 from storage import Config
 from render import put_lines_centered
@@ -13,8 +13,8 @@ class Pause(Scene):
         self.overlay: Image = img
         self.assets = assets
 
-    def update(self, dt: float, keys: set[str]) -> Transition:
-        if "Escape" in keys:
+    def update(self, dt: float, keys: set[int]) -> Transition:
+        if Keys.Escape in keys:
             return Pop()
         return None
 

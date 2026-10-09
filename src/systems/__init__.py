@@ -8,7 +8,7 @@ from .house import step as house_step
 from .outcome import Outcome
 
 
-def step(world: World, config: Config, dt: float, keys: set[str]) -> Outcome:
+def step(world: World, config: Config, dt: float, keys: set[int]) -> Outcome:
     if config.cheat_win_key in keys:
         return Outcome.WON
     world.freeze, dt = spend(world.freeze, dt)
