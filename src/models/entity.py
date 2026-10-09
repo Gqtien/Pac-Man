@@ -29,6 +29,10 @@ class Pacman(Entity):
     stall: float = 0.0
     starve: float = 0.0
 
+    @property
+    def death_progress(self) -> float:
+        return min(self.death / 2, 1.0)
+
 
 class GhostPersonality(Enum):
     BLINKY = auto()

@@ -124,7 +124,7 @@ class Gameplay(Scene):
         self.draw_sprite(entity, frame)
 
     def draw_death(self, pacman: Pacman, frames: Animation) -> None:
-        index = int(pacman.death / self.config.anim_speed * len(frames))
+        index = int(pacman.death_progress * len(frames))
         self.draw_sprite(pacman, frames[min(index, len(frames) - 1)])
 
     def draw_sprite(self, entity: Entity, frame: PhotoImage) -> None:

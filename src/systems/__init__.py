@@ -18,12 +18,12 @@ def step(world: World, config: Config, dt: float, keys: set[str]) -> Outcome:
             ghost_step(ghost, world, config, dt)
         collisions_step(world, config)
         house_step(world, dt)
-    return outcome(world, config)
+    return outcome(world)
 
 
-def outcome(world: World, config: Config) -> Outcome:
+def outcome(world: World) -> Outcome:
     if not world.pacman.alive:
-        if world.pacman.death < config.anim_speed:
+        if world.pacman.death_progress < 1.0:
             return Outcome.CONTINUE
         return Outcome.LOST if world.lives <= 0 else Outcome.DIED
     if not world.items:
