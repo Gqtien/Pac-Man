@@ -31,16 +31,17 @@ class SceneManager:
         if not self.stack:
             self.tk.destroy()
             return
-        self.canvas.delete("all")
         now = time.perf_counter()
         dt, self.last = min(now - self.last, 0.1), now
         keys, self.keys = self.keys, set()
+        self.canvas.delete("all")
 
         transition: Transition = self.top.update(dt, keys)
         self.apply(transition)
         for scene in self.stack:
             scene.draw(self.canvas)
-        self.tk.after(1, self.tick)
+        spent = time.perf_counter() - now
+        self.tk.after(max(1, round((1 / 60 - spent) * 1000)), self.tick)
 
     def apply(self, transition: Transition) -> None:
         match transition:
