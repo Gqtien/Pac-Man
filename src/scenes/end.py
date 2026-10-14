@@ -33,17 +33,14 @@ class EndScene(Scene):
     def update(self, dt: float, keys: set[int]) -> Transition:
         if Keys.Escape in keys:
             return Reset(self.factories.main(self.config, self.assets))
-        if Keys.Return in keys and self.name_buffer:
-            save_score(
-                self.config.highscore_path,
-                self.name_buffer,
-                self.score,
-            )
+        name = self.name_buffer.strip()
+        if Keys.Return in keys and name:
+            save_score(self.config.highscore_path, name, self.score)
             return Reset(self.factories.main(self.config, self.assets))
         if Keys.Backspace in keys:
             self.name_buffer = self.name_buffer[:-1]
         for code in keys:
-            k = chr(code).upper()
+            k = chr(code).upper() if code < 0x110000 else ""
             if len(k) != 1 or k not in "".join(LINES):
                 continue
             self.name_buffer += k
