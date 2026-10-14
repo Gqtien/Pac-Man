@@ -12,6 +12,7 @@ log = getLogger(__name__)
 class Config:
     lives: int = 3
     levels_to_win: int = 3
+    level_time_limit: int = 180
     speed: float = 10.0
     anim_speed: float = 10.0
     entity_hitbox: float = 0.5

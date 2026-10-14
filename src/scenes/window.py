@@ -1,6 +1,6 @@
 import time
-from collections.abc import Callable
 from mlx import Mlx
+from typing import Callable
 from render import FrameBuffer
 
 

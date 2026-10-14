@@ -4,7 +4,7 @@ from pathlib import Path
 from assets import load_assets
 from storage import load_config
 from scenes.factories import SceneFactories
-from scenes import SceneManager, Main, Gameplay, Won, Lost
+from scenes import SceneManager, Main, Gameplay, Won, Lost, TimedOut
 from functools import partial
 
 
@@ -14,6 +14,7 @@ def build_scenes() -> SceneFactories:
     s.gameplay = partial(Gameplay, s)
     s.won = partial(Won, s)
     s.lost = partial(Lost, s)
+    s.timed_out = partial(TimedOut, s)
     return s
 
 

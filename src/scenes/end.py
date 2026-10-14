@@ -72,3 +72,8 @@ class Won(EndScene):
 class Lost(EndScene):
     message = "Game Over !"
     color = FontColor.RED
+
+
+class TimedOut(EndScene):
+    message = "You Timed Out !"
+    color = FontColor.ORANGE

@@ -17,10 +17,10 @@ class Grid:
         self.framebuffer.put_image(image, px, py)
 
     def put_row(
-        self, images: list[Image], col: int, row: int, left_align: bool = True
+        self, images: list[Image], col: float, row: int, align: float = 0
     ) -> None:
         width, height = images_size(images)
-        x = self.left + col * self.cell_size - (0 if left_align else width)
+        x = self.left + int(col * self.cell_size - width * align)
         y = self.top + row * self.cell_size + (self.cell_size - height) // 2
         put_images(images, self.framebuffer, x, y)
 
