@@ -10,9 +10,9 @@ from models import Direction, Keys, new_map, new_world, next_level, respawn
 from render import (
     FrameBuffer,
     Grid,
+    MazeLayer,
     draw_entities,
     draw_items,
-    draw_maze,
     fit_grid,
     glyphs,
 )
@@ -26,6 +26,7 @@ class Gameplay(Scene):
         self.assets = assets
         self.factories = factories
         self.world = new_world(new_map(seed=42), config.lives)
+        self.maze = MazeLayer()
 
     def update(self, dt: float, keys: set[int]) -> Transition:
         if Keys.Escape in keys:
@@ -53,7 +54,7 @@ class Gameplay(Scene):
         grid = screen.offset(0, 1)
         sprites = assets.sprites[scale]
         framebuffer.clear()
-        draw_maze(grid, world.map, assets.walls[scale])
+        self.maze.draw(grid, world.map, assets.walls[scale])
         draw_items(grid, world.items, sprites)
         draw_entities(grid, world, sprites)
         self.draw_hud(grid, sprites, cols, rows)

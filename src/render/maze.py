@@ -1,6 +1,8 @@
 from typing import Callable, TypeAlias
+from PIL.Image import Image
 from assets import Wall, Walls
 from models import Direction, Map, is_door, is_house, is_solid
+from .framebuffer import FrameBuffer
 from .grid import Grid
 
 Frame: TypeAlias = dict[
@@ -32,6 +34,28 @@ DOOR = {
     Direction.EAST: (Wall.DOOR_E_TOP, Wall.DOOR_E_BOTTOM),
     Direction.WEST: (Wall.DOOR_W_TOP, Wall.DOOR_W_BOTTOM),
 }
+
+
+class MazeLayer:
+    def __init__(self) -> None:
+        self.map: Map = []
+        self.images: dict[int, Image] = {}
+
+    def draw(self, grid: Grid, map: Map, walls: Walls) -> None:
+        if map is not self.map:
+            self.map, self.images = map, {}
+        size = grid.cell_size
+        if size not in self.images:
+            self.images[size] = maze_image(map, walls, size)
+        image = self.images[size]
+        grid.framebuffer.put_image(image, grid.left, grid.top, opaque=True)
+
+
+def maze_image(map: Map, walls: Walls, cell_size: int) -> Image:
+    framebuffer = FrameBuffer(len(map[0]) * cell_size, len(map) * cell_size)
+    framebuffer.clear()
+    draw_maze(Grid(framebuffer, cell_size, 0, 0), map, walls)
+    return framebuffer.canvas
 
 
 def draw_maze(grid: Grid, map: Map, walls: Walls) -> None:
