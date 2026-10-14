@@ -23,7 +23,7 @@ class Gameplay(Scene):
         self.config = config
         self.assets = assets
         self.factories = factories
-        self.world = new_world(new_map(), config.lives)
+        self.world = new_world(new_map(seed=42), config.lives)
 
     def update(self, dt: float, keys: set[int]) -> Transition:
         if Keys.Escape in keys:

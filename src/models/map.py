@@ -14,8 +14,8 @@ WALLS = {
 }
 
 
-def new_map() -> Map:
-    return from_maze(MazeGenerator().maze)
+def new_map(seed: int = 0) -> Map:
+    return from_maze(MazeGenerator(seed=seed).maze)
 
 
 def has_wall(cell: int, direction: Direction) -> bool:
