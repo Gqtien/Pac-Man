@@ -4,8 +4,7 @@ from PIL import Image
 
 def load_image(path: Path) -> Image.Image:
     with Image.open(path) as image:
-        image.load()
-    return image
+        return image.convert("RGBA")
 
 
 class SpriteSheet:

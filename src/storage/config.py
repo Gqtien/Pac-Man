@@ -1,4 +1,4 @@
-from dataclasses import asdict, dataclass, fields
+from dataclasses import Field, asdict, dataclass, field, fields
 from logging import getLogger
 from pathlib import Path
 from typing import Any
@@ -10,38 +10,38 @@ log = getLogger(__name__)
 
 @dataclass
 class Config:
-    lives: int = 3
-    levels_to_win: int = 3
-    level_time_limit: int = 180
-    speed: float = 10.0
-    anim_speed: float = 10.0
-    entity_hitbox: float = 0.5
+    lives: int = field(default=3, metadata={"bounds": (1, 99)})
+    levels_to_win: int = field(default=3, metadata={"bounds": (1, 99)})
+    level_time_limit: int = field(default=180, metadata={"bounds": (1, 3600)})
+    speed: float = field(default=10.0, metadata={"bounds": (1, 15)})
+    anim_speed: float = field(default=10.0, metadata={"bounds": (1, 60)})
+    entity_hitbox: float = field(default=0.5, metadata={"bounds": (0.25, 1)})
     cheat_win_key: Keys = Keys.W
     cheat_invincible_key: Keys = Keys.I
     cheat_freeze_ghosts_key: Keys = Keys.F
     highscore_path: Path = Path("saves/highscore.json")
-    spritesheet_path: Path = Path("assets/spritesheet.png")
-    walls_path: Path = Path("assets/walls.png")
-    font_path: Path = Path("assets/font.png")
-    overlay_path: Path = Path("assets/pause_overlay.png")
 
 
 def load_config(path: Path) -> Config:
     config = Config()
     data = load_json(path)
-    if data is None:
-        return config
+    if data is not None:
+        fill(config, data, path)
+    config.highscore_path = path.parent / config.highscore_path
+    return config
 
+
+def fill(config: Config, data: dict[str, Any], path: Path) -> None:
     missing: bool = False
 
-    for field in fields(config):
-        name, default = field.name, getattr(config, field.name)
+    for entry in fields(config):
+        name, default = entry.name, getattr(config, entry.name)
         if name not in data:
             missing = True
             continue
 
-        value = parse(data[name], default)
-        if value is None or missing_file(name, value):
+        value = parse(entry, data[name], default)
+        if value is None:
             log.warning(
                 f"{path}: invalid {name!r} {data[name]!r}, "
                 f"using default {to_json(default)!r}"
@@ -50,7 +50,7 @@ def load_config(path: Path) -> Config:
 
         setattr(config, name, value)
 
-    known = {field.name for field in fields(config)}
+    known = {entry.name for entry in fields(config)}
     for key in data:
         if key not in known:
             log.warning(f"{path}: unknown key '{key}' ignored")
@@ -59,29 +59,22 @@ def load_config(path: Path) -> Config:
         defaults = {n: to_json(v) for n, v in asdict(Config()).items()}
         save_json(path, {**defaults, **data})
 
-    return config
 
-
-def parse(value: Any, default: Any) -> Any:
+def parse(entry: Field, value: Any, default: Any) -> Any:
     if isinstance(value, bool) or isinstance(default, bool):
         return value if type(value) is type(default) else None
-    if isinstance(default, Keys) and isinstance(value, str):
-        return {key.name.lower(): key for key in Keys}.get(value.lower())
-    if isinstance(default, Path) and isinstance(value, str):
-        return Path(value)
-    if isinstance(default, float) and isinstance(value, int):
-        value = float(value)
-    if not isinstance(value, type(default)):
+    if isinstance(default, Keys):
+        return {k.name.lower(): k for k in Keys if len(k.name) == 1}.get(
+            value.lower()
+        ) if isinstance(value, str) else None
+    if isinstance(default, Path):
+        return Path(value) if isinstance(value, str) else None
+    if not isinstance(value, (int, float)):
         return None
-    if isinstance(value, (int, float)) and value <= 0:
+    if isinstance(default, int) and isinstance(value, float):
         return None
-    return value
-
-
-def missing_file(name: str, value: Any) -> bool:
-    if name == "highscore_path":
-        return False
-    return isinstance(value, Path) and not value.is_file()
+    low, high = entry.metadata["bounds"]
+    return type(default)(value) if low <= value <= high else None
 
 
 def to_json(value: Any) -> Any:

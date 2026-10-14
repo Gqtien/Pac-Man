@@ -8,9 +8,5 @@
   "cheat_win_key": "w",
   "cheat_invincible_key": "i",
   "cheat_freeze_ghosts_key": "f",
-  "highscore_path": "saves/highscore.json",
-  "spritesheet_path": "assets/spritesheet.png",
-  "walls_path": "assets/walls.png",
-  "font_path": "assets/font.png",
-  "overlay_path": "assets/pause_overlay.png"
+  "highscore_path": "saves/highscore.json"
 }

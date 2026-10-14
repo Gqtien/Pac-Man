@@ -19,19 +19,20 @@ def build_scenes() -> SceneFactories:
 
 
 def run() -> None:
+    root = Path(__file__).resolve().parent.parent
     parser = ArgumentParser()
     parser.add_argument(
         "config",
         nargs="?",
         type=Path,
-        default=Path("config.json"),
+        default=root / "config.json",
         help="config file to load (default: %(default)s)",
     )
     args = parser.parse_args()
-    manager = SceneManager()
     config = load_config(args.config)
-    assets = load_assets(config)
+    assets = load_assets(root / "assets")
     factories = build_scenes()
+    manager = SceneManager()
     manager.start(Main(factories, config, assets))
 
 

@@ -1,7 +1,7 @@
-from collections.abc import Iterable
+import os
 from logging import getLogger
 from pathlib import Path
-from typing import TypeAlias
+from typing import Any, TypeAlias, Iterable
 from .files import load_json, save_json
 
 log = getLogger(__name__)
@@ -11,7 +11,7 @@ Highscores: TypeAlias = dict[str, int]
 
 
 def load_highscores(path: Path) -> Highscores:
-    if not path.exists():
+    if not os.path.isfile(path):
         return {}
     data = load_json(path)
     if data is None:
@@ -19,16 +19,34 @@ def load_highscores(path: Path) -> Highscores:
     scores = {
         name: score
         for name, score in data.items()
-        if type(score) is int and score >= 0
+        if is_entry(name, score)
     }
     if ignored := len(data) - len(scores):
-        log.warning(f"{path}: f{ignored} invalid scores ignored")
+        log.warning(f"{path}: {ignored} invalid scores ignored")
     return ranked(scores.items())
 
 
+def is_entry(name: str, score: Any) -> bool:
+    return (
+        0 < len(name) <= 10
+        and type(score) is int
+        and 0 <= score <= 9_999_999
+    )
+
+
 def save_score(path: Path, name: str, score: int) -> None:
+    if not can_overwrite(path):
+        log.error(f"{path}: not a highscore file, score not saved")
+        return
     scores = with_score(load_highscores(path), name, score)
     save_json(path, scores)
+
+
+def can_overwrite(path: Path) -> bool:
+    if not os.path.exists(path):
+        return True
+    data = load_json(path)
+    return data is not None and all(type(s) is int for s in data.values())
 
 
 def with_score(scores: Highscores, name: str, score: int) -> Highscores:

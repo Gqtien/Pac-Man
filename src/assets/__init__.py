@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from storage import Config
+from pathlib import Path
 from .font import Font, FontColor, Fonts, load_fonts
 from .scaled import Resized, Scaled
 from .sheet import SpriteSheet, load_image
@@ -16,12 +16,12 @@ class Assets:
     size: int = 16
 
 
-def load_assets(config: Config) -> Assets:
+def load_assets(folder: Path) -> Assets:
     return Assets(
-        Scaled(SpriteSheet.load(config.spritesheet_path), load_sprites),
-        Scaled(SpriteSheet.load(config.font_path, cell=8), load_fonts),
-        Scaled(SpriteSheet.load(config.walls_path, cell=8), load_walls),
-        Resized(load_image(config.overlay_path)),
+        Scaled(SpriteSheet.load(folder / "spritesheet.png"), load_sprites),
+        Scaled(SpriteSheet.load(folder / "font.png", cell=8), load_fonts),
+        Scaled(SpriteSheet.load(folder / "walls.png", cell=8), load_walls),
+        Resized(load_image(folder / "pause_overlay.png")),
     )
 
 
