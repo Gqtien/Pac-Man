@@ -24,7 +24,7 @@ def step(world: World, config: Config, dt: float, keys: set[int]) -> Outcome:
 
 def outcome(world: World, config: Config) -> Outcome:
     if not world.pacman.alive:
-        if world.pacman.death_progress < 1.0:
+        if world.pacman.death_progress < 1.0 and world.items:
             return Outcome.CONTINUE
         return Outcome.LOST if world.lives <= 0 else Outcome.DIED
     if world.timer >= config.level_time_limit:
