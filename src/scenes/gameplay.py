@@ -27,7 +27,7 @@ class Gameplay(Scene):
 
     def update(self, dt: float, keys: set[int]) -> Transition:
         if Keys.Escape in keys:
-            return Push(Pause(self.assets))
+            return Push(Pause(self.factories, self.config, self.assets))
         match step(self.world, self.config, dt, keys):
             case Outcome.LOST:
                 score = self.world.score

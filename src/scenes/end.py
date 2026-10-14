@@ -3,6 +3,7 @@ from .factories import SceneFactories
 from assets.font import LINES
 from assets import Assets, FontColor
 from storage import Config, save_score
+from .base import Scene, Transition, Reset
 from render import (
     FrameBuffer,
     Line,
@@ -10,7 +11,6 @@ from render import (
     text_font,
     title_font,
 )
-from .base import Scene, Transition, Reset
 
 
 class EndScene(Scene):
@@ -31,6 +31,8 @@ class EndScene(Scene):
         self.name_buffer: str = ""
 
     def update(self, dt: float, keys: set[int]) -> Transition:
+        if Keys.Escape in keys:
+            return Reset(self.factories.main(self.config, self.assets))
         if Keys.Return in keys and self.name_buffer:
             save_score(
                 self.config.highscore_path,
@@ -56,16 +58,17 @@ class EndScene(Scene):
             (f"Score - {self.score}", text),
             (f"Name:  {self.name_buffer:->10}", text),
             ('Press "Enter" to validate', text),
+            ('Or "Escape" to discard', text),
         ]
         framebuffer.clear()
         put_screen(framebuffer, lines)
 
 
-class Lost(EndScene):
-    message = "Game Over !"
-    color = FontColor.RED
-
-
 class Won(EndScene):
     message = "You Won !"
     color = FontColor.YELLOW
+
+
+class Lost(EndScene):
+    message = "Game Over !"
+    color = FontColor.RED
