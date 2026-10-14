@@ -1,3 +1,4 @@
+import sys
 from argparse import ArgumentParser
 from pathlib import Path
 from assets import load_assets
@@ -34,4 +35,7 @@ def run() -> None:
 
 
 if __name__ == "__main__":
-    run()
+    try:
+        run()
+    except BaseException as e:
+        sys.exit(f"Error: {e}")
