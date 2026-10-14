@@ -41,7 +41,7 @@ def load_config(path: Path) -> Config:
             continue
 
         value = parse(data[name], default)
-        if value is None:
+        if value is None or missing_file(name, value):
             log.warning(
                 f"{path}: invalid {name!r} {data[name]!r}, "
                 f"using default {to_json(default)!r}"
@@ -76,6 +76,12 @@ def parse(value: Any, default: Any) -> Any:
     if isinstance(value, (int, float)) and value <= 0:
         return None
     return value
+
+
+def missing_file(name: str, value: Any) -> bool:
+    if name == "highscore_path":
+        return False
+    return isinstance(value, Path) and not value.is_file()
 
 
 def to_json(value: Any) -> Any:
