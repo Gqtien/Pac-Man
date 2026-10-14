@@ -6,9 +6,9 @@ from .sheet import SpriteSheet
 Font: TypeAlias = dict[str, Image]
 
 LINES = (
-    "ABCDEFGHIJKLMNO",
-    "PQRSTUVWXYZ!©pts",
-    '0123456789/-" ',
+    "ABCDEFGHIJKLMNO ",
+    "PQRSTUVWXYZ!↑↓→←",
+    '0123456789/-"<>:',
 )
 
 
@@ -31,10 +31,8 @@ def load_fonts(sheet: SpriteSheet) -> Fonts:
 
 def load_font(sheet: SpriteSheet, color: FontColor) -> Font:
     top = color.value * 4
-    font = {
+    return {
         char: sheet.sprite(col, top + row)
         for row, line in enumerate(LINES)
         for col, char in enumerate(line)
     }
-    font[" "] = sheet.sprite(15, top)
-    return font
