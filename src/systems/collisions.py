@@ -60,4 +60,3 @@ def apply(world: World, ghost: Ghost) -> None:
                 return
             world.pacman.alive = False
             world.lives -= 1
-            world.freeze += 0.5

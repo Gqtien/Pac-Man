@@ -14,7 +14,6 @@ class Config:
     levels_to_win: int = field(default=3, metadata={"bounds": (1, 99)})
     level_time_limit: int = field(default=180, metadata={"bounds": (1, 3600)})
     speed: float = field(default=10.0, metadata={"bounds": (1, 15)})
-    anim_speed: float = field(default=10.0, metadata={"bounds": (1, 60)})
     entity_hitbox: float = field(default=0.5, metadata={"bounds": (0.25, 1)})
     cheat_win_key: Keys = Keys.W
     cheat_invincible_key: Keys = Keys.I

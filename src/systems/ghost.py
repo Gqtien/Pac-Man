@@ -3,7 +3,6 @@ from typing import Callable
 from storage import Config
 from .pathfind import pathfind
 from .movement import can_move, move
-from .animate import animate
 from .speed import ghost_factor
 from models import (
     Direction,
@@ -101,7 +100,6 @@ def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
     factor = ghost_factor(ghost, world)
     door_open = ghost.state in (GhostState.LEAVING, GhostState.DEAD)
     move(ghost, world, config.speed * factor, dt, door_open)
-    animate(ghost, config.anim_speed * factor, dt)
 
     if ghost.state is GhostState.FRIGHTENED:
         ghost.frightened -= dt

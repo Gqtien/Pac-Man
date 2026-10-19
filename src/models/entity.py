@@ -11,7 +11,6 @@ class Entity:
     just_moved: bool = field(default=True, kw_only=True)
     wanted: Direction = field(default=Direction.NONE, kw_only=True)
     progress: float = field(default=0.0, kw_only=True)
-    anim_progress: float = field(default=0.0, kw_only=True)
 
     @property
     def center(self) -> tuple[float, float]:
@@ -24,13 +23,14 @@ class Entity:
 @dataclass
 class Pacman(Entity):
     alive: bool = True
+    facing: Direction = Direction.WEST
     death: float = 0.0
     stall: float = 0.0
     starve: float = 0.0
 
     @property
     def death_progress(self) -> float:
-        return min(self.death / 2, 1.0)
+        return min(self.death / 3, 1.0)
 
 
 class GhostPersonality(Enum):

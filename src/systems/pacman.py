@@ -1,7 +1,6 @@
 from storage import Config
 from models import Direction, Pacman, World, Keys
 from .movement import move
-from .animate import animate
 from .speed import pacman_factor
 from .timer import spend
 
@@ -21,7 +20,8 @@ def step(world: World, config: Config, dt: float, keys: set[int]) -> None:
     world.pacman.stall, dt = spend(world.pacman.stall, dt)
     factor = pacman_factor(world)
     move(world.pacman, world, config.speed * factor, dt)
-    animate(world.pacman, config.anim_speed * factor, dt)
+    if not world.pacman.direction.is_still:
+        world.pacman.facing = world.pacman.direction
 
 
 def steer(pacman: Pacman, keys: set[int]) -> None:

@@ -12,6 +12,7 @@ from .outcome import Outcome
 def step(world: World, config: Config, dt: float, keys: set[int]) -> Outcome:
     cheats_step(world, config, keys)
     world.freeze, dt = spend(world.freeze, dt)
+    world.clock += dt
     pacman_step(world, config, dt, keys)
     if world.pacman.alive:
         world.timer += dt

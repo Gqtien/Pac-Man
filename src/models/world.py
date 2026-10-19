@@ -17,6 +17,7 @@ class World:
     lives: int = 3
     level: int = 1
     timer: float = 0.0
+    clock: float = 0.0
     freeze: float = 0.0
     multiplier: int = 1
     global_dots: int | None = None

@@ -22,11 +22,10 @@ class Sprites:
 def load_sprites(sheet: SpriteSheet) -> Sprites:
     return Sprites(
         pacman={
-            Direction.NONE: sheet.sprites(range(2, 3), 0),
-            Direction.EAST: sheet.sprites(range(3), 0),
-            Direction.WEST: sheet.sprites(range(3), 1),
-            Direction.NORTH: sheet.sprites(range(3), 2),
-            Direction.SOUTH: sheet.sprites(range(3), 3),
+            Direction.EAST: chomp(sheet, 0),
+            Direction.WEST: chomp(sheet, 1),
+            Direction.NORTH: chomp(sheet, 2),
+            Direction.SOUTH: chomp(sheet, 3),
         },
         death=sheet.sprites(range(3, 14), 0),
         ghost={
@@ -67,3 +66,8 @@ def load_sprites(sheet: SpriteSheet) -> Sprites:
             Item.SUPER_PACGUM: sheet.sprite(12, 3),
         },
     )
+
+
+def chomp(sheet: SpriteSheet, row: int) -> Animation:
+    opened, half, closed = sheet.sprites(range(3), row)
+    return [opened, half, closed, half]
