@@ -1,20 +1,22 @@
 import time
-from render import FrameBuffer
-from .base import Scene, Pop, Push, Reset, Transition
-from .window import Window
+from render import FrameBuffer, Window
+from .router import Router
+from .base import Scene
+from .transition import Transition, Push, Pop, Reset, Clear
+from .events import Init
 
 
 class SceneManager:
-    def __init__(self) -> None:
-        self.window = Window("PacMan")
+    def __init__(self, window: Window, router: Router) -> None:
+        self.window = window
         self.framebuffer = FrameBuffer(self.window.width, self.window.height)
         self.stack: list[Scene] = []
+        self.router: Router = router
         self.keys: set[int] = set()
         self.last = time.perf_counter()
 
-    def start(self, initial_scene: Scene) -> None:
-        self.stack.append(initial_scene)
-        self.last = time.perf_counter()
+    def run(self) -> None:
+        self.apply(self.router.route(Init()))
         self.window.run(self.tick, self.press)
 
     @property
@@ -30,7 +32,7 @@ class SceneManager:
         now = time.perf_counter()
         dt, self.last = min(now - self.last, 0.1), now
         keys, self.keys = self.keys, set()
-        self.apply(self.top.update(dt, keys))
+        self.apply(self.router.route(self.top.update(dt, keys)))
         if not self.stack:
             self.window.close()
             return
@@ -52,5 +54,7 @@ class SceneManager:
                 self.stack.pop()
             case Reset():
                 self.stack = [transition.scene]
+            case Clear():
+                self.stack = []
             case None:
                 pass

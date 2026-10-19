@@ -1,26 +1,21 @@
-from .base import Scene, Pop, Reset, Transition
-from .factories import SceneFactories
+from .base import Scene
+from .events import Event, Resume, Leave
 from models import Keys
 from assets import Assets, FontColor
 from render import FrameBuffer, Line, put_screen, text_font, title_font
-from storage import Config
 
 
 class Pause(Scene):
     transparent = True
 
-    def __init__(
-        self, factories: SceneFactories, config: Config, assets: Assets
-    ) -> None:
-        self.factories = factories
-        self.config = config
+    def __init__(self, assets: Assets) -> None:
         self.assets = assets
 
-    def update(self, dt: float, keys: set[int]) -> Transition:
+    def update(self, dt: float, keys: set[int]) -> Event:
         if Keys.Escape in keys:
-            return Pop()
+            return Resume()
         if Keys.Return in keys:
-            return Reset(self.factories.main(self.config, self.assets))
+            return Leave()
         return None
 
     def draw(self, framebuffer: FrameBuffer) -> None:

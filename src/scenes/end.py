@@ -1,9 +1,10 @@
 from models import Keys
-from .factories import SceneFactories
 from assets.font import LINES
 from assets import Assets, FontColor
 from storage import Config, save_score
-from .base import Scene, Transition, Reset
+from .base import Scene
+from .events import Event, Leave
+from systems import Outcome, Ending
 from render import (
     FrameBuffer,
     Line,
@@ -13,30 +14,27 @@ from render import (
 )
 
 
-class EndScene(Scene):
-    message: str
-    color: FontColor
-
+class End(Scene):
     def __init__(
         self,
-        factories: SceneFactories,
         config: Config,
         assets: Assets,
         score: int,
+        outcome: Ending,
     ) -> None:
         self.config = config
         self.assets = assets
-        self.factories = factories
         self.score = score
+        self.outcome = outcome
         self.name_buffer: str = ""
 
-    def update(self, dt: float, keys: set[int]) -> Transition:
+    def update(self, dt: float, keys: set[int]) -> Event:
         if Keys.Escape in keys:
-            return Reset(self.factories.main(self.config, self.assets))
+            return Leave()
         name = self.name_buffer.strip()
         if Keys.Return in keys and name:
             save_score(self.config.highscore_path, name, self.score)
-            return Reset(self.factories.main(self.config, self.assets))
+            return Leave()
         if Keys.Backspace in keys:
             self.name_buffer = self.name_buffer[:-1]
         for code in keys:
@@ -48,10 +46,11 @@ class EndScene(Scene):
         return None
 
     def draw(self, framebuffer: FrameBuffer) -> None:
-        title = title_font(framebuffer, self.assets, self.color)
+        message, color = self.banner()
+        title = title_font(framebuffer, self.assets, color)
         text = text_font(framebuffer, self.assets, FontColor.WHITE)
         lines: list[Line] = [
-            (self.message, title),
+            (message, title),
             (f"Score - {self.score}", text),
             (f"Name:  {self.name_buffer:->10}", text),
             ('Press "Enter" to validate', text),
@@ -60,17 +59,11 @@ class EndScene(Scene):
         framebuffer.clear()
         put_screen(framebuffer, lines)
 
-
-class Won(EndScene):
-    message = "You Won !"
-    color = FontColor.YELLOW
-
-
-class Lost(EndScene):
-    message = "Game Over !"
-    color = FontColor.RED
-
-
-class TimedOut(EndScene):
-    message = "You Timed Out !"
-    color = FontColor.ORANGE
+    def banner(self) -> tuple[str, FontColor]:
+        match self.outcome:
+            case Outcome.WON:
+                return "You Won !", FontColor.YELLOW
+            case Outcome.LOST:
+                return "Game Over !", FontColor.RED
+            case Outcome.TIMED_OUT:
+                return "Time's Up !", FontColor.ORANGE

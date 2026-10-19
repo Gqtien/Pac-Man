@@ -1,6 +1,6 @@
 from enum import Enum, auto
-from .base import Scene, Transition, Push, Pop
-from .factories import SceneFactories
+from .events import Event, Start, Quit
+from .base import Scene
 from models import Keys
 from storage import Config, load_highscores
 from assets import Assets, FontColor
@@ -23,20 +23,17 @@ class Mode(Enum):
 
 
 class Main(Scene):
-    def __init__(
-        self, factories: SceneFactories, config: Config, assets: Assets
-    ) -> None:
+    def __init__(self, config: Config, assets: Assets) -> None:
         self.config = config
         self.assets = assets
-        self.factories = factories
         self.highscores = load_highscores(config.highscore_path)
         self.mode = Mode.HIGHSCORES
 
-    def update(self, dt: float, keys: set[int]) -> Transition:
+    def update(self, dt: float, keys: set[int]) -> Event:
         if Keys.Q in keys:
-            return Pop()
+            return Quit()
         if Keys.Space in keys:
-            return Push(self.factories.gameplay(self.config, self.assets))
+            return Start()
         if Keys.Left in keys:
             self.mode = self.mode.shift(-1)
         if Keys.Right in keys:

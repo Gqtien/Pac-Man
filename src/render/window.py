@@ -3,7 +3,7 @@ import subprocess
 import time
 from mlx import Mlx
 from typing import Callable
-from render import FrameBuffer
+from .framebuffer import FrameBuffer
 
 
 class Window:
@@ -62,5 +62,7 @@ def work_area() -> tuple[int, int] | None:
         text=True,
         check=False,
     ).stdout
+    if "=" not in output:
+        return None
     w, h = map(int, output.split("=")[1].split(", ")[2:4])
     return w, h

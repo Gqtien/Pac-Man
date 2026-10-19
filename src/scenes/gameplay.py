@@ -1,8 +1,6 @@
 import math
-from typing import Callable
-from .base import Scene, Push, Transition, Reset
-from .factories import SceneFactories
-from .pause import Pause
+from .events import Event, Pause, Finish
+from .base import Scene
 from storage import Config
 from systems import Outcome, step
 from assets import Assets, FontColor, Sprites
@@ -19,33 +17,23 @@ from render import (
 
 
 class Gameplay(Scene):
-    def __init__(
-        self, factories: SceneFactories, config: Config, assets: Assets
-    ) -> None:
+    def __init__(self, config: Config, assets: Assets) -> None:
         self.config = config
         self.assets = assets
-        self.factories = factories
         self.world = new_world(new_map(seed=42), config.lives)
         self.maze = MazeLayer()
 
-    def update(self, dt: float, keys: set[int]) -> Transition:
+    def update(self, dt: float, keys: set[int]) -> Event:
         if Keys.Escape in keys:
-            return Push(Pause(self.factories, self.config, self.assets))
+            return Pause()
         match step(self.world, self.config, dt, keys):
             case Outcome.DIED:
                 self.world = respawn(self.world)
             case Outcome.WON if self.world.level < self.config.levels_to_win:
                 self.world = next_level(self.world, new_map())
-            case Outcome.WON:
-                return self.end(self.factories.won)
-            case Outcome.LOST:
-                return self.end(self.factories.lost)
-            case Outcome.TIMED_OUT:
-                return self.end(self.factories.timed_out)
+            case Outcome.WON | Outcome.LOST | Outcome.TIMED_OUT as outcome:
+                return Finish(self.world.score, outcome)
         return None
-
-    def end(self, scene: Callable[..., Scene]) -> Transition:
-        return Reset(scene(self.config, self.assets, self.world.score))
 
     def draw(self, framebuffer: FrameBuffer) -> None:
         world, assets = self.world, self.assets

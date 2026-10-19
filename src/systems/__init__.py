@@ -6,7 +6,7 @@ from .pacman import step as pacman_step
 from .ghost import step as ghost_step
 from .collisions import step as collisions_step
 from .house import step as house_step
-from .outcome import Outcome
+from .outcome import Outcome, Ending
 
 
 def step(world: World, config: Config, dt: float, keys: set[int]) -> Outcome:
@@ -35,4 +35,4 @@ def outcome(world: World, config: Config) -> Outcome:
     return Outcome.CONTINUE
 
 
-__all__ = ["Outcome", "step"]
+__all__ = ["Outcome", "Ending", "step"]
