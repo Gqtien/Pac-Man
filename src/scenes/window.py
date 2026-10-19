@@ -1,3 +1,5 @@
+import shutil
+import subprocess
 import time
 from mlx import Mlx
 from typing import Callable
@@ -9,6 +11,7 @@ class Window:
         self.mlx = Mlx()
         self.ptr = self.mlx.mlx_init()
         _, w, h = self.mlx.mlx_get_screen_size(self.ptr)
+        w, h = work_area() or (w, h)
         self.window = self.mlx.mlx_new_window(self.ptr, w, h, title)
         self.images = []
         for _ in range(2):
@@ -48,3 +51,16 @@ class Window:
             self.mlx.mlx_destroy_image(self.ptr, image)
         self.mlx.mlx_destroy_window(self.ptr, self.window)
         self.mlx.mlx_release(self.ptr)
+
+
+def work_area() -> tuple[int, int] | None:
+    if shutil.which("xprop") is None:
+        return None
+    output = subprocess.run(
+        ["xprop", "-root", "_NET_WORKAREA"],
+        capture_output=True,
+        text=True,
+        check=False,
+    ).stdout
+    w, h = map(int, output.split("=")[1].split(", ")[2:4])
+    return w, h
