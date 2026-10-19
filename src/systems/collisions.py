@@ -5,7 +5,8 @@ from .house import preferred
 
 def step(world: World, config: Config) -> None:
     eat(world)
-    collide(world, config)
+    if world.items:
+        collide(world, config)
 
 
 def eat(world: World) -> None:

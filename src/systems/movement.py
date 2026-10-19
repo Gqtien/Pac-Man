@@ -23,7 +23,7 @@ def move(
     if not can_move(entity.pos, entity.direction, world.map, door_open):
         entity.direction = Direction.NONE
         return
-    entity.progress += speed * dt
+    entity.progress += min(speed * dt, 1.0)
     # update pos from progress
     if entity.progress < 1.0:
         entity.just_moved = False
