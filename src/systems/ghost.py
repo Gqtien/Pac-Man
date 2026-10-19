@@ -6,7 +6,8 @@ from .movement import can_move, move
 from .speed import ghost_factor
 from models import (
     Direction,
-    World,
+    Game,
+    Level,
     Ghost,
     GhostState,
     GhostPersonality,
@@ -36,39 +37,39 @@ def pathfind_to(
     return Direction((step.x, step.y))
 
 
-def update_blinky(ghost: Ghost, world: World) -> None:
+def update_blinky(ghost: Ghost, level: Level) -> None:
     ghost.direction = pathfind_to(
-        ghost.pos, world.pacman.pos, world.map, ghost.direction
+        ghost.pos, level.pacman.pos, level.map, ghost.direction
     )
 
 
-def update_pinky(ghost: Ghost, world: World) -> None:
-    target = world.pacman.pos + world.pacman.direction.vec * 2
+def update_pinky(ghost: Ghost, level: Level) -> None:
+    target = level.pacman.pos + level.pacman.direction.vec * 2
     ghost.direction = pathfind_to(
-        ghost.pos, target, world.map, ghost.direction
+        ghost.pos, target, level.map, ghost.direction
     )
 
 
-def update_inky(ghost: Ghost, world: World) -> None:
+def update_inky(ghost: Ghost, level: Level) -> None:
     blinky: Ghost = next(
-        g for g in world.ghosts if g.personality is GhostPersonality.BLINKY
+        g for g in level.ghosts if g.personality is GhostPersonality.BLINKY
     )
-    ahead = world.pacman.pos + world.pacman.direction.vec
+    ahead = level.pacman.pos + level.pacman.direction.vec
     target = blinky.pos + (ahead - blinky.pos) * 2
     ghost.direction = pathfind_to(
-        ghost.pos, target, world.map, ghost.direction
+        ghost.pos, target, level.map, ghost.direction
     )
 
 
-def update_clyde(ghost: Ghost, world: World) -> None:
+def update_clyde(ghost: Ghost, level: Level) -> None:
     ghost.direction = pathfind_to(
-        ghost.pos, world.pacman.pos, world.map, ghost.direction
+        ghost.pos, level.pacman.pos, level.map, ghost.direction
     )
-    if (world.pacman.pos - ghost.pos).norm() <= 8:
+    if (level.pacman.pos - ghost.pos).norm() <= 8:
         ghost.state = GhostState.SCATTER
 
 
-CHASE_MAP: dict[GhostPersonality, Callable[[Ghost, World], None]] = {
+CHASE_MAP: dict[GhostPersonality, Callable[[Ghost, Level], None]] = {
     GhostPersonality.BLINKY: update_blinky,
     GhostPersonality.PINKY: update_pinky,
     GhostPersonality.INKY: update_inky,
@@ -96,38 +97,39 @@ def idle(ghost: Ghost, map: Map) -> None:
     ghost.direction = options[0] if options else ghost.direction.opposite
 
 
-def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
-    factor = ghost_factor(ghost, world)
+def step(ghost: Ghost, game: Game, config: Config, dt: float) -> None:
+    level = game.level
+    factor = ghost_factor(ghost, game)
     door_open = ghost.state in (GhostState.LEAVING, GhostState.DEAD)
-    move(ghost, world, config.speed * factor, dt, door_open)
+    move(ghost, level.map, config.speed * factor, dt, door_open)
 
     if ghost.state is GhostState.FRIGHTENED:
         ghost.frightened -= dt
         if ghost.frightened <= 0.0:
             ghost.state = GhostState.CHASE
-    if ghost.state is GhostState.EATEN and not world.freeze:
+    if ghost.state is GhostState.EATEN and not level.freeze:
         ghost.state = GhostState.DEAD
 
     if ghost.just_moved or ghost.direction is Direction.NONE:
         # recompute direction
         match ghost.state:
             case GhostState.HOUSE:
-                idle(ghost, world.map)
+                idle(ghost, level.map)
             case GhostState.LEAVING:
                 ghost.direction = pathfind_to(
                     ghost.pos,
                     ghost.corner,
-                    world.map,
+                    level.map,
                     ghost.direction,
                     door_open=True,
                 )
-                if not is_solid(world.map[ghost.pos.y][ghost.pos.x]):
+                if not is_solid(level.map[ghost.pos.y][ghost.pos.x]):
                     ghost.state = GhostState.CHASE
             case GhostState.DEAD:
                 ghost.direction = pathfind_to(
                     ghost.pos,
                     ghost.spawn,
-                    world.map,
+                    level.map,
                     ghost.direction,
                     door_open=True,
                 )
@@ -136,13 +138,13 @@ def step(ghost: Ghost, world: World, config: Config, dt: float) -> None:
             case GhostState.EATEN:
                 pass
             case GhostState.FRIGHTENED:
-                update_frightened_dir(ghost, world.map)
+                update_frightened_dir(ghost, level.map)
             case GhostState.SCATTER:
                 ghost.direction = pathfind_to(
-                    ghost.pos, ghost.corner, world.map, ghost.direction
+                    ghost.pos, ghost.corner, level.map, ghost.direction
                 )
                 if ghost.pos == ghost.corner:
                     ghost.state = GhostState.CHASE
             case GhostState.CHASE:
-                CHASE_MAP[ghost.personality](ghost, world)
+                CHASE_MAP[ghost.personality](ghost, level)
         ghost.just_moved = False

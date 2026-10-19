@@ -1,59 +1,61 @@
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 from .cheat import Cheat
 from .direction import Direction
 from .entity import Ghost, GhostPersonality, GhostState, Pacman
 from .items import Items, init_items
-from .map import Map, doors
+from .map import Map, doors, new_map
 from .vec import Vec2
 
 
 @dataclass
-class World:
+class Level:
+    number: int
     map: Map
     items: Items
     pacman: Pacman
     ghosts: list[Ghost]
-    score: int = 0
-    lives: int = 3
-    level: int = 1
     timer: float = 0.0
     clock: float = 0.0
     freeze: float = 0.0
+    starve: float = 0.0
     multiplier: int = 1
     global_dots: int | None = None
+
+
+@dataclass
+class Game:
+    level: Level
+    lives: int
+    score: int = 0
     cheats: set[Cheat] = field(default_factory=set)
 
 
-def new_world(map: Map, lives: int) -> World:
-    return World(
+def new_game(lives: int) -> Game:
+    return Game(new_level(1, new_map(seed=42)), lives)
+
+
+def next_level(level: Level) -> Level:
+    return new_level(level.number + 1, new_map())
+
+
+def new_level(number: int, map: Map) -> Level:
+    return Level(
+        number,
         map,
         init_items(map),
         spawn_pacman(map),
         spawn_ghosts(map),
-        lives=lives,
     )
 
 
-def respawn(world: World) -> World:
-    dots = {ghost.personality: ghost.dots for ghost in world.ghosts}
-    ghosts = spawn_ghosts(world.map)
-    for ghost in ghosts:
+def respawn(level: Level) -> None:
+    dots = {ghost.personality: ghost.dots for ghost in level.ghosts}
+    level.pacman = spawn_pacman(level.map)
+    level.ghosts = spawn_ghosts(level.map)
+    for ghost in level.ghosts:
         ghost.dots = dots[ghost.personality]
-    return replace(
-        world,
-        pacman=spawn_pacman(world.map),
-        ghosts=ghosts,
-        global_dots=0,
-    )
-
-
-def next_level(world: World, map: Map) -> World:
-    return replace(
-        new_world(map, world.lives),
-        score=world.score,
-        level=world.level + 1,
-        cheats=world.cheats,
-    )
+    level.starve = 0.0
+    level.global_dots = 0
 
 
 def spawn_pacman(map: Map) -> Pacman:

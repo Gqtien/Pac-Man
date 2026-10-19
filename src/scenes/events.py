@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from systems import Ending
+from systems import Outcome
 from typing import TypeAlias
 
 
@@ -30,7 +30,7 @@ class Quit:
 @dataclass(frozen=True)
 class Finish:
     score: int
-    outcome: Ending
+    outcome: Outcome
 
 
 Event: TypeAlias = Init | Start | Pause | Resume | Leave | Quit | Finish | None

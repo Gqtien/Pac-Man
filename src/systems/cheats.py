@@ -1,14 +1,14 @@
 from storage import Config
-from models import Cheat, World
+from models import Cheat, Game
 
 
-def step(world: World, config: Config, keys: set[int]) -> None:
+def step(game: Game, config: Config, keys: set[int]) -> None:
     if config.cheat_win_key in keys:
-        world.items.clear()
+        game.level.items.clear()
     toggles = (
         (config.cheat_invincible_key, Cheat.INVINCIBLE),
         (config.cheat_freeze_ghosts_key, Cheat.FREEZE_GHOSTS),
     )
     for key, cheat in toggles:
         if key in keys:
-            world.cheats ^= {cheat}
+            game.cheats ^= {cheat}

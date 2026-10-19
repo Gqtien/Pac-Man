@@ -4,7 +4,7 @@ from assets import Assets, FontColor
 from storage import Config, save_score
 from .base import Scene
 from .events import Event, Leave
-from systems import Outcome, Ending
+from systems import Outcome
 from render import (
     FrameBuffer,
     Line,
@@ -20,7 +20,7 @@ class End(Scene):
         config: Config,
         assets: Assets,
         score: int,
-        outcome: Ending,
+        outcome: Outcome,
     ) -> None:
         self.config = config
         self.assets = assets

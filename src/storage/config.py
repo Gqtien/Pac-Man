@@ -59,7 +59,7 @@ def fill(config: Config, data: dict[str, Any], path: Path) -> None:
         save_json(path, {**defaults, **data})
 
 
-def parse(entry: Field, value: Any, default: Any) -> Any:
+def parse(entry: Field[Any], value: Any, default: Any) -> Any:
     if isinstance(value, bool) or isinstance(default, bool):
         return value if type(value) is type(default) else None
     if isinstance(default, Keys):

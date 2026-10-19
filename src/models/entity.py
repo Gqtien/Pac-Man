@@ -26,7 +26,6 @@ class Pacman(Entity):
     facing: Direction = Direction.WEST
     death: float = 0.0
     stall: float = 0.0
-    starve: float = 0.0
 
     @property
     def death_progress(self) -> float:

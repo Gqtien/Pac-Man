@@ -1,38 +1,46 @@
 from storage import Config
-from models import World
+from models import Game, next_level, respawn
 from .timer import spend
 from .cheats import step as cheats_step
 from .pacman import step as pacman_step
 from .ghost import step as ghost_step
 from .collisions import step as collisions_step
 from .house import step as house_step
-from .outcome import Outcome, Ending
+from .outcome import Outcome
 
 
-def step(world: World, config: Config, dt: float, keys: set[int]) -> Outcome:
-    cheats_step(world, config, keys)
-    world.freeze, dt = spend(world.freeze, dt)
-    world.clock += dt
-    pacman_step(world, config, dt, keys)
-    if world.pacman.alive:
-        world.timer += dt
-        for ghost in world.ghosts:
-            ghost_step(ghost, world, config, dt)
-        collisions_step(world, config)
-        house_step(world, dt)
-    return outcome(world, config)
+def step(
+    game: Game, config: Config, dt: float, keys: set[int]
+) -> Outcome | None:
+    level = game.level
+    cheats_step(game, config, keys)
+    level.freeze, dt = spend(level.freeze, dt)
+    level.clock += dt
+    pacman_step(level, config, dt, keys)
+    if level.pacman.alive:
+        level.timer += dt
+        for ghost in level.ghosts:
+            ghost_step(ghost, game, config, dt)
+        collisions_step(game, config)
+        house_step(level, dt)
+    return advance(game, config)
 
 
-def outcome(world: World, config: Config) -> Outcome:
-    if not world.pacman.alive:
-        if world.pacman.death_progress < 1.0 and world.items:
-            return Outcome.CONTINUE
-        return Outcome.LOST if world.lives <= 0 else Outcome.DIED
-    if world.timer >= config.level_time_limit:
+def advance(game: Game, config: Config) -> Outcome | None:
+    level = game.level
+    if not level.pacman.alive:
+        if level.pacman.death_progress < 1.0 and level.items:
+            return None
+        if game.lives <= 0:
+            return Outcome.LOST
+        respawn(level)
+    elif level.timer >= config.level_time_limit:
         return Outcome.TIMED_OUT
-    if not world.items:
-        return Outcome.WON
-    return Outcome.CONTINUE
+    elif not level.items:
+        if level.number >= config.levels_to_win:
+            return Outcome.WON
+        game.level = next_level(level)
+    return None
 
 
-__all__ = ["Outcome", "Ending", "step"]
+__all__ = ["Outcome", "step"]

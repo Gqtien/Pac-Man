@@ -1,15 +1,15 @@
 from assets import Animation, Sprites
-from models import Ghost, GhostState, Pacman, World
+from models import Ghost, GhostState, Level, Pacman
 from .grid import Grid
 
 
-def draw_entities(grid: Grid, world: World, sprites: Sprites) -> None:
-    pacman = world.pacman
+def draw_entities(grid: Grid, level: Level, sprites: Sprites) -> None:
+    pacman = level.pacman
     if pacman.alive or pacman.death < 0.5:
-        for ghost in world.ghosts:
-            draw_ghost(grid, ghost, sprites, world.clock)
+        for ghost in level.ghosts:
+            draw_ghost(grid, ghost, sprites, level.clock)
     if pacman.alive:
-        if all(ghost.state is not GhostState.EATEN for ghost in world.ghosts):
+        if all(ghost.state is not GhostState.EATEN for ghost in level.ghosts):
             draw_pacman(grid, pacman, sprites)
     elif pacman.death < 1:
         draw_pacman(grid, pacman, sprites)

@@ -2,7 +2,7 @@ from .cheat import Cheat
 from .direction import Direction
 from .entity import Entity, Ghost, GhostPersonality, GhostState, Pacman
 from .vec import Vec2
-from .world import World, new_world, next_level, respawn
+from .game import Game, Level, new_game, next_level, respawn
 from .items import Items, Item, init_items
 from .speed import Speed, Speeds, speeds
 from .house import GLOBAL_DOT_LIMITS, dot_limit, starve_limit
@@ -23,20 +23,21 @@ from .map import (
 __all__ = [
     "Direction",
     "Entity",
+    "Game",
     "Ghost",
     "GhostPersonality",
     "GhostState",
+    "Level",
     "Map",
     "Maze",
     "Pacman",
     "Vec2",
-    "World",
     "Items",
     "Item",
     "Keys",
     "from_maze",
     "new_map",
-    "new_world",
+    "new_game",
     "next_level",
     "can_cross",
     "doors",

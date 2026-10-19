@@ -1,9 +1,9 @@
-from models import Direction, Entity, Map, Vec2, World, can_cross
+from models import Direction, Entity, Map, Vec2, can_cross
 
 
 def move(
     entity: Entity,
-    world: World,
+    map: Map,
     speed: float,
     dt: float,
     door_open: bool = False,
@@ -14,13 +14,13 @@ def move(
     if (
         entity.just_moved
         and not entity.wanted.is_still
-        and can_move(entity.pos, entity.wanted, world.map, door_open)
+        and can_move(entity.pos, entity.wanted, map, door_open)
     ):
         entity.direction = entity.wanted
     # update progress from direction
     if entity.direction.is_still:
         return
-    if not can_move(entity.pos, entity.direction, world.map, door_open):
+    if not can_move(entity.pos, entity.direction, map, door_open):
         entity.direction = Direction.NONE
         return
     entity.progress += min(speed * dt, 1.0)

@@ -105,7 +105,7 @@ Blinky (`B`) starts between the doors, Clyde (`C`) and Pinky (`P`) inside the "4
 ## `🛠️` | Implementation
 
 - The mlx loop runs the game at 60 fps. Movement uses the time elapsed since the last frame, so the game runs at the same speed on any machine.
-- The game rules live in `systems.step()`, which updates the world and returns an outcome: continue, died, lost, won or timed out. The gameplay scene turns it into a respawn, the next level or an end screen.
+- The game rules live in `systems.step()`. It updates the game, respawns Pac-Man after a death and builds the next level when the maze is cleared. It only returns an outcome when the game ends: won, lost or timed out.
 - Pac-Man and the ghosts move from tile to tile, with a progress value between two tiles so the movement stays smooth.
 - Each ghost finds its way with a breadth-first search toward its own target, as in the arcade: Blinky aims at Pac-Man, Pinky in front of him, Inky uses Blinky's position, and Clyde runs back to his corner when he gets too close.
 - Each frame is drawn into a Pillow image, then copied into an mlx image. The window takes the desktop's work area, and each sprite is scaled to the exact tile size that fits it: enlarged by a whole number without smoothing, then reduced to the final size by averaging, so the pixel art keeps its proportions at any size.
@@ -117,11 +117,11 @@ Blinky (`B`) starts between the doors, Clyde (`C`) and Pinky (`P`) inside the "4
 
 ```
 src/
-├── __main__.py   reads the arguments, loads the config and assets, starts the scenes
-├── models/       data: Vec2, Direction, Pacman, Ghost, World, maze conversion, game tables
-├── systems/      game rules: step(world, config, dt, keys) -> Outcome
-├── scenes/       mlx window, scene stack, menu, game, pause and end screens
-├── render/       drawing into the framebuffer
+├── __main__.py   reads the arguments, loads the config and assets, opens the window, starts the scenes
+├── models/       data: Vec2, Direction, Pacman, Ghost, Game, Level, maze conversion, game tables
+├── systems/      game rules: step(game, config, dt, keys) -> Outcome | None
+├── scenes/       scene stack, router, menu, game, pause and end screens
+├── render/       mlx window, drawing into the framebuffer
 ├── assets/       sprite sheets cut into sprites, fonts and wall tiles
 └── storage/      config and highscore files
 ```
@@ -130,16 +130,20 @@ src/
 flowchart TD
     main["__main__"] --> manager["SceneManager"]
     manager --> window["Window"] --> mlx[("mlx")]
-    manager -->|scene stack| scenes["Main, Gameplay, Pause, Won, Lost, TimedOut"]
+    manager -->|scene stack| scenes["Main, Gameplay, Pause, End"]
+    scenes -->|events| router["Router"]
+    router -->|Push, Pop, Reset| manager
     scenes -->|step| systems
-    systems -->|update| world["World"]
+    systems -->|update| game["Game, Level"]
     scenes -->|draw| render
     render --> assets
     scenes --> storage
-    world -->|map from| mazegen[("mazegenerator")]
+    game -->|map from| mazegen[("mazegenerator")]
 ```
 
-`models` holds plain data and pure helpers. `systems` holds every game rule as functions that update the `World` and return an `Outcome`. An outcome only says what happened in the game; picking the next screen is the scene's job. Scenes are thin glue: they call `systems.step`, turn the outcome into a `Push`, `Pop` or `Reset` of the scene stack, and call `render`. `__main__` builds them through `SceneFactories`, so screens can open each other without circular imports. `render` only draws, `assets` only loads images, and `storage` is the only package that reads or writes JSON.
+`models` holds plain data and pure helpers. A `Game` keeps what lasts the whole game (score, lives, cheats) and the current `Level` (maze, items, Pac-Man, ghosts and their timers), so moving on to the next level only replaces the `Level`. `systems` holds every game rule as functions that update the `Game`; `step` returns an `Outcome` only when the game ends.
+
+Scenes are thin glue: they call `systems.step` and `render`, and never open another scene themselves. They return an event instead (start, pause, resume, finish, leave, quit), and the `Router` is the only place that knows which screen comes next: it turns each event into a `Push`, `Pop` or `Reset` of the scene stack. `render` draws into the framebuffer and shows it in the mlx window, `assets` only loads images, and `storage` is the only package that reads or writes JSON.
 
 ---
 

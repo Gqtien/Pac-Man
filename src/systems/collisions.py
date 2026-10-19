@@ -1,28 +1,29 @@
 from storage import Config
-from models import Cheat, World, Item, GhostState, Entity, Ghost
+from models import Cheat, Game, Item, GhostState, Entity, Ghost
 from .house import preferred
 
 
-def step(world: World, config: Config) -> None:
-    eat(world)
-    if world.items:
-        collide(world, config)
+def step(game: Game, config: Config) -> None:
+    eat(game)
+    if game.level.items:
+        collide(game, config)
 
 
-def eat(world: World) -> None:
-    item = world.items.pop(world.pacman.pos, None)
+def eat(game: Game) -> None:
+    level = game.level
+    item = level.items.pop(level.pacman.pos, None)
     if item is None:
         return
-    world.score += item.value
-    world.pacman.stall += item.stall
+    game.score += item.value
+    level.pacman.stall += item.stall
     if item is Item.PACGUM:
-        world.pacman.starve = 0.0
-        if world.global_dots is not None:
-            world.global_dots += 1
-        elif (ghost := preferred(world)) is not None:
+        level.starve = 0.0
+        if level.global_dots is not None:
+            level.global_dots += 1
+        elif (ghost := preferred(level)) is not None:
             ghost.dots += 1
     if item is Item.SUPER_PACGUM:
-        for ghost in world.ghosts:
+        for ghost in level.ghosts:
             if ghost.state in (
                 GhostState.CHASE,
                 GhostState.SCATTER,
@@ -30,15 +31,16 @@ def eat(world: World) -> None:
             ):
                 ghost.state = GhostState.FRIGHTENED
                 ghost.frightened = 10
-                world.multiplier = 1
+                level.multiplier = 1
 
 
-def collide(world: World, config: Config) -> None:
-    for ghost in world.ghosts:
-        if not world.pacman.alive:
+def collide(game: Game, config: Config) -> None:
+    level = game.level
+    for ghost in level.ghosts:
+        if not level.pacman.alive:
             break
-        if touching(world.pacman, ghost, config.entity_hitbox):
-            apply(world, ghost)
+        if touching(level.pacman, ghost, config.entity_hitbox):
+            apply(game, ghost)
 
 
 def touching(a: Entity, b: Entity, hitbox: float) -> bool:
@@ -46,18 +48,19 @@ def touching(a: Entity, b: Entity, hitbox: float) -> bool:
     return abs(ax - bx) < hitbox and abs(ay - by) < hitbox
 
 
-def apply(world: World, ghost: Ghost) -> None:
+def apply(game: Game, ghost: Ghost) -> None:
+    level = game.level
     match ghost.state:
         case GhostState.FRIGHTENED:
             ghost.state = GhostState.EATEN
-            ghost.bounty = 200 * world.multiplier
-            world.score += ghost.bounty
-            world.multiplier *= 2
-            world.freeze = 1.0
+            ghost.bounty = 200 * level.multiplier
+            game.score += ghost.bounty
+            level.multiplier *= 2
+            level.freeze = 1.0
         case GhostState.DEAD | GhostState.EATEN:
             pass
         case GhostState.CHASE | GhostState.SCATTER | GhostState.LEAVING:
-            if Cheat.INVINCIBLE in world.cheats:
+            if Cheat.INVINCIBLE in game.cheats:
                 return
-            world.pacman.alive = False
-            world.lives -= 1
+            level.pacman.alive = False
+            game.lives -= 1
