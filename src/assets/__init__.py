@@ -13,7 +13,6 @@ class Assets:
     fonts: Scaled[Fonts]
     walls: Scaled[Walls]
     overlay: Resized
-    size: int = 16
 
 
 def load_assets(folder: Path) -> Assets:

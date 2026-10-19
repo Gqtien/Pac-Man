@@ -32,17 +32,9 @@ class Grid:
         )
 
 
-def fit_grid(
-    framebuffer: FrameBuffer, cols: int, rows: int, size: int
-) -> tuple[Grid, int]:
-    scale = max(
-        1,
-        min(
-            framebuffer.width // (size * cols),
-            framebuffer.height // (size * rows),
-        ),
-    )
-    cell_size = size * scale
-    left = (framebuffer.width - cols * cell_size) // 2
-    top = (framebuffer.height - rows * cell_size) // 2
-    return Grid(framebuffer, cell_size, left, top), scale
+def fit_grid(framebuffer: FrameBuffer, cols: int, rows: int) -> Grid:
+    cell = min(framebuffer.width // cols, framebuffer.height // rows)
+    cell = max(2, cell - cell % 2)
+    left = (framebuffer.width - cols * cell) // 2
+    top = (framebuffer.height - rows * cell) // 2
+    return Grid(framebuffer, cell, left, top)

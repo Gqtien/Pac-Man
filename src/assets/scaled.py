@@ -13,12 +13,12 @@ class Scaled(dict[int, Asset], Generic[Asset]):
         self.sheet = sheet
         self.load = load
 
-    def __missing__(self, scale: int) -> Asset:
-        asset = self[scale] = self.load(self.sheet.zoom(scale))
+    def __missing__(self, cell: int) -> Asset:
+        asset = self[cell] = self.load(self.sheet.zoom(cell))
         return asset
 
     def fit(self, px: float) -> Asset:
-        return self[max(1, int(px // self.sheet.cell))]
+        return self[max(1, int(px))]
 
 
 class Resized(dict[tuple[int, int], Image]):

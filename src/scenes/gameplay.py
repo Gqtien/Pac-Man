@@ -50,11 +50,10 @@ class Gameplay(Scene):
     def draw(self, framebuffer: FrameBuffer) -> None:
         world, assets = self.world, self.assets
         rows, cols = len(world.map), len(world.map[0])
-        screen, scale = fit_grid(framebuffer, cols, rows + 2, assets.size)
-        grid = screen.offset(0, 1)
-        sprites = assets.sprites[scale]
+        grid = fit_grid(framebuffer, cols, rows + 2).offset(0, 1)
+        sprites = assets.sprites[grid.cell_size]
         framebuffer.clear()
-        self.maze.draw(grid, world.map, assets.walls[scale])
+        self.maze.draw(grid, world.map, assets.walls[grid.cell_size // 2])
         draw_items(grid, world.items, sprites)
         draw_entities(grid, world, sprites)
         self.draw_hud(grid, sprites, cols, rows)

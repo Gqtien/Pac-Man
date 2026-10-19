@@ -109,7 +109,7 @@ Blinky (`B`) starts between the doors, Clyde (`C`) and Pinky (`P`) inside the "4
 - The game rules live in `systems.step()`, which updates the world and returns an outcome: continue, died, lost, won or timed out. The gameplay scene turns it into a respawn, the next level or an end screen.
 - Pac-Man and the ghosts move from tile to tile, with a progress value between two tiles so the movement stays smooth.
 - Each ghost finds its way with a breadth-first search toward its own target, as in the arcade: Blinky aims at Pac-Man, Pinky in front of him, Inky uses Blinky's position, and Clyde runs back to his corner when he gets too close.
-- Each frame is drawn into a Pillow image, then copied into an mlx image. Sprites are scaled by a whole number to fit the screen, so the pixel art stays sharp.
+- Each frame is drawn into a Pillow image, then copied into an mlx image. The window takes the desktop's work area, and each sprite is scaled to the exact tile size that fits it: enlarged by a whole number without smoothing, then reduced to the final size by averaging, so the pixel art keeps its proportions at any size.
 
 ---
 
