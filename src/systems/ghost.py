@@ -1,20 +1,20 @@
 import random
 from typing import Callable
-from storage import Config
-from .pathfind import pathfind
-from .movement import can_move, move
-from .speed import ghost_factor
 from models import (
     Direction,
     Game,
-    Level,
     Ghost,
-    GhostState,
     GhostPersonality,
+    GhostState,
+    Level,
     Map,
     Vec2,
     is_solid,
 )
+from storage import Config
+from .movement import can_move, move
+from .pathfind import pathfind
+from .speed import ghost_factor
 
 
 def pathfind_to(

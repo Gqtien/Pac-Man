@@ -1,5 +1,5 @@
+from models import Cheat, Entity, Game, Ghost, GhostState, Item
 from storage import Config
-from models import Cheat, Game, Item, GhostState, Entity, Ghost
 from .house import preferred
 
 

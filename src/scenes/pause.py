@@ -1,8 +1,8 @@
-from .base import Scene
-from .events import Event, Resume, Leave
-from models import Keys
 from assets import Assets, FontColor
+from models import Keys
 from render import FrameBuffer, Line, put_screen, text_font, title_font
+from .base import Scene
+from .events import Event, Leave, Resume
 
 
 class Pause(Scene):

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import TypeAlias
+from PIL.Image import Image
 from models import Direction, GhostPersonality, Item
 from .sheet import SpriteSheet
-from PIL.Image import Image
 
 Animation: TypeAlias = list[Image]
 

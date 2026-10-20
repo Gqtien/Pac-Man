@@ -1,4 +1,4 @@
-from models import Map, Vec2, Direction, can_cross, is_wall
+from models import Direction, Map, Vec2, can_cross, is_wall
 
 
 def pathfind(

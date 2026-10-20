@@ -1,8 +1,8 @@
 import shutil
 import subprocess
 import time
-from mlx import Mlx
 from typing import Callable
+from mlx import Mlx
 from .framebuffer import FrameBuffer
 
 

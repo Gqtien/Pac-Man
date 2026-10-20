@@ -1,12 +1,12 @@
-from storage import Config
 from models import Game, next_level, respawn
-from .timer import spend
+from storage import Config
 from .cheats import step as cheats_step
-from .pacman import step as pacman_step
-from .ghost import step as ghost_step
 from .collisions import step as collisions_step
+from .ghost import step as ghost_step
 from .house import step as house_step
 from .outcome import Outcome
+from .pacman import step as pacman_step
+from .timer import spend
 
 
 def step(

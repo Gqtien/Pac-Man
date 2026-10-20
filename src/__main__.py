@@ -2,9 +2,9 @@ import sys
 from argparse import ArgumentParser
 from pathlib import Path
 from assets import load_assets
-from storage import load_config
 from render import Window
-from scenes import SceneManager, Router
+from scenes import Router, SceneManager
+from storage import load_config
 
 
 def run() -> None:

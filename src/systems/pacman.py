@@ -1,5 +1,5 @@
+from models import Direction, Keys, Level, Pacman
 from storage import Config
-from models import Direction, Level, Pacman, Keys
 from .movement import move
 from .speed import pacman_factor
 from .timer import spend

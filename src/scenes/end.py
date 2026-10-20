@@ -1,10 +1,6 @@
-from models import Keys
-from assets.font import LINES
 from assets import Assets, FontColor
-from storage import Config, save_score
-from .base import Scene
-from .events import Event, Leave
-from systems import Outcome
+from assets.font import LINES
+from models import Keys
 from render import (
     FrameBuffer,
     Line,
@@ -12,6 +8,10 @@ from render import (
     text_font,
     title_font,
 )
+from storage import Config, save_score
+from systems import Outcome
+from .base import Scene
+from .events import Event, Leave
 
 
 class End(Scene):

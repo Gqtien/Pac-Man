@@ -1,9 +1,6 @@
 from enum import Enum, auto
-from .events import Event, Start, Quit
-from .base import Scene
-from models import Keys
-from storage import Config, load_highscores
 from assets import Assets, FontColor
+from models import Keys
 from render import (
     FrameBuffer,
     Line,
@@ -11,6 +8,9 @@ from render import (
     text_font,
     title_font,
 )
+from storage import Config, load_highscores
+from .base import Scene
+from .events import Event, Quit, Start
 
 
 class Mode(Enum):

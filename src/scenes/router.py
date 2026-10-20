@@ -1,11 +1,11 @@
-from storage import Config
 from assets import Assets
-from .events import Event, Init, Start, Pause, Resume, Finish, Leave, Quit
-from .transition import Transition, Push, Pop, Reset, Clear
-from .gameplay import Gameplay
-from .pause import Pause as PauseMenu
+from storage import Config
 from .end import End
+from .events import Event, Finish, Init, Leave, Pause, Quit, Resume, Start
+from .gameplay import Gameplay
 from .main import Main
+from .pause import Pause as PauseMenu
+from .transition import Clear, Pop, Push, Reset, Transition
 
 
 class Router:

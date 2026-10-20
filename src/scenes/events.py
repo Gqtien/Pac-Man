@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from systems import Outcome
 from typing import TypeAlias
+from systems import Outcome
 
 
 class Init:

@@ -1,5 +1,5 @@
-from storage import Config
 from models import Cheat, Game
+from storage import Config
 
 
 def step(game: Game, config: Config, keys: set[int]) -> None:

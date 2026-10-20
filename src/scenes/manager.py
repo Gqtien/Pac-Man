@@ -1,9 +1,9 @@
 import time
 from render import FrameBuffer, Window
-from .router import Router
 from .base import Scene
-from .transition import Transition, Push, Pop, Reset, Clear
 from .events import Init
+from .router import Router
+from .transition import Clear, Pop, Push, Reset, Transition
 
 
 class SceneManager:

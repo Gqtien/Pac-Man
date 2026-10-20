@@ -1,7 +1,7 @@
 import os
 from logging import getLogger
 from pathlib import Path
-from typing import Any, TypeAlias, Iterable
+from typing import Any, Iterable, TypeAlias
 from .files import load_json, save_json
 
 log = getLogger(__name__)

@@ -1,8 +1,4 @@
 import math
-from .events import Event, Pause, Finish
-from .base import Scene
-from storage import Config
-from systems import step
 from assets import Assets, FontColor, Sprites
 from models import Direction, Keys, new_game
 from render import (
@@ -14,6 +10,10 @@ from render import (
     fit_grid,
     glyphs,
 )
+from storage import Config
+from systems import step
+from .base import Scene
+from .events import Event, Finish, Pause
 
 
 class Gameplay(Scene):

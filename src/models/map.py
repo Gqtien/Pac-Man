@@ -1,7 +1,7 @@
 from typing import TypeAlias
+from mazegenerator import MazeGenerator
 from .direction import Direction
 from .vec import Vec2
-from mazegenerator import MazeGenerator
 
 Maze: TypeAlias = list[list[int]]
 Map: TypeAlias = list[list[int]]

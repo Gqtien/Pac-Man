@@ -1,6 +1,6 @@
 from enum import Enum
-from PIL.Image import Image
 from typing import TypeAlias
+from PIL.Image import Image
 from .sheet import SpriteSheet
 
 Font: TypeAlias = dict[str, Image]

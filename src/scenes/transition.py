@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from .base import Scene
 from typing import TypeAlias
+from .base import Scene
 
 
 @dataclass(frozen=True)

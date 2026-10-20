@@ -1,6 +1,5 @@
 from .entity import GhostPersonality
 
-
 DOT_LIMITS: dict[int, dict[GhostPersonality, int]] = {
     1: {
         GhostPersonality.BLINKY: 0,
