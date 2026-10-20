@@ -13,7 +13,9 @@ def load_json(path: Path) -> dict[str, Any] | None:
         log.warning(f"{path}: missing or not a regular file")
         return None
     try:
-        data = json.loads(path.read_bytes())
+        with open(path, "r") as f:
+            stripped = "".join(line for line in f if not line.startswith("#"))
+        data = json.loads(stripped)
     except (OSError, ValueError, RecursionError) as error:
         log.warning(f"{path}: {error}")
         return None
