@@ -13,6 +13,7 @@ dependencies = [
 dev = [
     "flake8",
     "mypy",
+    "pyinstaller>=6.22.3",
 ]
 
 [tool.mypy]

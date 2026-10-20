@@ -1,0 +1,4 @@
+[[actions]]
+name = "play"
+path = "pacman"
+args = ["config.json"]

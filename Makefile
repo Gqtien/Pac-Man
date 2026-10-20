@@ -1,7 +1,7 @@
 VENV		:= .venv
 PY_VERSION	:= 3.10
 MYPY_FLAGS	:= --python-version $(PY_VERSION) --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
-CMDS		:= run debug install lint lint-strict clean fclean
+CMDS		:= run debug install package lint lint-strict clean fclean
 ARGS		:= $(filter-out $(CMDS),$(MAKECMDGOALS))
 CMD			:= $(or $(firstword $(filter $(CMDS),$(MAKECMDGOALS))),run)
 
@@ -14,6 +14,9 @@ debug: $(VENV)
 install $(VENV):
 	@uv sync
 
+package: $(VENV)
+	@uv run pyinstaller --noconfirm --log-level WARN pacman.spec
+
 lint: $(VENV)
 	-@uv run flake8 src
 	-@uv run mypy src $(MYPY_FLAGS)
@@ -24,9 +27,10 @@ lint-strict: $(VENV)
 
 clean:
 	-@find . -type d \( -name __pycache__ -o -name .mypy_cache -o -name .pytest_cache -o -name .ruff_cache \) -exec rm -rf {} +
+	@rm -rf build
 
 fclean: clean
-	@rm -rf $(VENV)
+	@rm -rf $(VENV) dist
 
 $(ARGS): $(CMD)
 	@:
