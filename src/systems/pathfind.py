@@ -74,9 +74,7 @@ def get_neighbors(
     return neighbors
 
 
-def build_path(
-    previous: dict[Vec2, Vec2], target: Vec2
-) -> list[Vec2]:
+def build_path(previous: dict[Vec2, Vec2], target: Vec2) -> list[Vec2]:
     path: list[Vec2] = []
     current: Vec2 | None = target
     while current is not None:

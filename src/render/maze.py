@@ -80,10 +80,9 @@ def quarters(map: Map, x: int, y: int) -> list[Quarter]:
         top, bottom = DOOR[side]
         return [(top, Direction.NORTH, side), (bottom, Direction.SOUTH, side)]
     if is_house(cell):
-        return (
-            frame_quarters(map, x, y, HOUSE_FRAME, is_solid)
-            + frame_quarters(map, x, y, RIM, is_house)
-        )
+        return frame_quarters(
+            map, x, y, HOUSE_FRAME, is_solid
+        ) + frame_quarters(map, x, y, RIM, is_house)
     return frame_quarters(map, x, y, FRAME, is_solid)
 
 

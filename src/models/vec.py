@@ -22,4 +22,4 @@ class Vec2:
         yield self.y
 
     def norm(self) -> float:
-        return math.sqrt(self.x ** 2 + self.y ** 2)
+        return math.sqrt(self.x**2 + self.y**2)
