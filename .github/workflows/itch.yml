@@ -1,0 +1,32 @@
+name: itch.io
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency: itch
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v7
+      - name: Install MLX dependencies
+        run: sudo apt-get update && sudo apt-get install -y libbsd0 libvulkan1 libxcb-keysyms1
+      - run: make package
+      - name: Push to itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+          ITCH_GAME: ${{ vars.ITCH_GAME }}
+        run: |
+          curl -sSfL -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
+          unzip -q butler.zip -d butler
+          butler/butler push dist/pacman "$ITCH_GAME:linux" --userversion "${GITHUB_SHA::7}" --if-changed
